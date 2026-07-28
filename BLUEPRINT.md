@@ -627,11 +627,7 @@ Peer A (reconnect)                    Server                    Peer B (masih ak
 | 2026-07-28 | 1.5.0 | UPDATE — BLUEPRINT: Semua 11 bagian terisi penuh dengan data aktual |
 | 2026-07-28 | 1.6.0 | UPDATE — Major: (1) Chat persist via sessionStorage; (2) QR code join room; (3) Cyber vibes redesign (JetBrains Mono, matrix green, terminal log UI); (4) CSS fix — Google Fonts dipindah ke `<link>` di `index.html`; (5) WebRTC reconnect bug fix — `peer_ready` receiver selalu jadi initiator; (6) Room strict 2 orang — `room_full` event graceful; (7) Room auto-destroy saat peer disconnect — `room_ended` event; (8) Layar `SESSION_TERMINATED` dan `ACCESS_DENIED`; (9) Blueprint diperbarui lengkap dengan workflows |
 | 2026-07-28 | 2.0.0 | SECURITY HARDENING — (1) Dockerfile ditulis ulang Python/FastAPI+Vite multi-stage; (2) CORS restricted ke ALLOWED_ORIGINS env var; (3) SecurityHeadersMiddleware: HSTS+X-Frame+nosniff+Referrer; (4) Rate limiting 10/menit via SlowAPI; (5) WebSocket auto-create dihapus — reject room tidak dikenal; (6) Payload limit: 5MB JSON, 50MB file; (7) Idle timeout 60 detik; (8) WebSocket token auth via ws_token; (9) Structured JSON logging (UTCFormatter); (10) Frontend CSP meta tag; (11) secureLog() production-safe; (12) ICE/TURN dynamic dari server; (13) beforeunload cleanup + message cap; (14) BLUEPRINT: SR-13..16, T-11..14, TC-12..16, §13 Deployment Security Controls ditambahkan |
-
----
-
-*Dokumen ini adalah living document. Setiap perubahan pada kode harus dicatat di BAGIAN 12 dan diperbarui di bagian terkait.*
-
+| 2026-07-28 | 2.1.0 | BUGFIX & STABILITY — (1) Dihapus `ws_token` karena memblokir second peer saat race condition URL join; (2) Ditambahkan ICE candidate queuing di Frontend (`pendingCandidates`) untuk memperbaiki WebRTC race condition (menggantung di `Initiating WebRTC`); (3) Cleanup dokumentasi README & BLUEPRINT |
 
 ---
 
