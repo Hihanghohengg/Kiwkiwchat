@@ -194,16 +194,21 @@ async def websocket_endpoint(
 
     room = rooms[room_id]
 
-    # FIX-08: validate single-use ws_token
-    stored_token = room.get("ws_token", "")
-    if not stored_token or not secrets.compare_digest(token, stored_token):
-        await websocket.accept()
-        await websocket.send_json({"type": "error", "reason": "Unauthorized."})
-        await websocket.close(code=1008, reason="Unauthorized")
-        logger.warning(
-            f"WS_AUTH_FAILED room_id={room_id} remote={websocket.client.host}"
-        )
-        return
+    # FIX-08: validate single-use ws_token (only for initiator)
+    # The token prevents a race condition hijacking between POST /rooms and WS connect.
+    # The second peer joins by knowing the unguessable UUIDv4 room_id.
+    if room["count"] == 0:
+        stored_token = room.get("ws_token", "")
+        if not stored_token or not secrets.compare_digest(token, stored_token):
+            await websocket.accept()
+            await websocket.send_json({"type": "error", "reason": "Unauthorized."})
+            await websocket.close(code=1008, reason="Unauthorized")
+            logger.warning(
+                f"WS_AUTH_FAILED room_id={room_id} remote={websocket.client.host}"
+            )
+            return
+        # Clear token after successful initiator connection to prevent reuse
+        room["ws_token"] = ""
 
     # Accept first so we can send a JSON rejection message if room is full
     await websocket.accept()
