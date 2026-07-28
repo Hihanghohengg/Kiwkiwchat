@@ -181,8 +181,8 @@ function App() {
   const messagesEndRef = useRef(null);
   // FIX-11: store ICE servers from server response (may include TURN)
   const iceServers     = useRef([{ urls: "stun:stun.l.google.com:19302" }]);
-  // FIX-08: store ws_token from POST /rooms
   const wsToken        = useRef("");
+  const pendingCandidates = useRef([]);
 
   const { display: timerDisplay, seconds: timerSeconds } = useCountdown(roomStartTs, inRoom);
 
@@ -453,14 +453,24 @@ function App() {
 
     if (data.offer) {
       await peer.current.setRemoteDescription(new RTCSessionDescription(data.offer));
+      // Add any ICE candidates that arrived early
+      while (pendingCandidates.current.length > 0) {
+        await peer.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+      }
       const answer = await peer.current.createAnswer();
       await peer.current.setLocalDescription(answer);
       ws.current.send(JSON.stringify({ type: "signal", data: { answer } }));
     } else if (data.answer) {
       await peer.current.setRemoteDescription(new RTCSessionDescription(data.answer));
+      // Add any ICE candidates that arrived early
+      while (pendingCandidates.current.length > 0) {
+        await peer.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+      }
     } else if (data.candidate) {
       if (peer.current.remoteDescription) {
         await peer.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+      } else {
+        pendingCandidates.current.push(data.candidate);
       }
     }
   };
