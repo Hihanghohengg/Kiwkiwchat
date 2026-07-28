@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kiw Kiw Chat — Ephemeral Encrypted P2P</title>
+
+    <!-- SEO -->
+    <meta name="description" content="Kiw Kiw Chat: pesan terenkripsi end-to-end dengan ML-KEM-768 + AES-GCM-256. Tidak ada log, tidak ada riwayat." />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!-- FIX-12: Content Security Policy -->
+    <!-- connect-src: allow WSS to production + localhost dev -->
+    <meta http-equiv="Content-Security-Policy"
+          content="
+            default-src 'self';
+            connect-src 'self'
+                        wss://kiwkiw.chat
+                        https://kiwkiw.chat
+                        ws://localhost:8000
+                        http://localhost:8000;
+            script-src  'self';
+            style-src   'self' https://fonts.googleapis.com 'unsafe-inline';
+            font-src    https://fonts.gstatic.com;
+            img-src     'self' data:;
+            frame-ancestors 'none';
+            base-uri    'self';
+            form-action 'self';
+          " />
+
+    <!-- FIX-12: Additional security meta tags -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="Referrer-Policy" content="no-referrer" />
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

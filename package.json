@@ -1,0 +1,11 @@
+{
+  "name": "kiw-kiw-chat",
+  "version": "1.0.0",
+  "description": "Kiw Kiw Chat - Secure P2P Messenger",
+  "scripts": {
+    "start": "concurrently \"cd backend && uvicorn main:app --reload\" \"cd frontend && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -1,0 +1,28 @@
+# Node.js
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environments
+.env
+.env.*
+!.env.example
+
+# Build / Temp
+frontend/dist/
+backend/static/
+.vscode/
+.idea/
+.DS_Store

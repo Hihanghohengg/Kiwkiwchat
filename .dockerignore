@@ -1,0 +1,11 @@
+.git
+.gitignore
+.dockerignore
+node_modules/
+frontend/node_modules/
+__pycache__/
+.env
+.venv/
+venv/
+Dockerfile
+frontend/dist/
