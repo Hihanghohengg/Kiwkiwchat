@@ -340,7 +340,11 @@ function App() {
     ws.current.onmessage = async (event) => {
       const msg = JSON.parse(event.data);
 
-      if (msg.type === 'init') {
+      if (msg.type === 'error') {
+        secureLog("Server rejected connection:", msg.reason);
+        setStatus(`Error: ${msg.reason}`);
+        addTermLine(`SERVER_ERROR :: ${msg.reason}`, false);
+      } else if (msg.type === 'init') {
         isInitiator.current = msg.initiator;
         addTermLine(`IDENTITY_ASSIGNED :: initiator=${msg.initiator}`);
       } else if (msg.type === 'peer_ready') {
@@ -379,9 +383,15 @@ function App() {
       }
     };
 
-    ws.current.onclose = () => {
-      // Use ref-based check so the closure always sees the current value
-      if (!isSecure) setStatus("Disconnected from server");
+    ws.current.onerror = (err) => {
+      secureLog("WebSocket Error", err);
+      setStatus("Connection error");
+    };
+
+    ws.current.onclose = (e) => {
+      secureLog(`WebSocket Closed: code=${e.code} reason=${e.reason}`);
+      setStatus("Disconnected from server");
+      setIsSecure(false);
     };
   };
 
