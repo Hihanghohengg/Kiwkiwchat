@@ -16,6 +16,8 @@
           content="
             default-src 'self';
             connect-src 'self'
+                        wss://*.onrender.com
+                        https://*.onrender.com
                         wss://kiwkiw.chat
                         https://kiwkiw.chat
                         ws://localhost:8000
@@ -24,16 +26,14 @@
             style-src   'self' https://fonts.googleapis.com 'unsafe-inline';
             font-src    https://fonts.gstatic.com;
             img-src     'self' data:;
-            frame-ancestors 'none';
             base-uri    'self';
             form-action 'self';
           " />
 
     <!-- FIX-12: Additional security meta tags -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta http-equiv="Referrer-Policy" content="no-referrer" />
-    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+    <meta name="permissions-policy" content="geolocation=(), microphone=(), camera=()" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
