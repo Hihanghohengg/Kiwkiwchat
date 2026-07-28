@@ -92,7 +92,7 @@ function Toast({ message, type, onDone }) {
     const t  = setTimeout(() => setExiting(true), 2400);
     const t2 = setTimeout(() => onDone(),          2800);
     return () => { clearTimeout(t); clearTimeout(t2); };
-  }, [onDone]);
+  }, []); // FIX: empty dependency array prevents infinite reset on parent re-render
 
   const colors = {
     success: 'border-cyber-green/40 bg-cyber-green/10 text-cyber-green',
