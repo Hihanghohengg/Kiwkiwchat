@@ -9,15 +9,21 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 const ROOM_TTL_SECONDS = 15 * 60; // 15 minutes
 
 // FIX-10: Production-safe logging — hide stack traces from DevTools in prod
-const IS_DEV = import.meta.env.DEV;
-function secureLog(label, err) {
-  if (IS_DEV) {
-    console.error(label, err);
+export const secureLog = (msg, data = null) => {
+  if (import.meta.env.DEV) {
+    if (data) console.log(`[KiwKiw] ${msg}`, data);
+    else console.log(`[KiwKiw] ${msg}`);
   } else {
-    // In production, omit the error object to avoid leaking implementation details
-    console.error(`[KiwKiw] ${label}`);
+    // In production, only log critical errors without sensitive data
+    if (data instanceof Error) {
+      console.error(`[KiwKiw] ${msg}`, data.message);
+    } else if (typeof data === 'string') {
+      console.error(`[KiwKiw] ${msg} ${data}`);
+    } else {
+      console.error(`[KiwKiw] ${msg}`);
+    }
   }
-}
+};
 
 // FIX-13: Maximum messages kept in sessionStorage to prevent storage bloat
 const MAX_STORED_MESSAGES = 100;
@@ -416,6 +422,13 @@ function App() {
       }
     };
 
+    peer.current.oniceconnectionstatechange = () => {
+      if (peer.current.iceConnectionState === 'failed') {
+        setStatus("WebRTC Blocked (Requires TURN)");
+        addTermLine("WEBRTC_FAILED :: Symmetric NAT traversal blocked. Please configure a TURN server.", false);
+      }
+    };
+
     // Always set up ondatachannel as fallback for the non-initiator path.
     // The peer that calls initWebRTC() from peer_ready is always initiator.
     peer.current.ondatachannel = (event) => {
@@ -433,45 +446,59 @@ function App() {
   };
 
   const handleSignal = async (data) => {
-    // Non-initiator: create peer connection if not yet created when offer arrives
-    if (!peer.current) {
-      isInitiator.current = false;
-      // FIX-11: use ICE servers from server response
-      peer.current = new RTCPeerConnection({
-        iceServers: iceServers.current
-      });
-      peer.current.onicecandidate = (event) => {
-        if (event.candidate) {
-          ws.current.send(JSON.stringify({ type: "signal", data: { candidate: event.candidate } }));
-        }
-      };
-      peer.current.ondatachannel = (event) => {
-        dataChannel.current = event.channel;
-        setupDataChannel();
-      };
-    }
+    try {
+      // Non-initiator: create peer connection if not yet created when offer arrives
+      if (!peer.current) {
+        isInitiator.current = false;
+        // FIX-11: use ICE servers from server response
+        peer.current = new RTCPeerConnection({
+          iceServers: iceServers.current
+        });
+        peer.current.onicecandidate = (event) => {
+          if (event.candidate) {
+            ws.current.send(JSON.stringify({ type: "signal", data: { candidate: event.candidate } }));
+          }
+        };
+        
+        peer.current.oniceconnectionstatechange = () => {
+          if (peer.current.iceConnectionState === 'failed') {
+            setStatus("WebRTC Blocked (Requires TURN)");
+            addTermLine("WEBRTC_FAILED :: Symmetric NAT traversal blocked. Please configure a TURN server.", false);
+          }
+        };
 
-    if (data.offer) {
-      await peer.current.setRemoteDescription(new RTCSessionDescription(data.offer));
-      // Add any ICE candidates that arrived early
-      while (pendingCandidates.current.length > 0) {
-        await peer.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+        peer.current.ondatachannel = (event) => {
+          dataChannel.current = event.channel;
+          setupDataChannel();
+        };
       }
-      const answer = await peer.current.createAnswer();
-      await peer.current.setLocalDescription(answer);
-      ws.current.send(JSON.stringify({ type: "signal", data: { answer } }));
-    } else if (data.answer) {
-      await peer.current.setRemoteDescription(new RTCSessionDescription(data.answer));
-      // Add any ICE candidates that arrived early
-      while (pendingCandidates.current.length > 0) {
-        await peer.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+
+      if (data.offer) {
+        await peer.current.setRemoteDescription(new RTCSessionDescription(data.offer));
+        // Add any ICE candidates that arrived early
+        while (pendingCandidates.current.length > 0) {
+          await peer.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+        }
+        const answer = await peer.current.createAnswer();
+        await peer.current.setLocalDescription(answer);
+        ws.current.send(JSON.stringify({ type: "signal", data: { answer } }));
+      } else if (data.answer) {
+        await peer.current.setRemoteDescription(new RTCSessionDescription(data.answer));
+        // Add any ICE candidates that arrived early
+        while (pendingCandidates.current.length > 0) {
+          await peer.current.addIceCandidate(new RTCIceCandidate(pendingCandidates.current.shift()));
+        }
+      } else if (data.candidate) {
+        if (peer.current.remoteDescription) {
+          await peer.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+        } else {
+          pendingCandidates.current.push(data.candidate);
+        }
       }
-    } else if (data.candidate) {
-      if (peer.current.remoteDescription) {
-        await peer.current.addIceCandidate(new RTCIceCandidate(data.candidate));
-      } else {
-        pendingCandidates.current.push(data.candidate);
-      }
+    } catch (err) {
+      secureLog("WebRTC Signal Error", err);
+      addTermLine(`WEBRTC_ERROR :: ${err.message}`, false);
+      setStatus("WebRTC Negotiation Failed");
     }
   };
 
