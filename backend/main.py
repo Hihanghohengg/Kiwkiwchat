@@ -61,7 +61,7 @@ logger.propagate = False
 # ─── Configuration (from environment) ─────────────────────────────────────────
 # Set ALLOWED_ORIGINS in your environment, comma-separated:
 #   ALLOWED_ORIGINS=https://kiwkiw.chat,https://www.kiwkiw.chat
-_raw_origins = os.environ.get("ALLOWED_ORIGINS", "*")
+_raw_origins = os.environ.get("ALLOWED_ORIGINS", "https://kiwkiwchat.vercel.app,http://localhost:5173,http://localhost:4173")
 ALLOWED_ORIGINS: List[str] = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 MAX_MSG_BYTES: int        = int(os.environ.get("MAX_MSG_BYTES",    str(5 * 1024 * 1024)))   # 5 MB (JSON signaling)

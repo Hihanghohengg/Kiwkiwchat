@@ -3,13 +3,14 @@ import { QRCodeSVG } from 'qrcode.react';
 import { generateKey, importKey, encrypt, decrypt } from './crypto/encryption';
 import { performPQUpgrade } from './crypto/pq_upgrade';
 
-const { protocol, hostname, port, host } = window.location;
-const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
+const { hostname, port } = window.location;
 const isDev = port === '5173' || port === '4173';
-const backendHost = isDev ? `${hostname}:8000` : host;
 
-const WS_URL  = import.meta.env.VITE_WS_URL  || `${wsProtocol}//${backendHost}`;
-const API_URL = import.meta.env.VITE_API_URL || `${protocol}//${backendHost}`;
+const defaultApiUrl = isDev ? `http://${hostname}:8000` : "https://kiwkiw-backend.onrender.com";
+const defaultWsUrl  = isDev ? `ws://${hostname}:8000`   : "wss://kiwkiw-backend.onrender.com";
+
+const WS_URL  = import.meta.env.VITE_WS_URL  || defaultWsUrl;
+const API_URL = import.meta.env.VITE_API_URL || defaultApiUrl;
 
 const ROOM_TTL_SECONDS = 15 * 60; // 15 minutes
 
