@@ -191,8 +191,12 @@ function App() {
   const isInitiator    = useRef(false);
   const currentRoomId  = useRef(null);
   const messagesEndRef = useRef(null);
-  // FIX-11: store ICE servers from server response (may include TURN)
-  const iceServers     = useRef([{ urls: "stun:stun.l.google.com:19302" }]);
+  // FIX-11: store ICE servers from server response, with free TURN fallback for strict NAT traversal
+  const iceServers     = useRef([
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "turn:openrelay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
+    { urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" }
+  ]);
   const wsToken        = useRef("");
   const pendingCandidates = useRef([]);
 
@@ -509,29 +513,12 @@ function App() {
   };
 
   const setupDataChannel = () => {
-    dataChannel.current.onopen = async () => {
+    const originalSend = dataChannel.current.send.bind(dataChannel.current);
+    const wrappedPeer  = { send: originalSend, _pqHandler: null };
+
+    const handleOpen = async () => {
       setStatus("WebRTC Connected. Upgrading encryption...");
       addTermLine("WEBRTC_DATACHANNEL_OPEN...");
-
-      const originalSend = dataChannel.current.send.bind(dataChannel.current);
-      const wrappedPeer  = { send: originalSend, _pqHandler: null };
-
-      dataChannel.current.onmessage = async (event) => {
-        if (wrappedPeer._pqHandler) {
-          const handled = await wrappedPeer._pqHandler(event.data);
-          if (handled) return;
-        }
-        try {
-          const decrypted = await decrypt(event.data, hybridKey.current);
-          setMessages(prev => {
-            const next = [...prev, { text: decrypted, self: false, ts: Date.now() }];
-            if (currentRoomId.current) saveMessages(currentRoomId.current, next);
-            return next;
-          });
-        } catch (err) {
-          secureLog("Decryption failed", err);  // FIX-10
-        }
-      };
 
       try {
         hybridKey.current = await performPQUpgrade(
@@ -546,9 +533,32 @@ function App() {
       } catch (err) {
         setStatus("PQ Upgrade Failed");
         addTermLine("PQ_UPGRADE_FAILED.", false);
-        secureLog("PQ upgrade failed", err);  // FIX-10
+        secureLog("PQ upgrade failed", err);
       }
     };
+
+    dataChannel.current.onmessage = async (event) => {
+      if (wrappedPeer._pqHandler) {
+        const handled = await wrappedPeer._pqHandler(event.data);
+        if (handled) return;
+      }
+      try {
+        const decrypted = await decrypt(event.data, hybridKey.current);
+        setMessages(prev => {
+          const next = [...prev, { text: decrypted, self: false, ts: Date.now() }];
+          if (currentRoomId.current) saveMessages(currentRoomId.current, next);
+          return next;
+        });
+      } catch (err) {
+        secureLog("Decryption failed", err);
+      }
+    };
+
+    if (dataChannel.current.readyState === 'open') {
+      handleOpen();
+    } else {
+      dataChannel.current.onopen = handleOpen;
+    }
   };
 
   /* ── Clipboard ─── */
