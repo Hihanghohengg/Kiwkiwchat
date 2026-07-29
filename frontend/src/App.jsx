@@ -3,8 +3,9 @@ import { QRCodeSVG } from 'qrcode.react';
 import { generateKey, importKey, encrypt, decrypt } from './crypto/encryption';
 import { performPQUpgrade } from './crypto/pq_upgrade';
 
-const WS_URL  = import.meta.env.VITE_WS_URL  || "ws://localhost:8000";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const hostname = window.location.hostname;
+const WS_URL  = import.meta.env.VITE_WS_URL  || `ws://${hostname}:8000`;
+const API_URL = import.meta.env.VITE_API_URL || `http://${hostname}:8000`;
 
 const ROOM_TTL_SECONDS = 15 * 60; // 15 minutes
 

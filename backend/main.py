@@ -61,7 +61,7 @@ logger.propagate = False
 # ─── Configuration (from environment) ─────────────────────────────────────────
 # Set ALLOWED_ORIGINS in your environment, comma-separated:
 #   ALLOWED_ORIGINS=https://kiwkiw.chat,https://www.kiwkiw.chat
-_raw_origins = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:4173")
+_raw_origins = os.environ.get("ALLOWED_ORIGINS", "*")
 ALLOWED_ORIGINS: List[str] = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 MAX_MSG_BYTES: int        = int(os.environ.get("MAX_MSG_BYTES",    str(5 * 1024 * 1024)))   # 5 MB (JSON signaling)
@@ -112,7 +112,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"] if "*" in ALLOWED_ORIGINS else ALLOWED_ORIGINS,
     allow_credentials=False,
     allow_methods=["POST", "OPTIONS"],
     allow_headers=["Content-Type"],
