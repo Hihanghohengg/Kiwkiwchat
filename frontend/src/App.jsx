@@ -3,9 +3,13 @@ import { QRCodeSVG } from 'qrcode.react';
 import { generateKey, importKey, encrypt, decrypt } from './crypto/encryption';
 import { performPQUpgrade } from './crypto/pq_upgrade';
 
-const hostname = window.location.hostname;
-const WS_URL  = import.meta.env.VITE_WS_URL  || `ws://${hostname}:8000`;
-const API_URL = import.meta.env.VITE_API_URL || `http://${hostname}:8000`;
+const { protocol, hostname, port, host } = window.location;
+const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
+const isDev = port === '5173' || port === '4173';
+const backendHost = isDev ? `${hostname}:8000` : host;
+
+const WS_URL  = import.meta.env.VITE_WS_URL  || `${wsProtocol}//${backendHost}`;
+const API_URL = import.meta.env.VITE_API_URL || `${protocol}//${backendHost}`;
 
 const ROOM_TTL_SECONDS = 15 * 60; // 15 minutes
 
