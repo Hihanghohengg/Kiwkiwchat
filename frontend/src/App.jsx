@@ -365,6 +365,12 @@ function App() {
       } else if (msg.type === 'init') {
         isInitiator.current = msg.initiator;
         addTermLine(`IDENTITY_ASSIGNED :: initiator=${msg.initiator}`);
+        
+        if (msg.expires_in !== undefined) {
+          const localStartTs = Date.now() - ((ROOM_TTL_SECONDS - msg.expires_in) * 1000);
+          sessionStorage.setItem(storageKey(currentRoomId.current, 'start'), localStartTs);
+          setRoomStartTs(localStartTs);
+        }
       } else if (msg.type === 'peer_ready') {
         addTermLine("REMOTE_PEER_DETECTED — INITIATING_HANDSHAKE...");
         setStatus("Peer joined. Initiating WebRTC...");

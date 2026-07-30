@@ -23,6 +23,7 @@ import logging
 import os
 import secrets
 import sys
+import time
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
@@ -152,6 +153,7 @@ async def create_room(request: Request):
         "connections": {},
         "count":       0,
         "ws_token":    ws_token,
+        "created_at":  time.time(),
     }
 
     logger.info(f"ROOM_CREATED room_id={room_id} remote={request.client.host}")
@@ -194,10 +196,12 @@ async def websocket_endpoint(
 
     room = rooms[room_id]
 
-    # Token validation removed as it caused Unauthorized errors for the second peer.
-    # The UUIDv4 room_id provides 122 bits of entropy, which is sufficient security.
-    if room["count"] == 0:
-        room["ws_token"] = ""
+    if token != room["ws_token"]:
+        await websocket.accept()
+        await websocket.send_json({"type": "error", "reason": "Invalid token."})
+        await websocket.close(code=1008, reason="Invalid token")
+        logger.warning(f"WS_INVALID_TOKEN room_id={room_id} remote={websocket.client.host}")
+        return
 
     # Accept first so we can send a JSON rejection message if room is full
     await websocket.accept()
@@ -222,6 +226,9 @@ async def websocket_endpoint(
     )
 
     try:
+        elapsed = time.time() - room.get("created_at", time.time())
+        expires_in = int(max(0, ROOM_TTL_SECONDS - elapsed))
+
         # Send initialization to this peer
         await websocket.send_json({
             "type":            "init",
@@ -229,6 +236,7 @@ async def websocket_endpoint(
             "connection_id":   connection_id,
             "file_sharing":    True,
             "file_size_limit": 1_073_741_824,   # 1 GB (P2P, not via server)
+            "expires_in":      expires_in,
         })
 
         # If second peer joined, notify existing peer
