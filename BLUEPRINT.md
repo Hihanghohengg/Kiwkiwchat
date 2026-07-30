@@ -12,7 +12,7 @@
 |---|---|
 | **Nama Aplikasi** | Kiw Kiw Chat |
 | **Tagline** | *"The conversation that never happened."* |
-| **Versi** | 2.3.0 |
+| **Versi** | 2.4.0 |
 | **Lisensi** | MIT License |
 | **Inspirasi** | Nullroom.io (versi ringan — tanpa Ruby, pakai React + Python) |
 
@@ -251,7 +251,7 @@ HKDF(IKM=sharedSecret, Salt=AES-Key, Info="nullroom-hybrid-v1")
 | SR-08 | Pertukaran PQ diverifikasi secara mutual | Authentication | ✅ HMAC mutual `pq_upgrade.js:85-131` |
 | SR-09 | Room dibatasi ketat pada 2 peserta | Access Control | ✅ `room_full` + close 1008 di `main.py:76-80` |
 | SR-10 | Room memiliki masa hidup maksimum 15 menit | Ephemeral State | ✅ `asyncio.sleep(900)` di `main.py:46-58` |
-| SR-11 | Room dihancurkan segera saat salah satu peer keluar | Session Integrity | ✅ `room_ended` + `del rooms[room_id]` di `main.py:124-143` |
+| SR-11 | Room dipertahankan di memori saat peer terputus (sementara) agar bisa reconnect (page refresh), lalu dihancurkan otomatis oleh TTL | Session Integrity | ✅ `asyncio.sleep` di `main.py` |
 | SR-12 | Chat history dapat dipulihkan setelah refresh selama room masih aktif | Usability | ✅ `sessionStorage` persist di `App.jsx:21-30` |
 | SR-13 | CORS dibatasi ke origin production yang diizinkan secara eksplisit | Transport Security | ✅ `ALLOWED_ORIGINS` env var di `main.py:64` |
 | SR-14 | WebSocket hanya menerima koneksi ke room yang dibuat via `POST /rooms` | Access Control | ✅ Room ID divalidasi; auto-create dihapus di `main.py:169` |
@@ -641,6 +641,7 @@ Peer A (reconnect)                    Server                    Peer B (masih ak
 | 2026-07-28 | 2.1.0 | BUGFIX & STABILITY — (1) Dihapus `ws_token` karena memblokir second peer saat race condition URL join; (2) Ditambahkan ICE candidate queuing di Frontend (`pendingCandidates`) untuk memperbaiki WebRTC race condition (menggantung di `Initiating WebRTC`); (3) Cleanup dokumentasi README & BLUEPRINT |
 | 2026-07-29 | 2.2.0 | DEPLOYMENT & TESTING — (1) Explicit CSP whitelist for WebRTC STUN/TURN servers; (2) Resolved WebRTC hang due to strict NAT & readyState race condition; (3) Smart fallback URLs (Render backend for Vercel deployment); (4) Cross-device LAN connection & CORS fixes; (5) Penambahan `test_ssdlc_trike.py` dan `test_crypto_performance.py` untuk pengujian otomatis |
 | 2026-07-30 | 2.3.0 | SECURITY AUDIT & UI OVERHAUL — (1) Lulus uji DAST (ZAP) perbaikan CORS, strict CSP, Subresource Integrity (SRI) di `index.html`; (2) Security Headers via `vercel.json` dan SPA Routing rewrites; (3) Lulus uji SAST dengan `bandit`; (4) Timer Sync Absolut (Backend kirim `expires_in` dan fallback P2P `startTs`); (5) UI peremajaan ke Light Mode (Slate/White) agar optimal di laporan akademik. |
+| 2026-07-30 | 2.4.0 | BUGFIX & RELIABILITY — (1) Penambahan mekanisme Ping/Pong di WebSocket (`App.jsx` & `main.py`) untuk mencegah Idle Timeout 60s; (2) Fix "Invalid token" untuk Peer ke-2 dengan menyematkan `ws_token` secara aman di query parameter URL (`?t=...`); (3) Menghapus penghancuran room agresif (`del rooms[room_id]`) saat koneksi WS terputus untuk mendukung fitur reconnect saat refresh sebelum batas TTL (15 menit). |
 
 ---
 
