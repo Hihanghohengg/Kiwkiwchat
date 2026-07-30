@@ -1,0 +1,246 @@
+{
+  "test_date": "2026-07-30T02:20:23.319060+00:00",
+  "environment": {
+    "backend_url": "http://localhost:8001",
+    "ws_url": "ws://localhost:8001"
+  },
+  "summary": {
+    "total": 23,
+    "passed": 23,
+    "failed": 0,
+    "manual": 0
+  },
+  "test_results": [
+    {
+      "tc_id": "TC-01",
+      "sr_id": "SR-01",
+      "dsc_id": "",
+      "trike_id": "T-01, T-08",
+      "name": "WebRTC DataChannel payload terenkripsi",
+      "status": "PASS",
+      "evidence": "Fungsi crypto.subtle.encrypt (AES-GCM) terdeteksi di frontend (SAST) | Bukti Autentik: [frontend/src/crypto/encryption.js baris 46] Terdeteksi 'crypto.subtle.encrypt' -> const ciphertextBuffer = await crypto.subtle.encrypt(...",
+      "timestamp": "2026-07-30T02:18:30.033536+00:00"
+    },
+    {
+      "tc_id": "TC-02",
+      "sr_id": "SR-02",
+      "dsc_id": "",
+      "trike_id": "T-03",
+      "name": "Kunci tidak ke server",
+      "status": "PASS",
+      "evidence": "Kunci diekstrak dari URL hash (client-side only) tanpa dikirim ke server (SAST) | Bukti Autentik: [frontend/src/App.jsx baris 247] Terdeteksi 'window.location.hash' -> const hash = window.location.hash;...",
+      "timestamp": "2026-07-30T02:18:30.033536+00:00"
+    },
+    {
+      "tc_id": "TC-03",
+      "sr_id": "SR-03",
+      "dsc_id": "",
+      "trike_id": "T-02",
+      "name": "ML-KEM-768 terimplementasi",
+      "status": "PASS",
+      "evidence": "Library ML-KEM terdeteksi (SAST) | Bukti Autentik: [frontend/src/crypto/mlkem.js baris 1] Terdeteksi 'MlKem768' -> import { MlKem768 } from \"mlkem\";...",
+      "timestamp": "2026-07-30T02:18:30.036859+00:00"
+    },
+    {
+      "tc_id": "TC-04",
+      "sr_id": "SR-04",
+      "dsc_id": "",
+      "trike_id": "",
+      "name": "HKDF fusion",
+      "status": "PASS",
+      "evidence": "Fungsi derivasi HKDF terdeteksi untuk Hybrid Key (SAST) | Bukti Autentik: [frontend/src/crypto/encryption.js baris 99] Terdeteksi 'HKDF' -> \"HKDF\",...",
+      "timestamp": "2026-07-30T02:18:30.036859+00:00"
+    },
+    {
+      "tc_id": "TC-05",
+      "sr_id": "SR-05",
+      "dsc_id": "",
+      "trike_id": "T-06",
+      "name": "Data dihapus saat room ended",
+      "status": "PASS",
+      "evidence": "sessionStorage API digunakan untuk manajemen data sementara (SAST) | Bukti Autentik: [frontend/src/App.jsx baris 34] Terdeteksi 'sessionStorage' -> // FIX-13: Maximum messages kept in sessionStorage to prevent storage bloat...",
+      "timestamp": "2026-07-30T02:18:30.038396+00:00"
+    },
+    {
+      "tc_id": "TC-06",
+      "sr_id": "SR-06",
+      "dsc_id": "",
+      "trike_id": "T-03",
+      "name": "No logs",
+      "status": "PASS",
+      "evidence": "Tidak ada logging isi payload pada source code server (SAST)",
+      "timestamp": "2026-07-30T02:18:30.038396+00:00"
+    },
+    {
+      "tc_id": "TC-07",
+      "sr_id": "SR-07",
+      "dsc_id": "",
+      "trike_id": "",
+      "name": "WebRTC DTLS",
+      "status": "PASS",
+      "evidence": "WebRTC (selalu menggunakan DTLS) terinisialisasi di App.jsx (SAST) | Bukti Autentik: [frontend/src/App.jsx baris 449] Terdeteksi 'RTCPeerConnection' -> peer.current = new RTCPeerConnection({...",
+      "timestamp": "2026-07-30T02:18:30.038396+00:00"
+    },
+    {
+      "tc_id": "TC-08",
+      "sr_id": "SR-08",
+      "dsc_id": "",
+      "trike_id": "T-05",
+      "name": "HMAC mutual verification",
+      "status": "PASS",
+      "evidence": "Verifikasi HMAC ditemukan pada mekanisme PQ Upgrade (SAST) | Bukti Autentik: [frontend/src/crypto/pq_upgrade.js baris 18] Terdeteksi 'HMAC' -> \"raw\", sharedSecret, { name: \"HMAC\", hash: \"SHA-256\" }, false, [\"sign\"]...",
+      "timestamp": "2026-07-30T02:18:30.038396+00:00"
+    },
+    {
+      "tc_id": "TC-10",
+      "sr_id": "SR-10",
+      "dsc_id": "",
+      "trike_id": "T-07",
+      "name": "TTL 15 menit",
+      "status": "PASS",
+      "evidence": "Konfigurasi TTL 15 menit terdeteksi di main.py (SAST) | Bukti Autentik: [backend/main.py baris 71] Terdeteksi '900' -> ROOM_TTL_SECONDS: int     = int(os.environ.get(\"ROOM_TTL_SECONDS\", \"900\"))      ...",
+      "timestamp": "2026-07-30T02:18:30.038396+00:00"
+    },
+    {
+      "tc_id": "TC-12",
+      "sr_id": "SR-12",
+      "dsc_id": "",
+      "trike_id": "T-10",
+      "name": "Chat persist on refresh",
+      "status": "PASS",
+      "evidence": "Session storage digunakan untuk history (SAST) | Bukti Autentik: [frontend/src/App.jsx baris 34] Terdeteksi 'sessionStorage' -> // FIX-13: Maximum messages kept in sessionStorage to prevent storage bloat...",
+      "timestamp": "2026-07-30T02:18:30.038396+00:00"
+    },
+    {
+      "tc_id": "TC-20",
+      "sr_id": "",
+      "dsc_id": "DSC-11",
+      "trike_id": "",
+      "name": "Structured Logging",
+      "status": "PASS",
+      "evidence": "Structured Python logging digunakan (SAST) | Bukti Autentik: [backend/main.py baris 42] Terdeteksi 'UTCFormatter' -> class UTCFormatter(logging.Formatter):...",
+      "timestamp": "2026-07-30T02:18:30.038396+00:00"
+    },
+    {
+      "tc_id": "DSC-08",
+      "sr_id": "",
+      "dsc_id": "DSC-08",
+      "trike_id": "",
+      "name": "Docker multi-stage",
+      "status": "PASS",
+      "evidence": "Multi-stage build (Node & Python) terdeteksi (SAST) | Bukti Autentik: [Dockerfile baris 23] Terdeteksi 'FROM node' -> FROM node:20-alpine AS frontend-build...",
+      "timestamp": "2026-07-30T02:18:30.038396+00:00"
+    },
+    {
+      "tc_id": "DSC-09",
+      "sr_id": "",
+      "dsc_id": "DSC-09",
+      "trike_id": "",
+      "name": "Non-root user",
+      "status": "PASS",
+      "evidence": "Non-root user (appuser) dikonfigurasi (SAST) | Bukti Autentik: [Dockerfile baris 65] Terdeteksi 'groupadd' -> RUN groupadd --system --gid 1001 kiwkiw \\...",
+      "timestamp": "2026-07-30T02:18:30.038396+00:00"
+    },
+    {
+      "tc_id": "DSC-12",
+      "sr_id": "",
+      "dsc_id": "DSC-12",
+      "trike_id": "",
+      "name": "Environment isolation",
+      "status": "PASS",
+      "evidence": "Environment fallback (localhost vs production URL) terdeteksi (SAST) | Bukti Autentik: [frontend/src/App.jsx baris 12] Terdeteksi 'import.meta.env' -> const WS_URL  = import.meta.env.VITE_WS_URL  || defaultWsUrl;...",
+      "timestamp": "2026-07-30T02:18:30.045765+00:00"
+    },
+    {
+      "tc_id": "TC-09",
+      "sr_id": "SR-09",
+      "dsc_id": "",
+      "trike_id": "",
+      "name": "2-person room lock",
+      "status": "PASS",
+      "evidence": "Koneksi ketiga ditolak dengan pesan 'room_full' (DAST)",
+      "timestamp": "2026-07-30T02:18:38.372066+00:00"
+    },
+    {
+      "tc_id": "TC-11",
+      "sr_id": "SR-11",
+      "dsc_id": "",
+      "trike_id": "T-09",
+      "name": "Room destroyed on peer disconnect",
+      "status": "PASS",
+      "evidence": "Menerima notifikasi room_ended saat peer terputus (DAST)",
+      "timestamp": "2026-07-30T02:18:44.495120+00:00"
+    },
+    {
+      "tc_id": "TC-13",
+      "sr_id": "SR-13",
+      "dsc_id": "DSC-02",
+      "trike_id": "",
+      "name": "Security Headers",
+      "status": "PASS",
+      "evidence": "Semua security headers terdeteksi dengan benar (DAST)",
+      "timestamp": "2026-07-30T02:18:46.525548+00:00"
+    },
+    {
+      "tc_id": "TC-19",
+      "sr_id": "",
+      "dsc_id": "DSC-07",
+      "trike_id": "",
+      "name": "Security Headers Complete",
+      "status": "PASS",
+      "evidence": "nosniff dan Referrer-Policy terdeteksi (DAST)",
+      "timestamp": "2026-07-30T02:18:46.525548+00:00"
+    },
+    {
+      "tc_id": "TC-15",
+      "sr_id": "SR-15",
+      "dsc_id": "DSC-04",
+      "trike_id": "T-12",
+      "name": "Payload Limit",
+      "status": "PASS",
+      "evidence": "Backend menolak payload 6MB (DAST)",
+      "timestamp": "2026-07-30T02:18:50.762951+00:00"
+    },
+    {
+      "tc_id": "TC-17",
+      "sr_id": "",
+      "dsc_id": "DSC-01",
+      "trike_id": "T-11",
+      "name": "CORS",
+      "status": "PASS",
+      "evidence": "CORS menolak Origin tidak dikenal (DAST)",
+      "timestamp": "2026-07-30T02:18:52.804029+00:00"
+    },
+    {
+      "tc_id": "TC-18",
+      "sr_id": "",
+      "dsc_id": "DSC-06",
+      "trike_id": "",
+      "name": "WS Token Auth",
+      "status": "PASS",
+      "evidence": "Koneksi ditolak dengan pesan error JSON (DAST)",
+      "timestamp": "2026-07-30T02:18:56.870086+00:00"
+    },
+    {
+      "tc_id": "TC-16",
+      "sr_id": "SR-16",
+      "dsc_id": "DSC-05",
+      "trike_id": "T-14",
+      "name": "WS Idle Timeout",
+      "status": "PASS",
+      "evidence": "Server mengirim error inactivity timeout 60s (DAST)",
+      "timestamp": "2026-07-30T02:20:00.938038+00:00"
+    },
+    {
+      "tc_id": "TC-14",
+      "sr_id": "SR-14",
+      "dsc_id": "DSC-03",
+      "trike_id": "T-04, T-13",
+      "name": "Rate Limiting",
+      "status": "PASS",
+      "evidence": "Dibatasi (429) setelah 10 request (DAST)",
+      "timestamp": "2026-07-30T02:20:23.319060+00:00"
+    }
+  ],
+  "overall_status": "PASS"
+}
