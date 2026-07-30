@@ -235,6 +235,8 @@ function App() {
   useEffect(() => {
     const handleUnload = () => {
       if (currentRoomId.current) clearRoomStorage(currentRoomId.current);
+      if (ws.current) ws.current.close();
+      if (peer.current) peer.current.close();
     };
     window.addEventListener('beforeunload', handleUnload);
     return () => window.removeEventListener('beforeunload', handleUnload);
@@ -415,6 +417,11 @@ function App() {
   const destroyRoom = useCallback(() => {
     setShowDestroy(false);
     if (currentRoomId.current) clearRoomStorage(currentRoomId.current);
+    
+    if (ws.current) ws.current.close();
+    if (peer.current) peer.current.close();
+    
+    setRoomEnded(true);
     showToast("Room berhasil dihancurkan.", "success");
     setTimeout(() => { window.location.href = '/'; }, 2800);
   }, []);
