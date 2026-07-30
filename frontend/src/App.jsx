@@ -129,8 +129,8 @@ function QRModal({ url, onClose }) {
           <QRCodeSVG
             value={url}
             size={220}
-            bgColor="#0a0c14"
-            fgColor="#00ff88"
+            bgColor="#ffffff"
+            fgColor="#4f46e5"
             level="M"
           />
         </div>
