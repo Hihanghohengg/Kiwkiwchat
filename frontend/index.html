@@ -16,15 +16,13 @@
           content="
             default-src 'self';
             connect-src 'self'
+                        wss://kiwkiwchat.vercel.app
+                        https://kiwkiwchat.vercel.app
                         wss://*.onrender.com
                         https://*.onrender.com
-                        wss://kiwkiw.chat
-                        https://kiwkiw.chat
                         stun:stun.l.google.com:19302
                         turn:openrelay.metered.ca:80
-                        turn:openrelay.metered.ca:443
-                        ws:
-                        http:;
+                        turn:openrelay.metered.ca:443;
             script-src  'self';
             style-src   'self' https://fonts.googleapis.com 'unsafe-inline';
             font-src    https://fonts.gstatic.com;
@@ -41,7 +39,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" integrity="sha384-+KimCdwmcOqox9lD4RE8VLyuMEQ/kRzz7GvxaxY2FXTpFSOZEL+yS+WfprqkPm0Y" crossorigin="anonymous" />
   </head>
   <body>
     <div id="root"></div>
