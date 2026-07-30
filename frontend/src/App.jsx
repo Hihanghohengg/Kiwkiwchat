@@ -384,6 +384,17 @@ function App() {
           peer.current = null;
           dataChannel.current = null;
         }
+
+        // P2P FALLBACK: Sync local start timestamp to the new peer if the backend
+        // hasn't sent 'expires_in' (e.g. if the backend hasn't been re-deployed yet).
+        const storedStart = parseInt(sessionStorage.getItem(storageKey(currentRoomId.current, 'start')), 10);
+        if (storedStart && !isNaN(storedStart)) {
+          ws.current.send(JSON.stringify({
+            type: "signal",
+            data: { startTs: storedStart }
+          }));
+        }
+
         initWebRTC();
       } else if (msg.type === 'signal') {
         handleSignal(msg.data);
@@ -470,6 +481,15 @@ function App() {
 
   const handleSignal = async (data) => {
     try {
+      if (data.startTs !== undefined) {
+        // P2P FALLBACK: adopt the initiator's start timestamp if provided via signaling
+        const ts = parseInt(data.startTs, 10);
+        if (!isNaN(ts)) {
+          sessionStorage.setItem(storageKey(currentRoomId.current, 'start'), ts);
+          setRoomStartTs(ts);
+        }
+      }
+
       // Non-initiator: create peer connection if not yet created when offer arrives
       if (!peer.current) {
         isInitiator.current = false;
