@@ -1,0 +1,17 @@
+# .bandit
+# Bandit configuration file for testing Kiw Kiw Chat Backend
+
+# Exclude common non-production directories from scanning
+exclude_dirs:
+  - tests
+  - venv
+  - .venv
+  - __pycache__
+
+# Target the backend specifically
+targets:
+  - main.py
+
+# Skip tests (uncomment to skip specific tests if they are known false positives)
+# B101: assert_used (often used in tests, but we shouldn't use it in production code)
+skips: []

@@ -311,6 +311,9 @@ async def websocket_endpoint(
                 # Lightweight version: always authorize (validation is P2P)
                 await websocket.send_json({"type": "file_transfer_authorized"})
 
+            elif msg_type == "ping":
+                await websocket.send_json({"type": "pong"})
+
             # Silently ignore unknown message types
 
     except WebSocketDisconnect:
@@ -326,9 +329,9 @@ async def websocket_endpoint(
             except Exception:   # BUG-02 fix
                 pass
 
-        # Destroy the room — meaningless without both peers
-        if room_id in rooms:
-            del rooms[room_id]
+        # We no longer aggressively destroy the room on disconnect, allowing peers
+        # to reconnect (e.g., page refresh) before the TTL expires.
+        # TTL cleanup task will handle deleting the room.
 
         logger.info(
             f"WS_PEER_LEFT room_id={room_id} connection_id={connection_id} "

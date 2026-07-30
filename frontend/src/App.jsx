@@ -353,6 +353,13 @@ function App() {
       addTermLine("ESTABLISHING_SIGNALING_CHANNEL...");
       setStatus("Waiting for peer...");
       addTermLine("WAITING_FOR_REMOTE_PEER...", true);
+
+      // Start pinging to prevent idle timeout (60s)
+      ws.current.pingInterval = setInterval(() => {
+        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+          ws.current.send(JSON.stringify({ type: "ping" }));
+        }
+      }, 30000);
     };
 
     ws.current.onmessage = async (event) => {
@@ -415,6 +422,8 @@ function App() {
         addTermLine("REMOTE_PEER_DISCONNECTED.", false);
         setStatus("Peer disconnected.");
         setIsSecure(false);
+      } else if (msg.type === 'pong') {
+        // Just ignore pong
       }
     };
 
@@ -424,6 +433,9 @@ function App() {
     };
 
     ws.current.onclose = (e) => {
+      if (ws.current && ws.current.pingInterval) {
+        clearInterval(ws.current.pingInterval);
+      }
       secureLog(`WebSocket Closed: code=${e.code} reason=${e.reason}`);
       setStatus("Disconnected from server");
       setIsSecure(false);
