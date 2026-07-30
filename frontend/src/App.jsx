@@ -273,13 +273,15 @@ function App() {
       setRoomStartTs(ts);
       setRoomId(id);
 
+      const searchParams = new URLSearchParams(window.location.search);
+      const urlToken = searchParams.get('t') || "";
+
       importKey(keyB64)
         .then(key => {
           classicalKey.current = key;
           // Note: when restoring from URL (second peer joining via link),
-          // ws_token is not available. The second peer must connect without token
-          // OR the token should be embedded in the URL (handled by initiator).
-          connectToRoom(id, wsToken.current);
+          // ws_token must be parsed from the URL parameter 't'
+          connectToRoom(id, urlToken || wsToken.current);
         })
         .catch(err => {
           secureLog("Invalid room key", err);  // FIX-10
@@ -317,7 +319,7 @@ function App() {
         iceServers.current = data.turn_servers;
       }
 
-      window.history.pushState({}, '', `/rooms/${data.room_id}#${keyB64}`);
+      window.history.pushState({}, '', `/rooms/${data.room_id}?t=${data.ws_token}#${keyB64}`);
 
       const ts = Date.now();
       sessionStorage.setItem(storageKey(data.room_id, 'start'), ts);
