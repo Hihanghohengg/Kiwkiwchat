@@ -304,6 +304,18 @@ async def websocket_endpoint(
                 elif msg_type == "ping":
                     await websocket.send_json({"type": "pong"})
 
+                elif msg_type == "destroy_room":
+                    logger.info(f"WS_ROOM_DESTROYED_BY_PEER room_id={room_id} connection_id={connection_id}")
+                    for cid, ws in list(room["connections"].items()):
+                        try:
+                            await ws.send_json({"type": "room_ended", "reason": "peer_destroyed"})
+                            await ws.close(code=1008, reason="Room destroyed by peer")
+                        except Exception:
+                            pass
+                    if room_id in rooms:
+                        del rooms[room_id]
+                    return
+
                 # Silently ignore unknown message types
 
         except WebSocketDisconnect:

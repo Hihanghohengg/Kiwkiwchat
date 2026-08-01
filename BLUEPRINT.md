@@ -233,7 +233,7 @@ HKDF(IKM=sharedSecret, Salt=AES-Key, Info="nullroom-hybrid-v1")
 | T-11 | CORS Cross-Origin Bypass | Sedang | Tinggi | `ALLOWED_ORIGINS` dari env var — hanya origin whitelist yang diizinkan |
 | T-12 | WebSocket Room Bypass (tanpa POST) | Sedang | Tinggi | WS endpoint tolak room ID tidak dikenal; auto-create dihapus |
 | T-13 | Resource Exhaustion / DoS (Room Flooding) | Tinggi | Tinggi | Rate limiting 10 req/IP/menit via SlowAPI |
-| T-14 | Memory DoS via Payload Besar | Sedang | Tinggi | Payload limit: 5 MB JSON, 50 MB file; koneksi ditutup 1009 |
+| T-14 | Memory DoS via Payload Besar | Sedang | Tinggi | Payload limit: 64 KB JSON; koneksi ditutup 1009 |
 
 ---
 
@@ -256,7 +256,7 @@ HKDF(IKM=sharedSecret, Salt=AES-Key, Info="nullroom-hybrid-v1")
 | SR-13 | CORS dibatasi ke origin production yang diizinkan secara eksplisit | Transport Security | ✅ `ALLOWED_ORIGINS` env var di `main.py:64` |
 | SR-14 | WebSocket hanya menerima koneksi ke room yang dibuat via `POST /rooms` | Access Control | ✅ Room ID divalidasi; auto-create dihapus di `main.py:169` |
 | SR-15 | API endpoint dilindungi rate limiting untuk mencegah resource exhaustion | Availability | ✅ SlowAPI 10 req/IP/menit di `main.py:141` |
-| SR-16 | Ukuran payload dibatasi untuk mencegah memory DoS melalui WebSocket | Integrity/Availability | ✅ 5 MB JSON, 50 MB file di `main.py:205-218` |
+| SR-16 | Ukuran payload dibatasi untuk mencegah memory DoS melalui WebSocket | Integrity/Availability | ✅ 64 KB JSON di `main.py:270-280` |
 | SR-17 | Aplikasi lulus uji pemindaian kerentanan kode statis (SAST) standar | AppSec | ✅ `bandit_report.json` |
 | SR-18 | Aplikasi lulus uji dinamis (DAST) ZAP Proxy | AppSec | ✅ `vercel.json` SPA routing, CSP ketat, SRI fonts |
 
@@ -343,7 +343,7 @@ Lihat Bagian 7 untuk detail test case.
 | TC-12 | Kirim request dari origin tidak diizinkan | CORS whitelist (`ALLOWED_ORIGINS`) | Browser memblokir request; server tidak kirim ACAO header | ✅ SR-13 |
 | TC-13 | Connect WS ke room ID acak tanpa POST /rooms | Auto-create dihapus | WS ditutup 1008 dengan pesan `Room not found or expired` | ✅ SR-14 |
 | TC-14 | Kirim 11 request POST /rooms dari IP yang sama dalam 1 menit | Rate limiting | Request ke-11 mendapat HTTP 429 Too Many Requests | ✅ SR-15 |
-| TC-15 | Kirim pesan WebSocket melebihi 5MB | Payload limit | WS ditutup 1009 dengan pesan `Message exceeds ... byte limit` | ✅ SR-16 |
+| TC-15 | Kirim pesan WebSocket melebihi 64KB | Payload limit | WS ditutup 1009 dengan pesan `Message exceeds ... byte limit` | ✅ SR-16 |
 | TC-16 | Diam di WebSocket selama 65 detik | Idle timeout (60 detik) | Server kirim `Connection closed due to inactivity`, WS tutup 1001 | ✅ SR-16 |
 
 ### 7.2 Automated Security & Performance Testing
@@ -637,7 +637,7 @@ Peer A (reconnect)                    Server                    Peer B (masih ak
 | 2026-07-28 | 1.4.0 | UPDATE — UI: Link sharing dengan blur, reveal, copy-to-clipboard |
 | 2026-07-28 | 1.5.0 | UPDATE — BLUEPRINT: Semua 11 bagian terisi penuh dengan data aktual |
 | 2026-07-28 | 1.6.0 | UPDATE — Major: (1) Chat persist via sessionStorage; (2) QR code join room; (3) Cyber vibes redesign (JetBrains Mono, matrix green, terminal log UI); (4) CSS fix — Google Fonts dipindah ke `<link>` di `index.html`; (5) WebRTC reconnect bug fix — `peer_ready` receiver selalu jadi initiator; (6) Room strict 2 orang — `room_full` event graceful; (7) Room auto-destroy saat peer disconnect — `room_ended` event; (8) Layar `SESSION_TERMINATED` dan `ACCESS_DENIED`; (9) Blueprint diperbarui lengkap dengan workflows |
-| 2026-07-28 | 2.0.0 | SECURITY HARDENING — (1) Dockerfile ditulis ulang Python/FastAPI+Vite multi-stage; (2) CORS restricted ke ALLOWED_ORIGINS env var; (3) SecurityHeadersMiddleware: HSTS+X-Frame+nosniff+Referrer; (4) Rate limiting 10/menit via SlowAPI; (5) WebSocket auto-create dihapus — reject room tidak dikenal; (6) Payload limit: 5MB JSON, 50MB file; (7) Idle timeout 60 detik; (8) WebSocket token auth via ws_token; (9) Structured JSON logging (UTCFormatter); (10) Frontend CSP meta tag; (11) secureLog() production-safe; (12) ICE/TURN dynamic dari server; (13) beforeunload cleanup + message cap; (14) BLUEPRINT: SR-13..16, T-11..14, TC-12..16, §13 Deployment Security Controls ditambahkan |
+| 2026-07-28 | 2.0.0 | SECURITY HARDENING — (1) Dockerfile ditulis ulang Python/FastAPI+Vite multi-stage; (2) CORS restricted ke ALLOWED_ORIGINS env var; (3) SecurityHeadersMiddleware: HSTS+X-Frame+nosniff+Referrer; (4) Rate limiting 10/menit via SlowAPI; (5) WebSocket auto-create dihapus — reject room tidak dikenal; (6) Payload limit: 64KB JSON; (7) Idle timeout 60 detik; (8) WebSocket token auth via ws_token; (9) Structured JSON logging (UTCFormatter); (10) Frontend CSP meta tag; (11) secureLog() production-safe; (12) ICE/TURN dynamic dari server; (13) beforeunload cleanup + message cap; (14) BLUEPRINT: SR-13..16, T-11..14, TC-12..16, §13 Deployment Security Controls ditambahkan |
 | 2026-07-28 | 2.1.0 | BUGFIX & STABILITY — (1) Dihapus `ws_token` karena memblokir second peer saat race condition URL join; (2) Ditambahkan ICE candidate queuing di Frontend (`pendingCandidates`) untuk memperbaiki WebRTC race condition (menggantung di `Initiating WebRTC`); (3) Cleanup dokumentasi README & BLUEPRINT |
 | 2026-07-29 | 2.2.0 | DEPLOYMENT & TESTING — (1) Explicit CSP whitelist for WebRTC STUN/TURN servers; (2) Resolved WebRTC hang due to strict NAT & readyState race condition; (3) Smart fallback URLs (Render backend for Vercel deployment); (4) Cross-device LAN connection & CORS fixes; (5) Penambahan `test_ssdlc_trike.py` dan `test_crypto_performance.py` untuk pengujian otomatis |
 | 2026-07-30 | 2.3.0 | SECURITY AUDIT & UI OVERHAUL — (1) Lulus uji DAST (ZAP) perbaikan CORS, strict CSP, Subresource Integrity (SRI) di `index.html`; (2) Security Headers via `vercel.json` dan SPA Routing rewrites; (3) Lulus uji SAST dengan `bandit`; (4) Timer Sync Absolut (Backend kirim `expires_in` dan fallback P2P `startTs`); (5) UI peremajaan ke Light Mode (Slate/White) agar optimal di laporan akademik. |

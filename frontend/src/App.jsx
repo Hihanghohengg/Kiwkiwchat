@@ -273,6 +273,10 @@ export default function App() {
     setShowDestroy(false);
     if (currentRoomId.current) clearRoomStorage(currentRoomId.current);
     
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify({ type: "destroy_room" }));
+    }
+    
     if (ws.current) ws.current.close();
     if (peer.current) peer.current.close();
     

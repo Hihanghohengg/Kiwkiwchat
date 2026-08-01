@@ -9,14 +9,16 @@ async def run_e2e_test():
     
     # Start Backend
     backend = subprocess.Popen(
-        ["python", "backend/main.py"],
+        "python backend/main.py",
+        shell=True,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL
     )
     
     # Start Frontend (Assuming Vite dev server on 5173 or 4173)
     frontend = subprocess.Popen(
-        ["npm", "run", "dev"],
+        "npm run dev",
+        shell=True,
         cwd="frontend",
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL
