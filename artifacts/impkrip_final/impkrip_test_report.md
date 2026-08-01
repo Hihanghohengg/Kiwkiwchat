@@ -1,0 +1,32 @@
+# IMPKRIP Final Test Report
+
+## Manifest
+- **timestamp**: 2026-08-01T14:43:49.241947
+- **os**: Windows 10
+- **cpu**: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
+- **python**: 3.11.9
+- **browser**: Chromium
+- **node_version**: NOT_EVALUATED
+- **mlkem_version**: v2.7.0
+- **git_commit**: 6a275361d3251c64669175a78ab960617ffb2069
+
+## Results
+- **PQ-01**: PASS
+- **PQ-02**: PASS
+- **PQ-03**: PASS
+- **PQ-04**: PASS
+- **KD-01**: PASS
+- **KD-02**: PASS
+- **KD-03**: PASS
+- **KD-04**: PASS
+- **KC-01**: PASS
+- **KC-02**: PASS
+- **AE-01**: PASS
+- **AE-02**: PASS
+- **AE-03**: PASS
+- **AE-04**: PASS
+- **E2E-01**: PASS
+- **E2E-02**: PASS
+- **E2E-03**: PASS
+- **RP-01**: PARTIAL
+- **E2E-04**: PASS
