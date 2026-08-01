@@ -1,0 +1,16 @@
+[
+  {
+    "webrtc_time": 6.481374740600586,
+    "first_message_time": 0.14487552642822266,
+    "third_peer_rejected": false,
+    "storage_cleanup": true,
+    "success": true
+  },
+  {
+    "webrtc_time": 4.7067625522613525,
+    "first_message_time": 0.13398408889770508,
+    "third_peer_rejected": false,
+    "storage_cleanup": true,
+    "success": true
+  }
+]

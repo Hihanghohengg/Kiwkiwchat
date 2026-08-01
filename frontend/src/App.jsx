@@ -19,7 +19,9 @@ const defaultWsUrl  = isDev ? `ws://${hostname}:8000`   : "wss://kiwkiw-backend.
 const WS_URL  = import.meta.env.VITE_WS_URL  || defaultWsUrl;
 const API_URL = import.meta.env.VITE_API_URL || defaultApiUrl;
 
-const ROOM_TTL_SECONDS = 15 * 60; // 15 minutes
+const ROOM_TTL_SECONDS = import.meta.env.VITE_TEST_MODE 
+  ? (parseInt(import.meta.env.VITE_ROOM_TTL_SECONDS) || 3) 
+  : 15 * 60; // 15 minutes
 
 export default function App() {
   const [roomId,            setRoomId]            = useState(null);
@@ -52,6 +54,8 @@ export default function App() {
   ]);
   const wsToken        = useRef("");
   const pendingCandidates = useRef([]);
+  const sendCounter    = useRef(0);
+  const receiveCounter = useRef(0);
 
   const { display: timerDisplay, seconds: timerSeconds } = useCountdown(roomStartTs, inRoom);
 
@@ -381,11 +385,14 @@ export default function App() {
       addTermLine("WEBRTC_DATACHANNEL_OPEN...");
 
       try {
+        sendCounter.current = 0;
+        receiveCounter.current = 0;
         hybridKey.current = await performPQUpgrade(
           wrappedPeer,
           classicalKey.current,
           isInitiator.current,
-          (prog) => { setStatus(prog); addTermLine(prog.toUpperCase().replace(/ /g, '_')); }
+          (prog) => { setStatus(prog); addTermLine(prog.toUpperCase().replace(/ /g, '_')); },
+          currentRoomId.current
         );
         setIsSecure(true);
         setStatus("Secure P2P Channel Active");
@@ -403,14 +410,28 @@ export default function App() {
         if (handled) return;
       }
       try {
-        const decrypted = await decrypt(event.data, hybridKey.current);
+        const envelope = JSON.parse(event.data);
+        if (envelope.type !== "chat") return;
+        if (envelope.version !== 2) throw new Error("Unsupported protocol version");
+        
+        const expectedDir = isInitiator.current ? "responder-to-initiator" : "initiator-to-responder";
+        if (envelope.direction !== expectedDir) throw new Error("Invalid direction");
+        if (envelope.sequence !== receiveCounter.current) throw new Error("Invalid sequence / Replay detected");
+        
+        const decrypted = await decrypt(
+          envelope.ciphertext, envelope.iv, hybridKey.current, 
+          envelope.sequence, envelope.direction, envelope.version, currentRoomId.current
+        );
+        
+        receiveCounter.current++;
+
         setMessages(prev => {
           const next = [...prev, { text: decrypted, self: false, ts: Date.now() }];
           if (currentRoomId.current) saveMessages(currentRoomId.current, next);
           return next;
         });
       } catch (err) {
-        secureLog("Decryption failed", err);
+        secureLog("Decryption or validation failed", err);
       }
     };
     
@@ -444,8 +465,24 @@ export default function App() {
     e.preventDefault();
     if (!input.trim() || !isSecure || !dataChannel.current || dataChannel.current.readyState !== 'open') return;
     try {
-      const ciphertext = await encrypt(input, hybridKey.current);
-      dataChannel.current.send(ciphertext);
+      const seq = sendCounter.current++;
+      const dir = isInitiator.current ? "initiator-to-responder" : "responder-to-initiator";
+      
+      const { ciphertext, iv } = await encrypt(
+        input, hybridKey.current, seq, dir, 2, currentRoomId.current
+      );
+      
+      const envelope = {
+        type: "chat",
+        version: 2,
+        sequence: seq,
+        direction: dir,
+        iv: iv,
+        ciphertext: ciphertext
+      };
+      
+      dataChannel.current.send(JSON.stringify(envelope));
+      
       setMessages(prev => {
         const next = [...prev, { text: input, self: true, ts: Date.now() }];
         if (currentRoomId.current) saveMessages(currentRoomId.current, next);

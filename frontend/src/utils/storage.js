@@ -18,4 +18,12 @@ export function saveMessages(roomId, msgs) {
 export function clearRoomStorage(roomId) {
   sessionStorage.removeItem(storageKey(roomId, 'msgs'));
   sessionStorage.removeItem(storageKey(roomId, 'start'));
+  sessionStorage.removeItem(storageKey(roomId, 'token'));
+  
+  for (let i = sessionStorage.length - 1; i >= 0; i--) {
+    const key = sessionStorage.key(i);
+    if (key && key.includes(`_${roomId}`)) {
+      sessionStorage.removeItem(key);
+    }
+  }
 }
