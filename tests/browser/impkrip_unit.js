@@ -176,15 +176,18 @@ window.runImpkripUnitTests = async function() {
 
     // KC-01: Valid mutual confirmation HMAC accepted
     try {
-        const hmacKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(9), {name: 'HMAC', hash: 'SHA-256'}, false, ['sign', 'verify']);
+        const cKey = await enc.importKey(await enc.generateKey());
+        const pqSecret = new Uint8Array(32).fill(42);
+        const transcript = new Uint8Array(32).fill(7);
+        const { confirmationKey } = await enc.deriveSessionKeys(cKey, pqSecret, transcript);
         const payload = new Uint8Array(32).fill(11);
-        const sig = await crypto.subtle.sign('HMAC', hmacKey, payload);
-        const ok = await crypto.subtle.verify('HMAC', hmacKey, sig, payload);
+        const sig = await crypto.subtle.sign('HMAC', confirmationKey, payload);
+        const ok = await crypto.subtle.verify('HMAC', confirmationKey, sig, payload);
         testResults.push({
             id: "KC-01",
             name: "HMAC Mutual Key Confirmation Verification",
-            expected: "Valid HMAC confirmation tag over handshake transcript is verified",
-            actual: ok ? "HMAC confirmation tag verified successfully" : "HMAC verification failed",
+            expected: "Valid HMAC confirmation tag over handshake transcript is verified using derived confirmationKey",
+            actual: ok ? "HMAC confirmation tag verified successfully with derived confirmationKey" : "HMAC verification failed",
             status: ok ? "PASS" : "FAIL",
             error: null
         });
@@ -194,16 +197,19 @@ window.runImpkripUnitTests = async function() {
 
     // KC-02: Modified confirmation HMAC rejected
     try {
-        const hmacKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(9), {name: 'HMAC', hash: 'SHA-256'}, false, ['sign', 'verify']);
+        const cKey = await enc.importKey(await enc.generateKey());
+        const pqSecret = new Uint8Array(32).fill(42);
+        const transcript = new Uint8Array(32).fill(7);
+        const { confirmationKey } = await enc.deriveSessionKeys(cKey, pqSecret, transcript);
         const payload = new Uint8Array(32).fill(11);
-        const sig = await crypto.subtle.sign('HMAC', hmacKey, payload);
+        const sig = await crypto.subtle.sign('HMAC', confirmationKey, payload);
         const badPayload = new Uint8Array(32).fill(11); badPayload[0] ^= 0xFF;
-        const ok = await crypto.subtle.verify('HMAC', hmacKey, sig, badPayload);
+        const ok = await crypto.subtle.verify('HMAC', confirmationKey, sig, badPayload);
         testResults.push({
             id: "KC-02",
             name: "HMAC Tampered Handshake Rejection",
-            expected: "Tampered handshake payload is rejected during HMAC confirmation",
-            actual: !ok ? "Tampered handshake HMAC successfully rejected" : "Tampered HMAC incorrectly accepted",
+            expected: "Tampered handshake payload is rejected during HMAC confirmation using derived confirmationKey",
+            actual: !ok ? "Tampered handshake HMAC successfully rejected with derived confirmationKey" : "Tampered HMAC incorrectly accepted",
             status: !ok ? "PASS" : "FAIL",
             error: null
         });

@@ -56,6 +56,17 @@ window.runBenchmarkV2 = async function (config) {
         return dur;
     };
 
+    const measureBatch = async (arr, fn, batchSize = 10) => {
+        const start = performance.now();
+        for (let b = 0; b < batchSize; b++) {
+            await fn();
+        }
+        const end = performance.now();
+        const dur = (end - start) / batchSize;
+        arr.push(dur);
+        return dur;
+    };
+
     const areEqual = (b1, b2) => {
         const u1 = new Uint8Array(b1);
         const u2 = new Uint8Array(b2);
@@ -123,7 +134,6 @@ window.runBenchmarkV2 = async function (config) {
         const payload10k = "A".repeat(10240);
         const payload100k = "A".repeat(102400);
 
-        let sharedSecretDummy = new Uint8Array(32).fill(5);
         let transcriptDummy = new Uint8Array(32).fill(6);
 
         for (let i = 0; i < warmup + iterations; i++) {
@@ -132,23 +142,32 @@ window.runBenchmarkV2 = async function (config) {
 
             // ML-KEM KeyGen
             let kp;
-            const tKeygen = await measure(isWarmup ? [] : results.mlkem.keygen, async () => {
+            if (isFirst) {
+                const tKeygen = await measure([], async () => { kp = await mlkem.generateKeyPair(); });
+                results.coldStart['mlkem_keygen'] = tKeygen;
+            }
+            await measureBatch(isWarmup ? [] : results.mlkem.keygen, async () => {
                 kp = await mlkem.generateKeyPair();
-            });
-            if (isFirst) results.coldStart['mlkem_keygen'] = tKeygen;
+            }, 5);
 
             // ML-KEM Encap
             let encapRes;
-            const tEncap = await measure(isWarmup ? [] : results.mlkem.encap, async () => {
+            if (isFirst) {
+                const tEncap = await measure([], async () => { encapRes = await mlkem.encapsulate(kp.publicKey); });
+                results.coldStart['mlkem_encap'] = tEncap;
+            }
+            await measureBatch(isWarmup ? [] : results.mlkem.encap, async () => {
                 encapRes = await mlkem.encapsulate(kp.publicKey);
-            });
-            if (isFirst) results.coldStart['mlkem_encap'] = tEncap;
+            }, 5);
 
             // ML-KEM Decap
-            const tDecap = await measure(isWarmup ? [] : results.mlkem.decap, async () => {
+            if (isFirst) {
+                const tDecap = await measure([], async () => { await mlkem.decapsulate(encapRes.ciphertext, kp.secretKey); });
+                results.coldStart['mlkem_decap'] = tDecap;
+            }
+            await measureBatch(isWarmup ? [] : results.mlkem.decap, async () => {
                 await mlkem.decapsulate(encapRes.ciphertext, kp.secretKey);
-            });
-            if (isFirst) results.coldStart['mlkem_decap'] = tDecap;
+            }, 5);
 
             // AES KeyGen
             let benchKeyB64, benchKey;
@@ -158,63 +177,93 @@ window.runBenchmarkV2 = async function (config) {
             });
 
             // HKDF deriveSessionKeys
-            const tHkdf = await measure(isWarmup ? [] : results.hkdf.deriveSessionKeys, async () => {
-                await enc.deriveSessionKeys(benchKey, encapRes.sharedSecret, transcriptDummy);
-            });
-            if (isFirst) results.coldStart['hkdf_derive'] = tHkdf;
-
-            // HMAC sign & verify
-            let hmacBenchKey, hmacSig;
-            await crypto.subtle.importKey("raw", encapRes.sharedSecret, { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]).then(k => { hmacBenchKey = k; });
-            const tHmacSign = await measure(isWarmup ? [] : results.hmac.sign, async () => {
-                hmacSig = await crypto.subtle.sign("HMAC", hmacBenchKey, payload);
-            });
-            const tHmacVerify = await measure(isWarmup ? [] : results.hmac.verify, async () => {
-                await crypto.subtle.verify("HMAC", hmacBenchKey, hmacSig, payload);
-            });
+            let derivedKeys;
             if (isFirst) {
+                const tHkdf = await measure([], async () => {
+                    derivedKeys = await enc.deriveSessionKeys(benchKey, encapRes.sharedSecret, transcriptDummy);
+                });
+                results.coldStart['hkdf_derive'] = tHkdf;
+            }
+            await measureBatch(isWarmup ? [] : results.hkdf.deriveSessionKeys, async () => {
+                derivedKeys = await enc.deriveSessionKeys(benchKey, encapRes.sharedSecret, transcriptDummy);
+            }, 10);
+
+            // HMAC sign & verify using confirmationKey from deriveSessionKeys()
+            let hmacSig;
+            const hmacBenchKey = derivedKeys.confirmationKey;
+            if (isFirst) {
+                const tHmacSign = await measure([], async () => {
+                    hmacSig = await crypto.subtle.sign("HMAC", hmacBenchKey, payload);
+                });
+                const tHmacVerify = await measure([], async () => {
+                    await crypto.subtle.verify("HMAC", hmacBenchKey, hmacSig, payload);
+                });
                 results.coldStart['hmac_sign'] = tHmacSign;
                 results.coldStart['hmac_verify'] = tHmacVerify;
             }
+            await measureBatch(isWarmup ? [] : results.hmac.sign, async () => {
+                hmacSig = await crypto.subtle.sign("HMAC", hmacBenchKey, payload);
+            }, 10);
+            await measureBatch(isWarmup ? [] : results.hmac.verify, async () => {
+                await crypto.subtle.verify("HMAC", hmacBenchKey, hmacSig, payload);
+            }, 10);
 
             // AES Encrypt/Decrypt 1 KB
             let ct1k;
-            const tEnc1k = await measure(isWarmup ? [] : results.aes.enc1k, async () => {
-                ct1k = await enc.encrypt(payload1k, benchKey, i, 'initiator-to-responder', 2, 'bench');
-            });
-            const tDec1k = await measure(isWarmup ? [] : results.aes.dec1k, async () => {
-                await enc.decrypt(ct1k.ciphertext, ct1k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
-            });
             if (isFirst) {
+                const tEnc1k = await measure([], async () => {
+                    ct1k = await enc.encrypt(payload1k, benchKey, i, 'initiator-to-responder', 2, 'bench');
+                });
+                const tDec1k = await measure([], async () => {
+                    await enc.decrypt(ct1k.ciphertext, ct1k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
+                });
                 results.coldStart['aes_enc1k'] = tEnc1k;
                 results.coldStart['aes_dec1k'] = tDec1k;
             }
+            await measureBatch(isWarmup ? [] : results.aes.enc1k, async () => {
+                ct1k = await enc.encrypt(payload1k, benchKey, i, 'initiator-to-responder', 2, 'bench');
+            }, 10);
+            await measureBatch(isWarmup ? [] : results.aes.dec1k, async () => {
+                await enc.decrypt(ct1k.ciphertext, ct1k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
+            }, 10);
 
             // AES Encrypt/Decrypt 10 KB
             let ct10k;
-            const tEnc10k = await measure(isWarmup ? [] : results.aes.enc10k, async () => {
-                ct10k = await enc.encrypt(payload10k, benchKey, i, 'initiator-to-responder', 2, 'bench');
-            });
-            const tDec10k = await measure(isWarmup ? [] : results.aes.dec10k, async () => {
-                await enc.decrypt(ct10k.ciphertext, ct10k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
-            });
             if (isFirst) {
+                const tEnc10k = await measure([], async () => {
+                    ct10k = await enc.encrypt(payload10k, benchKey, i, 'initiator-to-responder', 2, 'bench');
+                });
+                const tDec10k = await measure([], async () => {
+                    await enc.decrypt(ct10k.ciphertext, ct10k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
+                });
                 results.coldStart['aes_enc10k'] = tEnc10k;
                 results.coldStart['aes_dec10k'] = tDec10k;
             }
+            await measureBatch(isWarmup ? [] : results.aes.enc10k, async () => {
+                ct10k = await enc.encrypt(payload10k, benchKey, i, 'initiator-to-responder', 2, 'bench');
+            }, 5);
+            await measureBatch(isWarmup ? [] : results.aes.dec10k, async () => {
+                await enc.decrypt(ct10k.ciphertext, ct10k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
+            }, 5);
 
             // AES Encrypt/Decrypt 100 KB
             let ct100k;
-            const tEnc100k = await measure(isWarmup ? [] : results.aes.enc100k, async () => {
-                ct100k = await enc.encrypt(payload100k, benchKey, i, 'initiator-to-responder', 2, 'bench');
-            });
-            const tDec100k = await measure(isWarmup ? [] : results.aes.dec100k, async () => {
-                await enc.decrypt(ct100k.ciphertext, ct100k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
-            });
             if (isFirst) {
+                const tEnc100k = await measure([], async () => {
+                    ct100k = await enc.encrypt(payload100k, benchKey, i, 'initiator-to-responder', 2, 'bench');
+                });
+                const tDec100k = await measure([], async () => {
+                    await enc.decrypt(ct100k.ciphertext, ct100k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
+                });
                 results.coldStart['aes_enc100k'] = tEnc100k;
                 results.coldStart['aes_dec100k'] = tDec100k;
             }
+            await measure(isWarmup ? [] : results.aes.enc100k, async () => {
+                ct100k = await enc.encrypt(payload100k, benchKey, i, 'initiator-to-responder', 2, 'bench');
+            });
+            await measure(isWarmup ? [] : results.aes.dec100k, async () => {
+                await enc.decrypt(ct100k.ciphertext, ct100k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
+            });
         }
 
         // --- PROTOCOL SIMULATION ---
@@ -224,11 +273,19 @@ window.runBenchmarkV2 = async function (config) {
                 this.latency = latency;
             }
             send(msg) {
-                setTimeout(() => {
-                    if (this.other && this.other._pqHandler) {
-                        this.other._pqHandler(msg);
-                    }
-                }, this.latency);
+                if (this.latency === 0) {
+                    queueMicrotask(() => {
+                        if (this.other && this.other._pqHandler) {
+                            this.other._pqHandler(msg);
+                        }
+                    });
+                } else {
+                    setTimeout(() => {
+                        if (this.other && this.other._pqHandler) {
+                            this.other._pqHandler(msg);
+                        }
+                    }, this.latency);
+                }
             }
         }
 

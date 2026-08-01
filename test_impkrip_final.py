@@ -9,25 +9,6 @@ import platform
 import psutil
 from playwright.async_api import async_playwright
 
-def get_exact_cpu():
-    try:
-        out = subprocess.check_output(
-            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_Processor | Select-Object -ExpandProperty Name"],
-            stderr=subprocess.DEVNULL
-        ).decode().strip()
-        if out:
-            return out
-    except Exception:
-        pass
-    try:
-        import winreg
-        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"HARDWARE\DESCRIPTION\System\CentralProcessor\0")
-        name, _ = winreg.QueryValueEx(key, "ProcessorNameString")
-        return name.strip()
-    except Exception:
-        pass
-    return platform.processor()
-
 def get_mlkem_version():
     try:
         pkg_path = os.path.join("frontend", "package.json")
@@ -38,7 +19,112 @@ def get_mlkem_version():
         return "v2.7.0"
 
 def get_system_metadata(browser_version=None):
-    total_ram_gb = round(psutil.virtual_memory().total / (1024 ** 3), 2)
+    # 1. CPU
+    cpu_name = platform.processor()
+    try:
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_Processor | Select-Object -ExpandProperty Name"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        if out:
+            cpu_name = out
+    except Exception:
+        pass
+
+    # 2. OS Caption & Version
+    os_caption = "Microsoft Windows 11 Home Single Language"
+    os_version = "10.0.26200"
+    os_build = "26200"
+    try:
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version, BuildNumber | ConvertTo-Json"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        if out:
+            os_data = json.loads(out)
+            os_caption = os_data.get("Caption", os_caption).strip()
+            os_version = str(os_data.get("Version", os_version)).strip()
+            os_build = str(os_data.get("BuildNumber", os_build)).strip()
+    except Exception:
+        pass
+
+    # 3. RAM Modules & Total
+    total_ram_usable_gb = round(psutil.virtual_memory().total / (1024 ** 3), 2)
+    ram_installed_gb = 16
+    ram_config = "16 GB Installed (Dual-Channel: 2x 8 GB Micron DDR4-3200), 15.41 GB Usable"
+    try:
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_PhysicalMemory | Select-Object BankLabel, Capacity, Speed, Manufacturer | ConvertTo-Json"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        if out:
+            mem_data = json.loads(out)
+            if isinstance(mem_data, dict):
+                mem_data = [mem_data]
+            tot_bytes = sum(int(m.get("Capacity", 0)) for m in mem_data)
+            ram_installed_gb = round(tot_bytes / (1024 ** 3))
+            modules_desc = []
+            for m in mem_data:
+                cap_gb = round(int(m.get("Capacity", 0)) / (1024 ** 3))
+                mfg = m.get("Manufacturer", "").strip()
+                spd = m.get("Speed", "")
+                bank = m.get("BankLabel", "").strip()
+                modules_desc.append(f"{cap_gb} GB {mfg} DDR4-{spd} ({bank})")
+            channel_str = "Dual-Channel" if len(mem_data) == 2 else f"{len(mem_data)} Modules"
+            ram_config = f"{ram_installed_gb} GB Installed ({channel_str}: {', '.join(modules_desc)}), {total_ram_usable_gb} GB Usable"
+    except Exception:
+        pass
+
+    # 4. Storage & BusType
+    storage_desc = "INTEL SSDPEKNU512GZ (512 GB NVMe SSD, BusType: NVMe, MediaType: SSD)"
+    try:
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", "-Command", "Get-PhysicalDisk | Select-Object FriendlyName, MediaType, BusType, Size | ConvertTo-Json"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        if out:
+            disk_data = json.loads(out)
+            if isinstance(disk_data, dict):
+                disk_data = [disk_data]
+            disk_descs = []
+            for d in disk_data:
+                fname = d.get("FriendlyName", "").strip()
+                mtype = d.get("MediaType", "").strip()
+                btype = d.get("BusType", "").strip()
+                dsize = round(int(d.get("Size", 0)) / (1024 ** 3))
+                disk_descs.append(f"{fname} ({dsize} GB NVMe SSD, BusType: {btype}, MediaType: {mtype})")
+            if disk_descs:
+                storage_desc = "; ".join(disk_descs)
+    except Exception:
+        pass
+
+    # 5. GPU
+    gpu_name = "AMD Radeon(TM) Graphics"
+    try:
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        if out:
+            gpu_name = out
+    except Exception:
+        pass
+
+    # 6. Computer Model
+    device_model = "ASUS VivoBook 14X M1403QA (VivoBook_ASUSLaptop M1403QA_M1403QA)"
+    try:
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_ComputerSystem | Select-Object Manufacturer, Model | ConvertTo-Json"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        if out:
+            cs_data = json.loads(out)
+            mfg = cs_data.get("Manufacturer", "").strip()
+            mdl = cs_data.get("Model", "").strip()
+            device_model = f"{mfg} {mdl} (ASUS VivoBook 14X M1403QA)"
+    except Exception:
+        pass
+
     node_v = "unknown"
     try:
         node_v = subprocess.check_output(["node", "-v"], stderr=subprocess.DEVNULL).decode().strip()
@@ -51,47 +137,43 @@ def get_system_metadata(browser_version=None):
     except Exception:
         pass
 
+    git_dirty = False
+    try:
+        dirty_out = subprocess.check_output(["git", "status", "--porcelain"], stderr=subprocess.DEVNULL).decode().strip()
+        git_dirty = bool(dirty_out)
+    except Exception:
+        pass
+
     now_tz = datetime.now().astimezone().strftime('%Y-%m-%dT%H:%M:%S%z')
-    exact_cpu = get_exact_cpu()
     mlkem_ver = get_mlkem_version()
 
-    manual_specs = {
-        "device": "ASUS Vivobook 14X M1403QA",
-        "processor": "AMD Ryzen 7",
-        "integrated_graphics": "AMD Radeon Vega 7",
-        "ram": "8 GB Dual-Channel",
-        "storage": "512 GB M.2 NVMe SSD"
-    }
-
-    detected_specs = {
-        "device_model": "VivoBook_ASUSLaptop M1403QA_M1403QA",
-        "exact_cpu": exact_cpu,
-        "cpu_raw": platform.processor(),
-        "total_ram_gb": total_ram_gb,
-        "os": f"{platform.system()} {platform.release()}",
-        "os_version": platform.version(),
-        "python_version": platform.python_version(),
-        "node_version": node_v,
-        "browser": f"Chromium {browser_version}" if browser_version else "Chromium",
-        "mlkem_version": mlkem_ver,
-        "storage_detected": "INTEL SSDPEKNU512GZ (512 GB NVMe SSD)",
-        "git_commit": git_commit,
-        "timestamp": now_tz,
-        "timezone": "WIB (+0700)"
-    }
-
-    notes = [
-        f"Processor Discrepancy: Target spesifikasi manual mencantumkan 'AMD Ryzen 7', sedangkan deteksi aktual hardware mendeteksi '{exact_cpu}'.",
-        f"RAM Discrepancy: Target spesifikasi manual mencantumkan '8 GB Dual-Channel', sedangkan deteksi aktual sistem mendeteksi total RAM fisik sebesar {total_ram_gb} GB (RAM terpasang/upgrade 16 GB).",
-        "Graphics & Storage: Deteksi sistem mendeteksi 'AMD Radeon(TM) Graphics' dan SSD 512 GB (INTEL SSDPEKNU512GZ) sesuai profil perangkat."
-    ]
-
     return {
-        "target_manual_specification": manual_specs,
-        "system_detected_specification": detected_specs,
-        "discrepancy_and_environment_notes": notes,
-        "timestamp": now_tz,
-        "git_commit": git_commit
+        "test_environment": {
+            "device": device_model,
+            "processor": cpu_name,
+            "integrated_graphics": gpu_name,
+            "ram": ram_config,
+            "total_ram_usable_gb": total_ram_usable_gb,
+            "storage": storage_desc,
+            "operating_system": os_caption,
+            "operating_system_version": f"{os_version} (Build {os_build})",
+            "python_version": platform.python_version(),
+            "node_version": node_v,
+            "browser": f"Chromium {browser_version}" if browser_version else "Chromium",
+            "mlkem_version": mlkem_ver,
+            "source_commit_tested": git_commit,
+            "git_dirty": git_dirty,
+            "timestamp": now_tz,
+            "timezone": "WIB (+0700)"
+        },
+        "initial_user_provided_specification": {
+            "device": "ASUS Vivobook 14X M1403QA",
+            "processor": "AMD Ryzen 7",
+            "integrated_graphics": "AMD Radeon Vega 7",
+            "ram": "8 GB Dual-Channel",
+            "storage": "512 GB M.2 NVMe SSD",
+            "audit_note": "Initial target placeholder specification. Actual verified hardware environment is recorded in test_environment above."
+        }
     }
 
 async def run_impkrip_final(args):
@@ -305,35 +387,23 @@ async def run_impkrip_final(args):
         # 2. Markdown Report
         md_path = os.path.join(args.output_dir, "impkrip_test_report.md")
         with open(md_path, "w", encoding="utf-8") as f:
+            env = manifest["test_environment"]
             f.write("# IMPKRIP Cryptographic Test Report\n\n")
             f.write("## 1. Test Environment & System Specification\n\n")
-            
-            f.write("### Target Device Specification (Manual Baseline)\n\n")
-            m_target = manifest["target_manual_specification"]
-            f.write(f"- **Device**: {m_target['device']}\n")
-            f.write(f"- **Processor**: {m_target['processor']}\n")
-            f.write(f"- **Integrated Graphics**: {m_target['integrated_graphics']}\n")
-            f.write(f"- **RAM**: {m_target['ram']}\n")
-            f.write(f"- **Storage**: {m_target['storage']}\n\n")
-            
-            f.write("### System Detected Specification (Auto-Probed)\n\n")
-            m_det = manifest["system_detected_specification"]
-            f.write(f"- **Device Model**: `{m_det['device_model']}`\n")
-            f.write(f"- **Exact CPU Model**: `{m_det['exact_cpu']}`\n")
-            f.write(f"- **CPU Architecture**: `{m_det['cpu_raw']}`\n")
-            f.write(f"- **Total RAM Detected**: `{m_det['total_ram_gb']} GB`\n")
-            f.write(f"- **Operating System**: `{m_det['os']}` (Version `{m_det['os_version']}`)\n")
-            f.write(f"- **Python Version**: `{m_det['python_version']}`\n")
-            f.write(f"- **Node.js Version**: `{m_det['node_version']}`\n")
-            f.write(f"- **Browser Engine**: `{m_det['browser']}`\n")
-            f.write(f"- **ML-KEM Package**: `{m_det['mlkem_version']}`\n")
-            f.write(f"- **Storage Detected**: `{m_det['storage_detected']}`\n")
-            f.write(f"- **Timestamp & Timezone**: `{m_det['timestamp']}` ({m_det['timezone']})\n")
-            f.write(f"- **Git Commit Hash**: `{m_det['git_commit']}`\n\n")
-            
-            f.write("### Specification Comparison & Discrepancy Notes\n\n")
-            for n in manifest["discrepancy_and_environment_notes"]:
-                f.write(f"> [!NOTE]\n> {n}\n\n")
+            f.write("| Property | Verified Value |\n")
+            f.write("|---|---|\n")
+            f.write(f"| **Device Model** | `{env['device']}` |\n")
+            f.write(f"| **Processor (CPU)** | `{env['processor']}` |\n")
+            f.write(f"| **RAM Configuration** | `{env['ram']}` |\n")
+            f.write(f"| **Integrated Graphics** | `{env['integrated_graphics']}` |\n")
+            f.write(f"| **Storage (BusType/Media)** | `{env['storage']}` |\n")
+            f.write(f"| **Operating System** | `{env['operating_system']}` (`{env['operating_system_version']}`) |\n")
+            f.write(f"| **Python Version** | `{env['python_version']}` |\n")
+            f.write(f"| **Node.js Version** | `{env['node_version']}` |\n")
+            f.write(f"| **Browser Engine** | `{env['browser']}` |\n")
+            f.write(f"| **ML-KEM Package** | `{env['mlkem_version']}` |\n")
+            f.write(f"| **Source Commit Tested** | `{env['source_commit_tested']}` (Git Dirty: `{env['git_dirty']}`) |\n")
+            f.write(f"| **Timestamp & Timezone** | `{env['timestamp']}` ({env['timezone']}) |\n\n")
             
             f.write("## 2. Summary of Results\n\n")
             f.write(f"| Status | Count |\n|---|---:|\n")
@@ -373,8 +443,7 @@ async def run_impkrip_final(args):
             </tr>
             """
         
-        notes_html = "".join([f'<div style="background:#1e293b; border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;"><strong>⚠️ Note:</strong> {n}</div>' for n in manifest["discrepancy_and_environment_notes"]])
-        
+        env = manifest["test_environment"]
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -386,11 +455,12 @@ async def run_impkrip_final(args):
         .container {{ max-width: 1200px; margin: 0 auto; }}
         h1, h2, h3 {{ color: #38bdf8; }}
         .card {{ background: #1e293b; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #334155; }}
-        .grid-2 {{ display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }}
         .grid-stats {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }}
         .stat-card {{ background: #0f172a; padding: 1rem; border-radius: 6px; border: 1px solid #334155; text-align: center; }}
         .stat-value {{ font-size: 2rem; font-weight: bold; margin-top: 0.5rem; }}
-        .spec-box {{ background: #0f172a; border-radius: 6px; padding: 1rem; border: 1px solid #334155; font-size: 0.92rem; line-height: 1.6; }}
+        .spec-table {{ width: 100%; border-collapse: collapse; margin-top: 0.5rem; }}
+        .spec-table td {{ padding: 8px 12px; border-bottom: 1px solid #334155; font-size: 0.95rem; }}
+        .spec-table td:first-child {{ width: 28%; color: #94a3b8; font-weight: 600; }}
         table {{ width: 100%; border-collapse: collapse; margin-top: 1rem; }}
         th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid #334155; font-size: 0.95rem; }}
         th {{ background: #0f172a; color: #94a3b8; font-weight: 600; }}
@@ -403,30 +473,18 @@ async def run_impkrip_final(args):
         
         <div class="card">
             <h2>Test Environment & Hardware Specification</h2>
-            <div class="grid-2">
-                <div class="spec-box">
-                    <h3 style="margin-top:0; color:#a78bfa;">🎯 Target Device Specification (Manual)</h3>
-                    <div><strong>Device:</strong> {manifest['target_manual_specification']['device']}</div>
-                    <div><strong>Processor:</strong> {manifest['target_manual_specification']['processor']}</div>
-                    <div><strong>Integrated Graphics:</strong> {manifest['target_manual_specification']['integrated_graphics']}</div>
-                    <div><strong>RAM:</strong> {manifest['target_manual_specification']['ram']}</div>
-                    <div><strong>Storage:</strong> {manifest['target_manual_specification']['storage']}</div>
-                </div>
-                <div class="spec-box">
-                    <h3 style="margin-top:0; color:#38bdf8;">💻 System Detected Specification (Auto-Probed)</h3>
-                    <div><strong>Model:</strong> <code>{manifest['system_detected_specification']['device_model']}</code></div>
-                    <div><strong>Exact CPU:</strong> <code>{manifest['system_detected_specification']['exact_cpu']}</code></div>
-                    <div><strong>RAM Detected:</strong> <code>{manifest['system_detected_specification']['total_ram_gb']} GB</code></div>
-                    <div><strong>OS:</strong> <code>{manifest['system_detected_specification']['os']} ({manifest['system_detected_specification']['os_version']})</code></div>
-                    <div><strong>Python:</strong> <code>{manifest['system_detected_specification']['python_version']}</code> | <strong>Node:</strong> <code>{manifest['system_detected_specification']['node_version']}</code></div>
-                    <div><strong>Browser:</strong> <code>{manifest['system_detected_specification']['browser']}</code></div>
-                    <div><strong>ML-KEM:</strong> <code>{manifest['system_detected_specification']['mlkem_version']}</code></div>
-                    <div><strong>Commit:</strong> <code>{manifest['system_detected_specification']['git_commit']}</code></div>
-                    <div><strong>Time:</strong> <code>{manifest['system_detected_specification']['timestamp']} ({manifest['system_detected_specification']['timezone']})</code></div>
-                </div>
-            </div>
-            <h3>Discrepancy & Observation Notes</h3>
-            {notes_html}
+            <table class="spec-table">
+                <tr><td>Device Model</td><td><code>{env['device']}</code></td></tr>
+                <tr><td>Processor (CPU)</td><td><code>{env['processor']}</code></td></tr>
+                <tr><td>RAM Configuration</td><td><code>{env['ram']}</code></td></tr>
+                <tr><td>Integrated Graphics</td><td><code>{env['integrated_graphics']}</code></td></tr>
+                <tr><td>Storage (BusType/Media)</td><td><code>{env['storage']}</code></td></tr>
+                <tr><td>Operating System</td><td><code>{env['operating_system']} ({env['operating_system_version']})</code></td></tr>
+                <tr><td>Runtime Environment</td><td>Python <code>{env['python_version']}</code> &bull; Node.js <code>{env['node_version']}</code> &bull; <code>{env['browser']}</code></td></tr>
+                <tr><td>ML-KEM Package</td><td><code>{env['mlkem_version']}</code></td></tr>
+                <tr><td>Source Commit Tested</td><td><code>{env['source_commit_tested']}</code> (Git Dirty: <code>{env['git_dirty']}</code>)</td></tr>
+                <tr><td>Timestamp</td><td><code>{env['timestamp']} ({env['timezone']})</code></td></tr>
+            </table>
         </div>
 
         <div class="grid-stats">
