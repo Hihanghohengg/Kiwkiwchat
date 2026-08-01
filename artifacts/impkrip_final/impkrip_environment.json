@@ -1,11 +1,14 @@
 {
-  "timestamp": "2026-08-01T14:47:26.206565",
+  "timestamp": "2026-08-01T22:05:45+0700",
   "os": "Windows 10",
   "cpu": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
-  "python": "3.11.9",
-  "browser": "Chromium",
+  "total_ram_gb": 15.41,
+  "python_version": "3.11.9",
+  "node_version": "v22.17.0",
+  "browser": "Chromium 149.0.7827.55",
+  "mlkem_version": "v2.7.0",
   "warmup": 20,
   "iterations": 200,
   "runs": 5,
-  "headless": true
+  "git_commit": "27f421968468840ebb64463e56bfad236fd0e8a5"
 }

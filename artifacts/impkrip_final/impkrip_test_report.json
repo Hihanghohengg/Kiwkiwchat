@@ -1,33 +1,210 @@
 {
   "manifest": {
-    "timestamp": "2026-08-01T14:43:49.241947",
+    "timestamp": "2026-08-01T22:03:04+0700",
     "os": "Windows 10",
     "cpu": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
-    "python": "3.11.9",
-    "browser": "Chromium",
-    "node_version": "NOT_EVALUATED",
+    "total_ram_gb": 15.41,
+    "python_version": "3.11.9",
+    "node_version": "v22.17.0",
+    "browser": "Chromium 149.0.7827.55",
     "mlkem_version": "v2.7.0",
-    "git_commit": "6a275361d3251c64669175a78ab960617ffb2069"
+    "git_commit": "27f421968468840ebb64463e56bfad236fd0e8a5"
   },
-  "results": {
-    "PQ-01": "PASS",
-    "PQ-02": "PASS",
-    "PQ-03": "PASS",
-    "PQ-04": "PASS",
-    "KD-01": "PASS",
-    "KD-02": "PASS",
-    "KD-03": "PASS",
-    "KD-04": "PASS",
-    "KC-01": "PASS",
-    "KC-02": "PASS",
-    "AE-01": "PASS",
-    "AE-02": "PASS",
-    "AE-03": "PASS",
-    "AE-04": "PASS",
-    "E2E-01": "PASS",
-    "E2E-02": "PASS",
-    "E2E-03": "PASS",
-    "RP-01": "PARTIAL",
-    "E2E-04": "PASS"
-  }
+  "summary": {
+    "total": 19,
+    "pass": 18,
+    "partial": 1,
+    "fail": 0,
+    "skipped": 0,
+    "not_evaluated": 0
+  },
+  "tests": [
+    {
+      "id": "PQ-01",
+      "name": "ML-KEM-768 Key Generation",
+      "expected": "Valid 1184-byte public key and secret key generated",
+      "actual": "Generated 1184-byte public key (1184 bytes)",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "PQ-02",
+      "name": "ML-KEM-768 Encap/Decap Agreement",
+      "expected": "Encapsulation and decapsulation produce identical 32-byte shared secret",
+      "actual": "Decapsulated shared secret matches encapsulated secret byte-for-byte",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "PQ-03",
+      "name": "ML-KEM-768 Ciphertext & Secret Nonce Variation",
+      "expected": "Independent encapsulations produce distinct ciphertexts and shared secrets",
+      "actual": "Distinct ciphertexts and distinct shared secrets produced",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "PQ-04",
+      "name": "ML-KEM-768 Ephemeral Key Uniqueness",
+      "expected": "Consecutive key generation calls generate unique public keys",
+      "actual": "Unique public keys generated",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "KD-01",
+      "name": "HKDF Session Key Agreement",
+      "expected": "Both peers derive identical AES encryption keys given identical inputs",
+      "actual": "Derived AES encryption keys match byte-for-byte across peers",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "KD-02",
+      "name": "HKDF Classical Secret Dependency",
+      "expected": "Different classical secrets result in distinct session keys",
+      "actual": "Distinct session keys derived",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "KD-03",
+      "name": "HKDF Post-Quantum Secret Dependency",
+      "expected": "Different ML-KEM shared secrets result in distinct session keys",
+      "actual": "Distinct session keys derived",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "KD-04",
+      "name": "HKDF Domain Key Separation",
+      "expected": "Derived encryptionKey and confirmationKey are cryptographically distinct",
+      "actual": "Encryption key and confirmation key are distinct",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "KC-01",
+      "name": "HMAC Mutual Key Confirmation Verification",
+      "expected": "Valid HMAC confirmation tag over handshake transcript is verified",
+      "actual": "HMAC confirmation tag verified successfully",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "KC-02",
+      "name": "HMAC Tampered Handshake Rejection",
+      "expected": "Tampered handshake payload is rejected during HMAC confirmation",
+      "actual": "Tampered handshake HMAC successfully rejected",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "AE-01",
+      "name": "AES-GCM-256 Authenticated Encryption/Decryption",
+      "expected": "Valid plaintext encrypted and decrypted with AAD matches original string",
+      "actual": "Decrypted plaintext matches original message",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "AE-02",
+      "name": "AES-GCM-256 Tampered Ciphertext Authentication",
+      "expected": "Bit-flipped ciphertext fails GCM tag authentication and throws error",
+      "actual": "Tampered ciphertext rejected by WebCrypto GCM tag check",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "AE-03",
+      "name": "AES-GCM-256 Key Authenticity Verification",
+      "expected": "Decryption with unassociated AES key fails authentication tag verification",
+      "actual": "Decryption with wrong key rejected",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "AE-04",
+      "name": "AES-GCM-256 Additional Authenticated Data (AAD) Binding",
+      "expected": "Mismatch in sequence number or direction in AAD causes GCM decryption failure",
+      "actual": "Decryption with modified AAD sequence rejected",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "E2E-01",
+      "name": "Two-Way Chat: Creator to Invitee",
+      "expected": "Messages sent from Creator are received and decrypted by Invitee across all 3 runs",
+      "actual": "Passed 3/3 runs",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "E2E-02",
+      "name": "Two-Way Chat: Invitee to Creator",
+      "expected": "Messages sent from Invitee are received and decrypted by Creator across all 3 runs",
+      "actual": "Passed 3/3 runs",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "E2E-03",
+      "name": "Signaling Constraint: Third-Peer Rejection",
+      "expected": "Attempt by a third peer to enter occupied room is rejected with ROOM_FULL across all 3 runs",
+      "actual": "Passed 3/3 runs",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "E2E-04",
+      "name": "Session Teardown: Room Destroy Cleanup",
+      "expected": "Explicit room destruction removes all session storage keys across all 3 runs",
+      "actual": "Passed 3/3 runs",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "id": "RP-01",
+      "name": "Replay Protection: Envelope Sequence Validation",
+      "expected": "Envelopes with out-of-order or duplicate sequences rejected",
+      "actual": "Sequence counter validation enforced at application envelope layer; raw WebRTC packet injection out-of-scope for browser unit tests",
+      "status": "PARTIAL",
+      "error": null
+    }
+  ],
+  "e2e_runs": [
+    {
+      "run": 1,
+      "status": "SUCCESS",
+      "details": {
+        "E2E-01": "PASS",
+        "E2E-02": "PASS",
+        "E2E-03": "PASS",
+        "E2E-04": "PASS"
+      },
+      "error": null
+    },
+    {
+      "run": 2,
+      "status": "SUCCESS",
+      "details": {
+        "E2E-01": "PASS",
+        "E2E-02": "PASS",
+        "E2E-03": "PASS",
+        "E2E-04": "PASS"
+      },
+      "error": null
+    },
+    {
+      "run": 3,
+      "status": "SUCCESS",
+      "details": {
+        "E2E-01": "PASS",
+        "E2E-02": "PASS",
+        "E2E-03": "PASS",
+        "E2E-04": "PASS"
+      },
+      "error": null
+    }
+  ]
 }
