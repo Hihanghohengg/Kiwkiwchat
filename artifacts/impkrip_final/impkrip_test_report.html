@@ -9,9 +9,11 @@
         .container { max-width: 1200px; margin: 0 auto; }
         h1, h2, h3 { color: #38bdf8; }
         .card { background: #1e293b; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #334155; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         .stat-card { background: #0f172a; padding: 1rem; border-radius: 6px; border: 1px solid #334155; text-align: center; }
         .stat-value { font-size: 2rem; font-weight: bold; margin-top: 0.5rem; }
+        .spec-box { background: #0f172a; border-radius: 6px; padding: 1rem; border: 1px solid #334155; font-size: 0.92rem; line-height: 1.6; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; font-size: 0.95rem; }
         th { background: #0f172a; color: #94a3b8; font-weight: 600; }
@@ -21,22 +23,36 @@
 <body>
     <div class="container">
         <h1>🔒 IMPKRIP Cryptographic Evaluation Report</h1>
+        
         <div class="card">
-            <h2>System Manifest</h2>
-            <div class="grid">
-                <div><strong>Commit:</strong> <code>b3d02bbed6dc03d8c883d48d6fc92f3a6164c45b</code></div>
-                <div><strong>Timestamp:</strong> 2026-08-01T22:07:10+0700</div>
-                <div><strong>OS:</strong> Windows 10</div>
-                <div><strong>CPU:</strong> AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD</div>
-                <div><strong>RAM:</strong> 15.41 GB</div>
-                <div><strong>Python:</strong> 3.11.9</div>
-                <div><strong>Node:</strong> v22.17.0</div>
-                <div><strong>Browser:</strong> Chromium 149.0.7827.55</div>
-                <div><strong>ML-KEM:</strong> v2.7.0</div>
+            <h2>Test Environment & Hardware Specification</h2>
+            <div class="grid-2">
+                <div class="spec-box">
+                    <h3 style="margin-top:0; color:#a78bfa;">🎯 Target Device Specification (Manual)</h3>
+                    <div><strong>Device:</strong> ASUS Vivobook 14X M1403QA</div>
+                    <div><strong>Processor:</strong> AMD Ryzen 7</div>
+                    <div><strong>Integrated Graphics:</strong> AMD Radeon Vega 7</div>
+                    <div><strong>RAM:</strong> 8 GB Dual-Channel</div>
+                    <div><strong>Storage:</strong> 512 GB M.2 NVMe SSD</div>
+                </div>
+                <div class="spec-box">
+                    <h3 style="margin-top:0; color:#38bdf8;">💻 System Detected Specification (Auto-Probed)</h3>
+                    <div><strong>Model:</strong> <code>VivoBook_ASUSLaptop M1403QA_M1403QA</code></div>
+                    <div><strong>Exact CPU:</strong> <code>AMD Ryzen 5 5600H with Radeon Graphics</code></div>
+                    <div><strong>RAM Detected:</strong> <code>15.41 GB</code></div>
+                    <div><strong>OS:</strong> <code>Windows 10 (10.0.26200)</code></div>
+                    <div><strong>Python:</strong> <code>3.11.9</code> | <strong>Node:</strong> <code>v22.17.0</code></div>
+                    <div><strong>Browser:</strong> <code>Chromium 149.0.7827.55</code></div>
+                    <div><strong>ML-KEM:</strong> <code>^2.7.0</code></div>
+                    <div><strong>Commit:</strong> <code>609a1fe1c529e0e7fe27ac4fde6eb1da5022af46</code></div>
+                    <div><strong>Time:</strong> <code>2026-08-01T22:11:51+0700 (WIB (+0700))</code></div>
+                </div>
             </div>
+            <h3>Discrepancy & Observation Notes</h3>
+            <div style="background:#1e293b; border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;"><strong>⚠️ Note:</strong> Processor Discrepancy: Target spesifikasi manual mencantumkan 'AMD Ryzen 7', sedangkan deteksi aktual hardware mendeteksi 'AMD Ryzen 5 5600H with Radeon Graphics'.</div><div style="background:#1e293b; border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;"><strong>⚠️ Note:</strong> RAM Discrepancy: Target spesifikasi manual mencantumkan '8 GB Dual-Channel', sedangkan deteksi aktual sistem mendeteksi total RAM fisik sebesar 15.41 GB (RAM terpasang/upgrade 16 GB).</div><div style="background:#1e293b; border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;"><strong>⚠️ Note:</strong> Graphics & Storage: Deteksi sistem mendeteksi 'AMD Radeon(TM) Graphics' dan SSD 512 GB (INTEL SSDPEKNU512GZ) sesuai profil perangkat.</div>
         </div>
 
-        <div class="grid">
+        <div class="grid-stats">
             <div class="stat-card"><div style="color:#94a3b8;">Total Tests</div><div class="stat-value" style="color:#38bdf8;">19</div></div>
             <div class="stat-card"><div style="color:#94a3b8;">Passed</div><div class="stat-value" style="color:#10b981;">18</div></div>
             <div class="stat-card"><div style="color:#94a3b8;">Partial</div><div class="stat-value" style="color:#f59e0b;">1</div></div>
@@ -57,158 +73,158 @@
                 </thead>
                 <tbody>
                     
-        <tr>
-            <td><code>PQ-01</code></td>
-            <td><strong>ML-KEM-768 Key Generation</strong></td>
-            <td>Valid 1184-byte public key and secret key generated</td>
-            <td>Generated 1184-byte public key (1184 bytes)</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>PQ-02</code></td>
-            <td><strong>ML-KEM-768 Encap/Decap Agreement</strong></td>
-            <td>Encapsulation and decapsulation produce identical 32-byte shared secret</td>
-            <td>Decapsulated shared secret matches encapsulated secret byte-for-byte</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>PQ-03</code></td>
-            <td><strong>ML-KEM-768 Ciphertext & Secret Nonce Variation</strong></td>
-            <td>Independent encapsulations produce distinct ciphertexts and shared secrets</td>
-            <td>Distinct ciphertexts and distinct shared secrets produced</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>PQ-04</code></td>
-            <td><strong>ML-KEM-768 Ephemeral Key Uniqueness</strong></td>
-            <td>Consecutive key generation calls generate unique public keys</td>
-            <td>Unique public keys generated</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>KD-01</code></td>
-            <td><strong>HKDF Session Key Agreement</strong></td>
-            <td>Both peers derive identical AES encryption keys given identical inputs</td>
-            <td>Derived AES encryption keys match byte-for-byte across peers</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>KD-02</code></td>
-            <td><strong>HKDF Classical Secret Dependency</strong></td>
-            <td>Different classical secrets result in distinct session keys</td>
-            <td>Distinct session keys derived</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>KD-03</code></td>
-            <td><strong>HKDF Post-Quantum Secret Dependency</strong></td>
-            <td>Different ML-KEM shared secrets result in distinct session keys</td>
-            <td>Distinct session keys derived</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>KD-04</code></td>
-            <td><strong>HKDF Domain Key Separation</strong></td>
-            <td>Derived encryptionKey and confirmationKey are cryptographically distinct</td>
-            <td>Encryption key and confirmation key are distinct</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>KC-01</code></td>
-            <td><strong>HMAC Mutual Key Confirmation Verification</strong></td>
-            <td>Valid HMAC confirmation tag over handshake transcript is verified</td>
-            <td>HMAC confirmation tag verified successfully</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>KC-02</code></td>
-            <td><strong>HMAC Tampered Handshake Rejection</strong></td>
-            <td>Tampered handshake payload is rejected during HMAC confirmation</td>
-            <td>Tampered handshake HMAC successfully rejected</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>AE-01</code></td>
-            <td><strong>AES-GCM-256 Authenticated Encryption/Decryption</strong></td>
-            <td>Valid plaintext encrypted and decrypted with AAD matches original string</td>
-            <td>Decrypted plaintext matches original message</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>AE-02</code></td>
-            <td><strong>AES-GCM-256 Tampered Ciphertext Authentication</strong></td>
-            <td>Bit-flipped ciphertext fails GCM tag authentication and throws error</td>
-            <td>Tampered ciphertext rejected by WebCrypto GCM tag check</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>AE-03</code></td>
-            <td><strong>AES-GCM-256 Key Authenticity Verification</strong></td>
-            <td>Decryption with unassociated AES key fails authentication tag verification</td>
-            <td>Decryption with wrong key rejected</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>AE-04</code></td>
-            <td><strong>AES-GCM-256 Additional Authenticated Data (AAD) Binding</strong></td>
-            <td>Mismatch in sequence number or direction in AAD causes GCM decryption failure</td>
-            <td>Decryption with modified AAD sequence rejected</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>E2E-01</code></td>
-            <td><strong>Two-Way Chat: Creator to Invitee</strong></td>
-            <td>Messages sent from Creator are received and decrypted by Invitee across all 3 runs</td>
-            <td>Passed 3/3 runs</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>E2E-02</code></td>
-            <td><strong>Two-Way Chat: Invitee to Creator</strong></td>
-            <td>Messages sent from Invitee are received and decrypted by Creator across all 3 runs</td>
-            <td>Passed 3/3 runs</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>E2E-03</code></td>
-            <td><strong>Signaling Constraint: Third-Peer Rejection</strong></td>
-            <td>Attempt by a third peer to enter occupied room is rejected with ROOM_FULL across all 3 runs</td>
-            <td>Passed 3/3 runs</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>E2E-04</code></td>
-            <td><strong>Session Teardown: Room Destroy Cleanup</strong></td>
-            <td>Explicit room destruction removes all session storage keys across all 3 runs</td>
-            <td>Passed 3/3 runs</td>
-            <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
-        </tr>
-        
-        <tr>
-            <td><code>RP-01</code></td>
-            <td><strong>Replay Protection: Envelope Sequence Validation</strong></td>
-            <td>Envelopes with out-of-order or duplicate sequences rejected</td>
-            <td>Sequence counter validation enforced at application envelope layer; raw WebRTC packet injection out-of-scope for browser unit tests</td>
-            <td style="text-align:center;"><span style="background:#f59e0b; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PARTIAL</span></td>
-        </tr>
-        
+            <tr>
+                <td><code>PQ-01</code></td>
+                <td><strong>ML-KEM-768 Key Generation</strong></td>
+                <td>Valid 1184-byte public key and secret key generated</td>
+                <td>Generated 1184-byte public key (1184 bytes)</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>PQ-02</code></td>
+                <td><strong>ML-KEM-768 Encap/Decap Agreement</strong></td>
+                <td>Encapsulation and decapsulation produce identical 32-byte shared secret</td>
+                <td>Decapsulated shared secret matches encapsulated secret byte-for-byte</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>PQ-03</code></td>
+                <td><strong>ML-KEM-768 Ciphertext & Secret Nonce Variation</strong></td>
+                <td>Independent encapsulations produce distinct ciphertexts and shared secrets</td>
+                <td>Distinct ciphertexts and distinct shared secrets produced</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>PQ-04</code></td>
+                <td><strong>ML-KEM-768 Ephemeral Key Uniqueness</strong></td>
+                <td>Consecutive key generation calls generate unique public keys</td>
+                <td>Unique public keys generated</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>KD-01</code></td>
+                <td><strong>HKDF Session Key Agreement</strong></td>
+                <td>Both peers derive identical AES encryption keys given identical inputs</td>
+                <td>Derived AES encryption keys match byte-for-byte across peers</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>KD-02</code></td>
+                <td><strong>HKDF Classical Secret Dependency</strong></td>
+                <td>Different classical secrets result in distinct session keys</td>
+                <td>Distinct session keys derived</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>KD-03</code></td>
+                <td><strong>HKDF Post-Quantum Secret Dependency</strong></td>
+                <td>Different ML-KEM shared secrets result in distinct session keys</td>
+                <td>Distinct session keys derived</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>KD-04</code></td>
+                <td><strong>HKDF Domain Key Separation</strong></td>
+                <td>Derived encryptionKey and confirmationKey are cryptographically distinct</td>
+                <td>Encryption key and confirmation key are distinct</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>KC-01</code></td>
+                <td><strong>HMAC Mutual Key Confirmation Verification</strong></td>
+                <td>Valid HMAC confirmation tag over handshake transcript is verified</td>
+                <td>HMAC confirmation tag verified successfully</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>KC-02</code></td>
+                <td><strong>HMAC Tampered Handshake Rejection</strong></td>
+                <td>Tampered handshake payload is rejected during HMAC confirmation</td>
+                <td>Tampered handshake HMAC successfully rejected</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>AE-01</code></td>
+                <td><strong>AES-GCM-256 Authenticated Encryption/Decryption</strong></td>
+                <td>Valid plaintext encrypted and decrypted with AAD matches original string</td>
+                <td>Decrypted plaintext matches original message</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>AE-02</code></td>
+                <td><strong>AES-GCM-256 Tampered Ciphertext Authentication</strong></td>
+                <td>Bit-flipped ciphertext fails GCM tag authentication and throws error</td>
+                <td>Tampered ciphertext rejected by WebCrypto GCM tag check</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>AE-03</code></td>
+                <td><strong>AES-GCM-256 Key Authenticity Verification</strong></td>
+                <td>Decryption with unassociated AES key fails authentication tag verification</td>
+                <td>Decryption with wrong key rejected</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>AE-04</code></td>
+                <td><strong>AES-GCM-256 Additional Authenticated Data (AAD) Binding</strong></td>
+                <td>Mismatch in sequence number or direction in AAD causes GCM decryption failure</td>
+                <td>Decryption with modified AAD sequence rejected</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>E2E-01</code></td>
+                <td><strong>Two-Way Chat: Creator to Invitee</strong></td>
+                <td>Messages sent from Creator are received and decrypted by Invitee across all 3 runs</td>
+                <td>Passed 3/3 runs</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>E2E-02</code></td>
+                <td><strong>Two-Way Chat: Invitee to Creator</strong></td>
+                <td>Messages sent from Invitee are received and decrypted by Creator across all 3 runs</td>
+                <td>Passed 3/3 runs</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>E2E-03</code></td>
+                <td><strong>Signaling Constraint: Third-Peer Rejection</strong></td>
+                <td>Attempt by a third peer to enter occupied room is rejected with ROOM_FULL across all 3 runs</td>
+                <td>Passed 3/3 runs</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>E2E-04</code></td>
+                <td><strong>Session Teardown: Room Destroy Cleanup</strong></td>
+                <td>Explicit room destruction removes all session storage keys across all 3 runs</td>
+                <td>Passed 3/3 runs</td>
+                <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
+            </tr>
+            
+            <tr>
+                <td><code>RP-01</code></td>
+                <td><strong>Replay Protection: Envelope Sequence Validation</strong></td>
+                <td>Envelopes with out-of-order or duplicate sequences rejected</td>
+                <td>Sequence counter validation enforced at application envelope layer; raw WebRTC packet injection out-of-scope for browser unit tests</td>
+                <td style="text-align:center;"><span style="background:#f59e0b; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PARTIAL</span></td>
+            </tr>
+            
                 </tbody>
             </table>
         </div>

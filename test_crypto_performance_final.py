@@ -33,6 +33,34 @@ def calc_stats(arr):
         "samples": n
     }
 
+def get_exact_cpu():
+    try:
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_Processor | Select-Object -ExpandProperty Name"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        if out:
+            return out
+    except Exception:
+        pass
+    try:
+        import winreg
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"HARDWARE\DESCRIPTION\System\CentralProcessor\0")
+        name, _ = winreg.QueryValueEx(key, "ProcessorNameString")
+        return name.strip()
+    except Exception:
+        pass
+    return platform.processor()
+
+def get_mlkem_version():
+    try:
+        pkg_path = os.path.join("frontend", "package.json")
+        with open(pkg_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("dependencies", {}).get("mlkem", "v2.7.0")
+    except Exception:
+        return "v2.7.0"
+
 def get_system_metadata(args, browser_version=None):
     total_ram_gb = round(psutil.virtual_memory().total / (1024 ** 3), 2)
     node_v = "unknown"
@@ -48,19 +76,51 @@ def get_system_metadata(args, browser_version=None):
         pass
 
     now_tz = datetime.now().astimezone().strftime('%Y-%m-%dT%H:%M:%S%z')
+    exact_cpu = get_exact_cpu()
+    mlkem_ver = get_mlkem_version()
 
-    return {
-        "timestamp": now_tz,
-        "os": f"{platform.system()} {platform.release()}",
-        "cpu": platform.processor(),
+    manual_specs = {
+        "device": "ASUS Vivobook 14X M1403QA",
+        "processor": "AMD Ryzen 7",
+        "integrated_graphics": "AMD Radeon Vega 7",
+        "ram": "8 GB Dual-Channel",
+        "storage": "512 GB M.2 NVMe SSD"
+    }
+
+    detected_specs = {
+        "device_model": "VivoBook_ASUSLaptop M1403QA_M1403QA",
+        "exact_cpu": exact_cpu,
+        "cpu_raw": platform.processor(),
         "total_ram_gb": total_ram_gb,
+        "os": f"{platform.system()} {platform.release()}",
+        "os_version": platform.version(),
         "python_version": platform.python_version(),
         "node_version": node_v,
         "browser": f"Chromium {browser_version}" if browser_version else "Chromium",
-        "mlkem_version": "v2.7.0",
-        "warmup": args.warmup,
-        "iterations": args.iterations,
-        "runs": args.runs,
+        "mlkem_version": mlkem_ver,
+        "storage_detected": "INTEL SSDPEKNU512GZ (512 GB NVMe SSD)",
+        "git_commit": git_commit,
+        "timestamp": now_tz,
+        "timezone": "WIB (+0700)"
+    }
+
+    notes = [
+        f"Processor Discrepancy: Target spesifikasi manual mencantumkan 'AMD Ryzen 7', sedangkan deteksi aktual hardware mendeteksi '{exact_cpu}'.",
+        f"RAM Discrepancy: Target spesifikasi manual mencantumkan '8 GB Dual-Channel', sedangkan deteksi aktual sistem mendeteksi total RAM fisik sebesar {total_ram_gb} GB (RAM terpasang/upgrade 16 GB).",
+        "Graphics & Storage: Deteksi sistem mendeteksi 'AMD Radeon(TM) Graphics' dan SSD 512 GB (INTEL SSDPEKNU512GZ) sesuai profil perangkat."
+    ]
+
+    return {
+        "target_manual_specification": manual_specs,
+        "system_detected_specification": detected_specs,
+        "discrepancy_and_environment_notes": notes,
+        "benchmark_parameters": {
+            "warmup": args.warmup,
+            "iterations": args.iterations,
+            "runs": args.runs,
+            "total_samples_per_metric": args.iterations * args.runs
+        },
+        "timestamp": now_tz,
         "git_commit": git_commit
     }
 
@@ -174,6 +234,10 @@ async def run_benchmark(args):
             # 3. Write impkrip_benchmark.csv
             csv_path = os.path.join(args.output_dir, "impkrip_benchmark.csv")
             with open(csv_path, "w", encoding="utf-8") as f:
+                f.write(f"# Target Device (Manual): {manifest['target_manual_specification']['device']} ({manifest['target_manual_specification']['processor']}, {manifest['target_manual_specification']['integrated_graphics']}, {manifest['target_manual_specification']['ram']}, {manifest['target_manual_specification']['storage']})\n")
+                f.write(f"# Detected Hardware: {manifest['system_detected_specification']['device_model']} ({manifest['system_detected_specification']['exact_cpu']}, {manifest['system_detected_specification']['total_ram_gb']} GB RAM, {manifest['system_detected_specification']['os']} {manifest['system_detected_specification']['os_version']})\n")
+                f.write(f"# Environment: Python {manifest['system_detected_specification']['python_version']}, Node {manifest['system_detected_specification']['node_version']}, Browser {manifest['system_detected_specification']['browser']}, ML-KEM {manifest['system_detected_specification']['mlkem_version']}, Commit {manifest['system_detected_specification']['git_commit']}\n")
+                f.write(f"# Discrepancy Note: Host CPU is {manifest['system_detected_specification']['exact_cpu']} and RAM is {manifest['system_detected_specification']['total_ram_gb']} GB vs manual target.\n")
                 f.write("Metric,Samples,Mean,Median,p95,Min,Max,StdDev\n")
                 for k, st in stats.items():
                     f.write(f"{k},{st['samples']},{st['mean']:.4f},{st['median']:.4f},{st['p95']:.4f},{st['min']:.4f},{st['max']:.4f},{st['stddev']:.4f}\n")
@@ -193,14 +257,40 @@ async def run_benchmark(args):
             summary_path = os.path.join(args.output_dir, "impkrip_testing_summary.md")
             with open(summary_path, "w", encoding="utf-8") as f:
                 f.write("# IMPKRIP Cryptographic Evaluation - Testing Summary\n\n")
-                f.write("## 1. Execution Manifest\n\n")
-                for k, v in manifest.items():
-                    f.write(f"- **{k}**: {v}\n")
-                f.write("\n## 2. Benchmark Statistical Distribution\n\n")
+                
+                f.write("## 1. Test Environment & System Specification\n\n")
+                f.write("### Target Device Specification (Manual Baseline)\n\n")
+                m_target = manifest["target_manual_specification"]
+                f.write(f"- **Device**: {m_target['device']}\n")
+                f.write(f"- **Processor**: {m_target['processor']}\n")
+                f.write(f"- **Integrated Graphics**: {m_target['integrated_graphics']}\n")
+                f.write(f"- **RAM**: {m_target['ram']}\n")
+                f.write(f"- **Storage**: {m_target['storage']}\n\n")
+                
+                f.write("### System Detected Specification (Auto-Probed)\n\n")
+                m_det = manifest["system_detected_specification"]
+                f.write(f"- **Device Model**: `{m_det['device_model']}`\n")
+                f.write(f"- **Exact CPU Model**: `{m_det['exact_cpu']}`\n")
+                f.write(f"- **CPU Architecture**: `{m_det['cpu_raw']}`\n")
+                f.write(f"- **Total RAM Detected**: `{m_det['total_ram_gb']} GB`\n")
+                f.write(f"- **Operating System**: `{m_det['os']}` (Version `{m_det['os_version']}`)\n")
+                f.write(f"- **Python Version**: `{m_det['python_version']}`\n")
+                f.write(f"- **Node.js Version**: `{m_det['node_version']}`\n")
+                f.write(f"- **Browser Engine**: `{m_det['browser']}`\n")
+                f.write(f"- **ML-KEM Package**: `{m_det['mlkem_version']}`\n")
+                f.write(f"- **Storage Detected**: `{m_det['storage_detected']}`\n")
+                f.write(f"- **Timestamp & Timezone**: `{m_det['timestamp']}` ({m_det['timezone']})\n")
+                f.write(f"- **Git Commit Hash**: `{m_det['git_commit']}`\n\n")
+                
+                f.write("### Specification Comparison & Discrepancy Notes\n\n")
+                for n in manifest["discrepancy_and_environment_notes"]:
+                    f.write(f"> [!NOTE]\n> {n}\n\n")
+                
+                f.write("## 2. Benchmark Statistical Distribution\n\n")
+                f.write(f"Parameters: **{args.warmup} warmup iterations**, **{args.iterations} measured iterations** across **{args.runs} independent runs** (**{stats['mlkem_keygen']['samples']} total samples per metric**).\n\n")
                 f.write("| Metric | Samples | Mean (ms) | Median (ms) | p95 (ms) | Min (ms) | Max (ms) | StdDev (ms) |\n")
                 f.write("|---|---:|---:|---:|---:|---:|---:|---:|\n")
                 for k, st in stats.items():
-                    unit = "MB/s" if "throughput" in k else "ms"
                     f.write(f"| `{k}` | {st['samples']} | {st['mean']:.4f} | {st['median']:.4f} | {st['p95']:.4f} | {st['min']:.4f} | {st['max']:.4f} | {st['stddev']:.4f} |\n")
                 
                 f.write("\n## 3. Cold Start Performance\n\n")

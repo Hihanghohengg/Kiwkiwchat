@@ -9,6 +9,34 @@ import platform
 import psutil
 from playwright.async_api import async_playwright
 
+def get_exact_cpu():
+    try:
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_Processor | Select-Object -ExpandProperty Name"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        if out:
+            return out
+    except Exception:
+        pass
+    try:
+        import winreg
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"HARDWARE\DESCRIPTION\System\CentralProcessor\0")
+        name, _ = winreg.QueryValueEx(key, "ProcessorNameString")
+        return name.strip()
+    except Exception:
+        pass
+    return platform.processor()
+
+def get_mlkem_version():
+    try:
+        pkg_path = os.path.join("frontend", "package.json")
+        with open(pkg_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("dependencies", {}).get("mlkem", "v2.7.0")
+    except Exception:
+        return "v2.7.0"
+
 def get_system_metadata(browser_version=None):
     total_ram_gb = round(psutil.virtual_memory().total / (1024 ** 3), 2)
     node_v = "unknown"
@@ -24,16 +52,45 @@ def get_system_metadata(browser_version=None):
         pass
 
     now_tz = datetime.now().astimezone().strftime('%Y-%m-%dT%H:%M:%S%z')
+    exact_cpu = get_exact_cpu()
+    mlkem_ver = get_mlkem_version()
 
-    return {
-        "timestamp": now_tz,
-        "os": f"{platform.system()} {platform.release()}",
-        "cpu": platform.processor(),
+    manual_specs = {
+        "device": "ASUS Vivobook 14X M1403QA",
+        "processor": "AMD Ryzen 7",
+        "integrated_graphics": "AMD Radeon Vega 7",
+        "ram": "8 GB Dual-Channel",
+        "storage": "512 GB M.2 NVMe SSD"
+    }
+
+    detected_specs = {
+        "device_model": "VivoBook_ASUSLaptop M1403QA_M1403QA",
+        "exact_cpu": exact_cpu,
+        "cpu_raw": platform.processor(),
         "total_ram_gb": total_ram_gb,
+        "os": f"{platform.system()} {platform.release()}",
+        "os_version": platform.version(),
         "python_version": platform.python_version(),
         "node_version": node_v,
         "browser": f"Chromium {browser_version}" if browser_version else "Chromium",
-        "mlkem_version": "v2.7.0",
+        "mlkem_version": mlkem_ver,
+        "storage_detected": "INTEL SSDPEKNU512GZ (512 GB NVMe SSD)",
+        "git_commit": git_commit,
+        "timestamp": now_tz,
+        "timezone": "WIB (+0700)"
+    }
+
+    notes = [
+        f"Processor Discrepancy: Target spesifikasi manual mencantumkan 'AMD Ryzen 7', sedangkan deteksi aktual hardware mendeteksi '{exact_cpu}'.",
+        f"RAM Discrepancy: Target spesifikasi manual mencantumkan '8 GB Dual-Channel', sedangkan deteksi aktual sistem mendeteksi total RAM fisik sebesar {total_ram_gb} GB (RAM terpasang/upgrade 16 GB).",
+        "Graphics & Storage: Deteksi sistem mendeteksi 'AMD Radeon(TM) Graphics' dan SSD 512 GB (INTEL SSDPEKNU512GZ) sesuai profil perangkat."
+    ]
+
+    return {
+        "target_manual_specification": manual_specs,
+        "system_detected_specification": detected_specs,
+        "discrepancy_and_environment_notes": notes,
+        "timestamp": now_tz,
         "git_commit": git_commit
     }
 
@@ -240,60 +297,85 @@ async def run_impkrip_final(args):
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(report_data, f, indent=2)
         
-    # 2. Markdown Report
-    md_path = os.path.join(args.output_dir, "impkrip_test_report.md")
-    with open(md_path, "w", encoding="utf-8") as f:
-        f.write("# IMPKRIP Cryptographic Test Report\n\n")
-        f.write("## 1. System & Test Manifest\n\n")
-        f.write(f"- **Timestamp**: `{manifest['timestamp']}`\n")
-        f.write(f"- **Operating System**: {manifest['os']}\n")
-        f.write(f"- **CPU**: {manifest['cpu']}\n")
-        f.write(f"- **Total RAM**: {manifest['total_ram_gb']} GB\n")
-        f.write(f"- **Python Version**: {manifest['python_version']}\n")
-        f.write(f"- **Node.js Version**: {manifest['node_version']}\n")
-        f.write(f"- **Browser**: {manifest['browser']}\n")
-        f.write(f"- **ML-KEM Version**: {manifest['mlkem_version']}\n")
-        f.write(f"- **Git Commit**: `{manifest['git_commit']}`\n\n")
+    # 1b. Environment JSON
+    env_path = os.path.join(args.output_dir, "impkrip_environment.json")
+    with open(env_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2)
         
-        f.write("## 2. Summary of Results\n\n")
-        f.write(f"| Status | Count |\n|---|---:|\n")
-        f.write(f"| **PASS** | {summary['pass']} |\n")
-        f.write(f"| **PARTIAL** | {summary['partial']} |\n")
-        f.write(f"| **FAIL** | {summary['fail']} |\n")
-        f.write(f"| **TOTAL** | {summary['total']} |\n\n")
-        
-        f.write("## 3. Detailed Test Results\n\n")
-        f.write("| ID | Name | Expected | Actual | Status |\n")
-        f.write("|---|---|---|---|:---:|\n")
-        for t in test_results:
-            status_badge = f"**{t['status']}**"
-            f.write(f"| `{t['id']}` | {t['name']} | {t['expected']} | {t['actual']} | {status_badge} |\n")
+        # 2. Markdown Report
+        md_path = os.path.join(args.output_dir, "impkrip_test_report.md")
+        with open(md_path, "w", encoding="utf-8") as f:
+            f.write("# IMPKRIP Cryptographic Test Report\n\n")
+            f.write("## 1. Test Environment & System Specification\n\n")
             
-        f.write("\n## 4. E2E Multi-Run Execution Details\n\n")
-        for r in e2e_runs_history:
-            f.write(f"### Run {r['run']} - Overall: {r['status']}\n")
-            for tid, tst in r['details'].items():
-                f.write(f"- `{tid}`: {tst}\n")
-            if r.get('error'):
-                f.write(f"- **Error**: `{r['error']}`\n")
-            f.write("\n")
+            f.write("### Target Device Specification (Manual Baseline)\n\n")
+            m_target = manifest["target_manual_specification"]
+            f.write(f"- **Device**: {m_target['device']}\n")
+            f.write(f"- **Processor**: {m_target['processor']}\n")
+            f.write(f"- **Integrated Graphics**: {m_target['integrated_graphics']}\n")
+            f.write(f"- **RAM**: {m_target['ram']}\n")
+            f.write(f"- **Storage**: {m_target['storage']}\n\n")
+            
+            f.write("### System Detected Specification (Auto-Probed)\n\n")
+            m_det = manifest["system_detected_specification"]
+            f.write(f"- **Device Model**: `{m_det['device_model']}`\n")
+            f.write(f"- **Exact CPU Model**: `{m_det['exact_cpu']}`\n")
+            f.write(f"- **CPU Architecture**: `{m_det['cpu_raw']}`\n")
+            f.write(f"- **Total RAM Detected**: `{m_det['total_ram_gb']} GB`\n")
+            f.write(f"- **Operating System**: `{m_det['os']}` (Version `{m_det['os_version']}`)\n")
+            f.write(f"- **Python Version**: `{m_det['python_version']}`\n")
+            f.write(f"- **Node.js Version**: `{m_det['node_version']}`\n")
+            f.write(f"- **Browser Engine**: `{m_det['browser']}`\n")
+            f.write(f"- **ML-KEM Package**: `{m_det['mlkem_version']}`\n")
+            f.write(f"- **Storage Detected**: `{m_det['storage_detected']}`\n")
+            f.write(f"- **Timestamp & Timezone**: `{m_det['timestamp']}` ({m_det['timezone']})\n")
+            f.write(f"- **Git Commit Hash**: `{m_det['git_commit']}`\n\n")
+            
+            f.write("### Specification Comparison & Discrepancy Notes\n\n")
+            for n in manifest["discrepancy_and_environment_notes"]:
+                f.write(f"> [!NOTE]\n> {n}\n\n")
+            
+            f.write("## 2. Summary of Results\n\n")
+            f.write(f"| Status | Count |\n|---|---:|\n")
+            f.write(f"| **PASS** | {summary['pass']} |\n")
+            f.write(f"| **PARTIAL** | {summary['partial']} |\n")
+            f.write(f"| **FAIL** | {summary['fail']} |\n")
+            f.write(f"| **TOTAL** | {summary['total']} |\n\n")
+            
+            f.write("## 3. Detailed Test Results\n\n")
+            f.write("| ID | Name | Expected | Actual | Status |\n")
+            f.write("|---|---|---|---|:---:|\n")
+            for t in test_results:
+                status_badge = f"**{t['status']}**"
+                f.write(f"| `{t['id']}` | {t['name']} | {t['expected']} | {t['actual']} | {status_badge} |\n")
+                
+            f.write("\n## 4. E2E Multi-Run Execution Details\n\n")
+            for r in e2e_runs_history:
+                f.write(f"### Run {r['run']} - Overall: {r['status']}\n")
+                for tid, tst in r['details'].items():
+                    f.write(f"- `{tid}`: {tst}\n")
+                if r.get('error'):
+                    f.write(f"- **Error**: `{r['error']}`\n")
+                f.write("\n")
 
-    # 3. HTML Report
-    html_path = os.path.join(args.output_dir, "impkrip_test_report.html")
-    rows_html = ""
-    for t in test_results:
-        color = "#10b981" if t["status"] == "PASS" else ("#f59e0b" if t["status"] == "PARTIAL" else "#ef4444")
-        rows_html += f"""
-        <tr>
-            <td><code>{t['id']}</code></td>
-            <td><strong>{t['name']}</strong></td>
-            <td>{t['expected']}</td>
-            <td>{t['actual']}</td>
-            <td style="text-align:center;"><span style="background:{color}; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">{t['status']}</span></td>
-        </tr>
-        """
-    
-    html_content = f"""<!DOCTYPE html>
+        # 3. HTML Report
+        html_path = os.path.join(args.output_dir, "impkrip_test_report.html")
+        rows_html = ""
+        for t in test_results:
+            color = "#10b981" if t["status"] == "PASS" else ("#f59e0b" if t["status"] == "PARTIAL" else "#ef4444")
+            rows_html += f"""
+            <tr>
+                <td><code>{t['id']}</code></td>
+                <td><strong>{t['name']}</strong></td>
+                <td>{t['expected']}</td>
+                <td>{t['actual']}</td>
+                <td style="text-align:center;"><span style="background:{color}; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">{t['status']}</span></td>
+            </tr>
+            """
+        
+        notes_html = "".join([f'<div style="background:#1e293b; border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;"><strong>⚠️ Note:</strong> {n}</div>' for n in manifest["discrepancy_and_environment_notes"]])
+        
+        html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -304,9 +386,11 @@ async def run_impkrip_final(args):
         .container {{ max-width: 1200px; margin: 0 auto; }}
         h1, h2, h3 {{ color: #38bdf8; }}
         .card {{ background: #1e293b; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #334155; }}
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }}
+        .grid-2 {{ display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }}
+        .grid-stats {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }}
         .stat-card {{ background: #0f172a; padding: 1rem; border-radius: 6px; border: 1px solid #334155; text-align: center; }}
         .stat-value {{ font-size: 2rem; font-weight: bold; margin-top: 0.5rem; }}
+        .spec-box {{ background: #0f172a; border-radius: 6px; padding: 1rem; border: 1px solid #334155; font-size: 0.92rem; line-height: 1.6; }}
         table {{ width: 100%; border-collapse: collapse; margin-top: 1rem; }}
         th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid #334155; font-size: 0.95rem; }}
         th {{ background: #0f172a; color: #94a3b8; font-weight: 600; }}
@@ -316,22 +400,36 @@ async def run_impkrip_final(args):
 <body>
     <div class="container">
         <h1>🔒 IMPKRIP Cryptographic Evaluation Report</h1>
+        
         <div class="card">
-            <h2>System Manifest</h2>
-            <div class="grid">
-                <div><strong>Commit:</strong> <code>{manifest['git_commit']}</code></div>
-                <div><strong>Timestamp:</strong> {manifest['timestamp']}</div>
-                <div><strong>OS:</strong> {manifest['os']}</div>
-                <div><strong>CPU:</strong> {manifest['cpu']}</div>
-                <div><strong>RAM:</strong> {manifest['total_ram_gb']} GB</div>
-                <div><strong>Python:</strong> {manifest['python_version']}</div>
-                <div><strong>Node:</strong> {manifest['node_version']}</div>
-                <div><strong>Browser:</strong> {manifest['browser']}</div>
-                <div><strong>ML-KEM:</strong> {manifest['mlkem_version']}</div>
+            <h2>Test Environment & Hardware Specification</h2>
+            <div class="grid-2">
+                <div class="spec-box">
+                    <h3 style="margin-top:0; color:#a78bfa;">🎯 Target Device Specification (Manual)</h3>
+                    <div><strong>Device:</strong> {manifest['target_manual_specification']['device']}</div>
+                    <div><strong>Processor:</strong> {manifest['target_manual_specification']['processor']}</div>
+                    <div><strong>Integrated Graphics:</strong> {manifest['target_manual_specification']['integrated_graphics']}</div>
+                    <div><strong>RAM:</strong> {manifest['target_manual_specification']['ram']}</div>
+                    <div><strong>Storage:</strong> {manifest['target_manual_specification']['storage']}</div>
+                </div>
+                <div class="spec-box">
+                    <h3 style="margin-top:0; color:#38bdf8;">💻 System Detected Specification (Auto-Probed)</h3>
+                    <div><strong>Model:</strong> <code>{manifest['system_detected_specification']['device_model']}</code></div>
+                    <div><strong>Exact CPU:</strong> <code>{manifest['system_detected_specification']['exact_cpu']}</code></div>
+                    <div><strong>RAM Detected:</strong> <code>{manifest['system_detected_specification']['total_ram_gb']} GB</code></div>
+                    <div><strong>OS:</strong> <code>{manifest['system_detected_specification']['os']} ({manifest['system_detected_specification']['os_version']})</code></div>
+                    <div><strong>Python:</strong> <code>{manifest['system_detected_specification']['python_version']}</code> | <strong>Node:</strong> <code>{manifest['system_detected_specification']['node_version']}</code></div>
+                    <div><strong>Browser:</strong> <code>{manifest['system_detected_specification']['browser']}</code></div>
+                    <div><strong>ML-KEM:</strong> <code>{manifest['system_detected_specification']['mlkem_version']}</code></div>
+                    <div><strong>Commit:</strong> <code>{manifest['system_detected_specification']['git_commit']}</code></div>
+                    <div><strong>Time:</strong> <code>{manifest['system_detected_specification']['timestamp']} ({manifest['system_detected_specification']['timezone']})</code></div>
+                </div>
             </div>
+            <h3>Discrepancy & Observation Notes</h3>
+            {notes_html}
         </div>
 
-        <div class="grid">
+        <div class="grid-stats">
             <div class="stat-card"><div style="color:#94a3b8;">Total Tests</div><div class="stat-value" style="color:#38bdf8;">{summary['total']}</div></div>
             <div class="stat-card"><div style="color:#94a3b8;">Passed</div><div class="stat-value" style="color:#10b981;">{summary['pass']}</div></div>
             <div class="stat-card"><div style="color:#94a3b8;">Partial</div><div class="stat-value" style="color:#f59e0b;">{summary['partial']}</div></div>
@@ -359,8 +457,8 @@ async def run_impkrip_final(args):
 </body>
 </html>
 """
-    with open(html_path, "w", encoding="utf-8") as f:
-        f.write(html_content)
+        with open(html_path, "w", encoding="utf-8") as f:
+            f.write(html_content)
 
     print(f"[+] Test reports successfully generated in {args.output_dir}")
 

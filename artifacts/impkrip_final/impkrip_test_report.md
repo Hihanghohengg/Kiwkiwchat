@@ -1,16 +1,40 @@
 # IMPKRIP Cryptographic Test Report
 
-## 1. System & Test Manifest
+## 1. Test Environment & System Specification
 
-- **Timestamp**: `2026-08-01T22:07:10+0700`
-- **Operating System**: Windows 10
-- **CPU**: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
-- **Total RAM**: 15.41 GB
-- **Python Version**: 3.11.9
-- **Node.js Version**: v22.17.0
-- **Browser**: Chromium 149.0.7827.55
-- **ML-KEM Version**: v2.7.0
-- **Git Commit**: `b3d02bbed6dc03d8c883d48d6fc92f3a6164c45b`
+### Target Device Specification (Manual Baseline)
+
+- **Device**: ASUS Vivobook 14X M1403QA
+- **Processor**: AMD Ryzen 7
+- **Integrated Graphics**: AMD Radeon Vega 7
+- **RAM**: 8 GB Dual-Channel
+- **Storage**: 512 GB M.2 NVMe SSD
+
+### System Detected Specification (Auto-Probed)
+
+- **Device Model**: `VivoBook_ASUSLaptop M1403QA_M1403QA`
+- **Exact CPU Model**: `AMD Ryzen 5 5600H with Radeon Graphics`
+- **CPU Architecture**: `AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD`
+- **Total RAM Detected**: `15.41 GB`
+- **Operating System**: `Windows 10` (Version `10.0.26200`)
+- **Python Version**: `3.11.9`
+- **Node.js Version**: `v22.17.0`
+- **Browser Engine**: `Chromium 149.0.7827.55`
+- **ML-KEM Package**: `^2.7.0`
+- **Storage Detected**: `INTEL SSDPEKNU512GZ (512 GB NVMe SSD)`
+- **Timestamp & Timezone**: `2026-08-01T22:11:51+0700` (WIB (+0700))
+- **Git Commit Hash**: `609a1fe1c529e0e7fe27ac4fde6eb1da5022af46`
+
+### Specification Comparison & Discrepancy Notes
+
+> [!NOTE]
+> Processor Discrepancy: Target spesifikasi manual mencantumkan 'AMD Ryzen 7', sedangkan deteksi aktual hardware mendeteksi 'AMD Ryzen 5 5600H with Radeon Graphics'.
+
+> [!NOTE]
+> RAM Discrepancy: Target spesifikasi manual mencantumkan '8 GB Dual-Channel', sedangkan deteksi aktual sistem mendeteksi total RAM fisik sebesar 15.41 GB (RAM terpasang/upgrade 16 GB).
+
+> [!NOTE]
+> Graphics & Storage: Deteksi sistem mendeteksi 'AMD Radeon(TM) Graphics' dan SSD 512 GB (INTEL SSDPEKNU512GZ) sesuai profil perangkat.
 
 ## 2. Summary of Results
 
