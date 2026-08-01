@@ -73,12 +73,15 @@ export async function performPQUpgrade(peer, classicalKey, isInitiator, onProgre
         const msg = JSON.parse(msgStr)
         if (!msg.type || !msg.type.startsWith("pq-")) return false
         if (msg.version !== PROTOCOL_VERSION) {
+          cleanup()
           reject(new Error("Unsupported protocol version"))
           return false
         }
         await processMessage(msg)
         return true
-      } catch {
+      } catch (err) {
+        cleanup()
+        reject(err)
         return false
       }
     }

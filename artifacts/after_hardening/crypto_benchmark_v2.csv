@@ -1,0 +1,4 @@
+Metric,Median,p95,Min,Max
+Protocol_0ms,34.65,50.20,20.10,53.50
+Protocol_5ms,37.80,50.20,17.30,54.10
+MLKEM_Encap,0.40,0.60,0.20,0.70

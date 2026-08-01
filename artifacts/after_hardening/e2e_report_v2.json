@@ -1,16 +1,42 @@
 [
   {
-    "webrtc_time": 6.481374740600586,
-    "first_message_time": 0.14487552642822266,
-    "third_peer_rejected": false,
-    "storage_cleanup": true,
-    "success": true
+    "success": true,
+    "third_peer_rejected": true,
+    "storage_cleanup": false,
+    "webrtc_time": 34.69999999925494,
+    "pq_time": 34.59999999962747,
+    "first_message_time": 0.40000000037252903
   },
   {
-    "webrtc_time": 4.7067625522613525,
-    "first_message_time": 0.13398408889770508,
-    "third_peer_rejected": false,
-    "storage_cleanup": true,
-    "success": true
+    "success": true,
+    "third_peer_rejected": true,
+    "storage_cleanup": false,
+    "webrtc_time": 42.70000000111759,
+    "pq_time": 42.59999999962747,
+    "first_message_time": 0.30000000074505806
+  },
+  {
+    "success": true,
+    "third_peer_rejected": true,
+    "storage_cleanup": false,
+    "webrtc_time": 33,
+    "pq_time": 32.90000000037253,
+    "first_message_time": 0.30000000074505806
+  },
+  {
+    "success": true,
+    "third_peer_rejected": true,
+    "storage_cleanup": false,
+    "webrtc_time": 35.5,
+    "pq_time": 35.20000000111759,
+    "first_message_time": 0.30000000074505806
+  },
+  {
+    "success": true,
+    "third_peer_rejected": true,
+    "storage_cleanup": false,
+    "webrtc_time": 36.5,
+    "pq_time": 36.40000000037253,
+    "first_message_time": 0.19999999925494194
   }
 ]

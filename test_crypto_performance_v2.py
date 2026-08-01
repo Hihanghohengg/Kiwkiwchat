@@ -62,9 +62,10 @@ async def run_benchmark(args):
             agg = {
                 "mlkem": {"keygen": [], "encap": [], "decap": []},
                 "aes": {"keygen": [], "import": [], "enc1k": [], "dec1k": [], "enc10k": [], "dec10k": [], "enc100k": [], "dec100k": [], "enc1m": [], "dec1m": []},
-                "hkdf": {"raw": [], "deriveHybrid": []},
+                "hkdf": {"deriveSessionKeys": []},
                 "hmac": {"import": [], "sign": [], "validVerify": [], "invalidVerify": []},
-                "protocol": {"cold": [], "warm": [], "initiatorTime": [], "responderTime": [], "totalWallClock": [], "successRates": []}
+                "protocol": {"cold": [], "warm": [], "initiatorTime": [], "responderTime": [], "totalWallClock": [], "successRates": []},
+                "protocolLatent": {"warm": [], "initiatorTime": [], "responderTime": [], "totalWallClock": [], "successRates": []}
             }
             
             negative_results = all_runs[-1].get("negative", {})
@@ -74,7 +75,7 @@ async def run_benchmark(args):
                     agg["mlkem"][k].extend(res["mlkem"][k])
                 for k in ["keygen", "import", "enc1k", "dec1k", "enc10k", "dec10k", "enc100k", "dec100k", "enc1m", "dec1m"]:
                     agg["aes"][k].extend(res["aes"][k])
-                for k in ["deriveHybrid"]:
+                for k in ["deriveSessionKeys"]:
                     if res.get("hkdf") and k in res["hkdf"]:
                         agg["hkdf"][k].extend(res["hkdf"][k])
                 for k in ["import", "sign", "validVerify", "invalidVerify"]:
@@ -86,6 +87,13 @@ async def run_benchmark(args):
                 agg["protocol"]["responderTime"].extend(res["protocol"]["responderTime"])
                 agg["protocol"]["totalWallClock"].extend(res["protocol"]["totalWallClock"])
                 agg["protocol"]["successRates"].append(res["protocol"]["successRate"])
+                
+                if res.get("protocolLatent"):
+                    agg["protocolLatent"]["warm"].extend(res["protocolLatent"]["warm"])
+                    agg["protocolLatent"]["initiatorTime"].extend(res["protocolLatent"]["initiatorTime"])
+                    agg["protocolLatent"]["responderTime"].extend(res["protocolLatent"]["responderTime"])
+                    agg["protocolLatent"]["totalWallClock"].extend(res["protocolLatent"]["totalWallClock"])
+                    agg["protocolLatent"]["successRates"].append(res["protocolLatent"]["successRate"])
             
             stats = {
                 "mlkem": {k: calc_stats(v) for k, v in agg["mlkem"].items()},
@@ -99,6 +107,13 @@ async def run_benchmark(args):
                     "responderTime": calc_stats(agg["protocol"]["responderTime"]),
                     "totalWallClock": calc_stats(agg["protocol"]["totalWallClock"]),
                     "avgSuccessRate": statistics.mean(agg["protocol"]["successRates"]) if agg["protocol"]["successRates"] else 0
+                },
+                "protocolLatent": {
+                    "warm": calc_stats(agg["protocolLatent"]["warm"]),
+                    "initiatorTime": calc_stats(agg["protocolLatent"]["initiatorTime"]),
+                    "responderTime": calc_stats(agg["protocolLatent"]["responderTime"]),
+                    "totalWallClock": calc_stats(agg["protocolLatent"]["totalWallClock"]),
+                    "avgSuccessRate": statistics.mean(agg["protocolLatent"]["successRates"]) if agg["protocolLatent"]["successRates"] else 0
                 }
             }
             
@@ -125,11 +140,16 @@ async def run_benchmark(args):
             # Write MD
             with open(os.path.join(args.output_dir, "crypto_benchmark_v2.md"), "w") as f:
                 f.write("# Crypto Benchmark V2 Report\n\n")
-                f.write("## Protocol (performPQUpgrade)\n")
+                f.write("## Protocol (performPQUpgrade - 0ms Latency)\n")
                 f.write(f"- Cold Start (mean): {stats['protocol']['cold'].get('mean', 0):.2f} ms\n")
                 f.write(f"- Warm (median): {stats['protocol']['warm'].get('median', 0):.2f} ms\n")
                 f.write(f"- Warm (p95): {stats['protocol']['warm'].get('p95', 0):.2f} ms\n")
                 f.write(f"- Success Rate: {stats['protocol']['avgSuccessRate']:.2f}%\n")
+                
+                f.write("\n## Protocol (performPQUpgrade - 5ms Latency)\n")
+                f.write(f"- Warm (median): {stats['protocolLatent']['warm'].get('median', 0):.2f} ms\n")
+                f.write(f"- Warm (p95): {stats['protocolLatent']['warm'].get('p95', 0):.2f} ms\n")
+                f.write(f"- Success Rate: {stats['protocolLatent']['avgSuccessRate']:.2f}%\n")
                 
                 f.write("\n## ML-KEM-768\n")
                 f.write(f"- Encap (median): {stats['mlkem']['encap'].get('median', 0):.2f} ms\n")
@@ -138,7 +158,19 @@ async def run_benchmark(args):
                 f.write("\n## Negative Security Tests\n")
                 for k, v in negative_results.items():
                     f.write(f"- {k}: {'PASS' if v else 'FAIL'}\n")
-                    
+            
+            # Write CSV & HTML
+            with open(os.path.join(args.output_dir, "crypto_benchmark_v2.csv"), "w") as f:
+                f.write("Metric,Median,p95,Min,Max\n")
+                f.write(f"Protocol_0ms,{stats['protocol']['warm'].get('median', 0):.2f},{stats['protocol']['warm'].get('p95', 0):.2f},{stats['protocol']['warm'].get('min', 0):.2f},{stats['protocol']['warm'].get('max', 0):.2f}\n")
+                f.write(f"Protocol_5ms,{stats['protocolLatent']['warm'].get('median', 0):.2f},{stats['protocolLatent']['warm'].get('p95', 0):.2f},{stats['protocolLatent']['warm'].get('min', 0):.2f},{stats['protocolLatent']['warm'].get('max', 0):.2f}\n")
+                f.write(f"MLKEM_Encap,{stats['mlkem']['encap'].get('median', 0):.2f},{stats['mlkem']['encap'].get('p95', 0):.2f},{stats['mlkem']['encap'].get('min', 0):.2f},{stats['mlkem']['encap'].get('max', 0):.2f}\n")
+
+            with open(os.path.join(args.output_dir, "crypto_benchmark_v2.html"), "w") as f:
+                f.write("<html><body><h1>Benchmark Report</h1><pre>")
+                f.write(json.dumps({"manifest": manifest, "stats": stats, "negative": negative_results}, indent=2))
+                f.write("</pre></body></html>")
+                
             print(f"[+] Artifacts saved to {args.output_dir}")
             
     finally:

@@ -8,16 +8,34 @@ window.runBenchmarkV2 = async function (config) {
     const results = {
         mlkem: { keygen: [], encap: [], decap: [] },
         aes: { keygen: [], import: [], enc1k: [], dec1k: [], enc10k: [], dec10k: [], enc100k: [], dec100k: [], enc1m: [], dec1m: [] },
-        hkdf: { raw: [], deriveHybrid: [] },
+        hkdf: { deriveSessionKeys: [] },
         hmac: { import: [], sign: [], validVerify: [], invalidVerify: [] },
-        protocol: { cold: null, warm: [], successRate: 0, initiatorTime: [], responderTime: [], totalWallClock: [] },
+        protocol: { 
+            cold: null, 
+            warm: [], 
+            successRate: 0, 
+            initiatorTime: [], 
+            responderTime: [], 
+            totalWallClock: [] 
+        },
+        protocolLatent: {
+            warm: [],
+            successRate: 0,
+            initiatorTime: [],
+            responderTime: [],
+            totalWallClock: []
+        },
         negative: {
             ephemeralKeyUniqueness: false,
             aesBitFlip: false,
             aesWrongTag: false,
             aesWrongKey: false,
             hmacModified: false,
-            hkdfDifferentSecret: false
+            hkdfDifferentSecret: false,
+            hkdfDifferentClassical: false,
+            hkdfDifferentTranscript: false,
+            keysMatchPeers: false,
+            encAndConfirmKeysDiffer: false
         },
         errors: []
     };
@@ -71,17 +89,41 @@ window.runBenchmarkV2 = async function (config) {
         const badVerify = await crypto.subtle.verify("HMAC", hmacKey, sig, badPayload);
         results.negative.hmacModified = !badVerify;
 
-        // HKDF
+        // HKDF / deriveSessionKeys
+        const classical1B64 = await enc.generateKey();
+        const classical1 = await enc.importKey(classical1B64);
+        const classical2B64 = await enc.generateKey();
+        const classical2 = await enc.importKey(classical2B64);
+
         const secret1 = new Uint8Array(32);
         const secret2 = new Uint8Array(32); secret2[0] = 1;
+        const transcript1 = new Uint8Array(32);
+        const transcript2 = new Uint8Array(32); transcript2[0] = 1;
         
-        const hkdf1 = await enc.deriveHybridKey(key, secret1);
-        if(hkdf1) {
-            const hkdf2 = await enc.deriveHybridKey(key, secret2);
-            // compare keys
-            const e1 = await crypto.subtle.exportKey("raw", hkdf1);
-            const e2 = await crypto.subtle.exportKey("raw", hkdf2);
-            results.negative.hkdfDifferentSecret = (e1.toString() !== e2.toString());
+        if (enc.deriveSessionKeys) {
+            const keys1 = await enc.deriveSessionKeys(classical1, secret1, transcript1);
+            const keys2 = await enc.deriveSessionKeys(classical1, secret2, transcript1);
+            const keys3 = await enc.deriveSessionKeys(classical2, secret1, transcript1);
+            const keys4 = await enc.deriveSessionKeys(classical1, secret1, transcript2);
+            
+            const eEnc1 = await crypto.subtle.exportKey("raw", keys1.encryptionKey);
+            const eConf1 = await crypto.subtle.exportKey("raw", keys1.confirmationKey);
+            const eEnc2 = await crypto.subtle.exportKey("raw", keys2.encryptionKey);
+            const eEnc3 = await crypto.subtle.exportKey("raw", keys3.encryptionKey);
+            const eEnc4 = await crypto.subtle.exportKey("raw", keys4.encryptionKey);
+
+            const areEqual = (b1, b2) => {
+                const u1 = new Uint8Array(b1);
+                const u2 = new Uint8Array(b2);
+                if (u1.length !== u2.length) return false;
+                for (let i = 0; i < u1.length; i++) if (u1[i] !== u2[i]) return false;
+                return true;
+            };
+
+            results.negative.encAndConfirmKeysDiffer = !areEqual(eEnc1, eConf1);
+            results.negative.hkdfDifferentSecret = !areEqual(eEnc1, eEnc2);
+            results.negative.hkdfDifferentClassical = !areEqual(eEnc1, eEnc3);
+            results.negative.hkdfDifferentTranscript = !areEqual(eEnc1, eEnc4);
         }
 
         // --- BENCHMARK LOOPS ---
@@ -124,9 +166,10 @@ window.runBenchmarkV2 = async function (config) {
             }
 
             // HKDF
-            if (enc.deriveHybridKey) {
-                const r_hkdf_derive = isWarmup ? [] : results.hkdf.deriveHybrid;
-                await measure("hkdf.derive", r_hkdf_derive, async () => { await enc.deriveHybridKey(aKey, encapRes.sharedSecret); });
+            if (enc.deriveSessionKeys) {
+                const transcriptHash = new Uint8Array(32);
+                const r_hkdf_derive = isWarmup ? [] : results.hkdf.deriveSessionKeys;
+                await measure("hkdf.derive", r_hkdf_derive, async () => { await enc.deriveSessionKeys(aKey, encapRes.sharedSecret, transcriptHash); });
             }
 
             // HMAC
@@ -146,9 +189,10 @@ window.runBenchmarkV2 = async function (config) {
 
         // --- PROTOCOL MOCK ---
         class MockPeer {
-            constructor() {
+            constructor(latency) {
                 this.other = null;
-                this.latency = 5; // 5ms simulated network latency
+                this.latency = latency; 
+                this.keysEqualCheckResult = null; // store keys equal result
             }
             send(msg) {
                 setTimeout(() => {
@@ -159,44 +203,67 @@ window.runBenchmarkV2 = async function (config) {
             }
         }
 
-        for (let i = 0; i < warmup + iterations; i++) {
-            const isWarmup = i < warmup;
-            let success = false;
-            
-            const peerA = new MockPeer();
-            const peerB = new MockPeer();
-            peerA.other = peerB;
-            peerB.other = peerA;
-            
-            const classicalB64 = await enc.generateKey();
-            const cKey = await enc.importKey(classicalB64);
+        async function runProtocolLoop(latency, resObj) {
+            let matches = 0;
+            for (let i = 0; i < warmup + iterations; i++) {
+                const isWarmup = i < warmup;
+                let success = false;
+                
+                const peerA = new MockPeer(latency);
+                const peerB = new MockPeer(latency);
+                peerA.other = peerB;
+                peerB.other = peerA;
+                
+                const classicalB64 = await enc.generateKey();
+                const cKey = await enc.importKey(classicalB64);
 
-            const tStart = performance.now();
-            let tAEnd = 0, tBEnd = 0;
+                const tStart = performance.now();
+                let tAEnd = 0, tBEnd = 0;
+                let kA, kB;
 
-            const pA = pq.performPQUpgrade(peerA, cKey, true).then(() => {
-                tAEnd = performance.now();
-            });
-            const pB = pq.performPQUpgrade(peerB, cKey, false).then(() => {
-                tBEnd = performance.now();
-            });
+                const pA = pq.performPQUpgrade(peerA, cKey, true).then(k => {
+                    kA = k;
+                    tAEnd = performance.now();
+                }).catch(e => { if(isWarmup) console.error(e); });
+                
+                const pB = pq.performPQUpgrade(peerB, cKey, false).then(k => {
+                    kB = k;
+                    tBEnd = performance.now();
+                }).catch(e => { if(isWarmup) console.error(e); });
 
-            await Promise.all([pA, pB]);
-            const tEnd = performance.now();
-            success = true;
+                await Promise.all([pA, pB]);
+                const tEnd = performance.now();
+                if (kA && kB) {
+                    success = true;
+                    // check equality
+                    const eA = new Uint8Array(await crypto.subtle.exportKey("raw", kA));
+                    const eB = new Uint8Array(await crypto.subtle.exportKey("raw", kB));
+                    let eq = eA.length === eB.length;
+                    for (let j = 0; j < eA.length && eq; j++) if(eA[j] !== eB[j]) eq = false;
+                    if(eq) matches++;
+                }
 
-            if (i === 0) {
-                results.protocol.cold = tEnd - tStart;
-            } else if (!isWarmup) {
-                results.protocol.warm.push(tEnd - tStart);
-                results.protocol.initiatorTime.push(tAEnd - tStart);
-                results.protocol.responderTime.push(tBEnd - tStart);
-                results.protocol.totalWallClock.push(tEnd - tStart);
-                if (success) results.protocol.successRate++;
+                if (i === 0 && latency === 0) {
+                    results.protocol.cold = tEnd - tStart;
+                } else if (!isWarmup) {
+                    resObj.warm.push(tEnd - tStart);
+                    resObj.initiatorTime.push(tAEnd - tStart);
+                    resObj.responderTime.push(tBEnd - tStart);
+                    resObj.totalWallClock.push(tEnd - tStart);
+                    if (success) resObj.successRate++;
+                }
+            }
+            resObj.successRate = (resObj.successRate / iterations) * 100;
+            if (matches === warmup + iterations) {
+                results.negative.keysMatchPeers = true;
             }
         }
 
-        results.protocol.successRate = (results.protocol.successRate / iterations) * 100;
+        // Run 0ms latency
+        await runProtocolLoop(0, results.protocol);
+        
+        // Run 5ms latency
+        await runProtocolLoop(5, results.protocolLatent);
 
     } catch (e) {
         results.errors.push(e.toString());

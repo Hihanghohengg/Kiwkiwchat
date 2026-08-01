@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 
-const ROOM_TTL_SECONDS = 15 * 60; // 15 minutes
+const ROOM_TTL_SECONDS = import.meta.env.VITE_TEST_MODE
+  ? (parseInt(import.meta.env.VITE_ROOM_TTL_SECONDS) || 3)
+  : 15 * 60; // 15 minutes
 
 export function useCountdown(startTimestamp, running) {
   const calcRemaining = () => {

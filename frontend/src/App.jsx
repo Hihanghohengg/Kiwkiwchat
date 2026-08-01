@@ -78,6 +78,7 @@ export default function App() {
   useEffect(() => {
     if (inRoom && timerSeconds === 0) {
       showToast("Room TTL expired. Destroying...", "error");
+      if (currentRoomId.current) clearRoomStorage(currentRoomId.current);
       setTimeout(() => { window.location.href = '/'; }, 2800);
     }
   }, [timerSeconds, inRoom]);
@@ -255,6 +256,10 @@ export default function App() {
       } else if (msg.type === 'room_full') {
         setRoomFull(true);
         setInRoom(false);
+      } else if (msg.type === 'room_ended') {
+        addTermLine("ROOM_DESTROYED_BY_PEER", false);
+        if (currentRoomId.current) clearRoomStorage(currentRoomId.current);
+        setRoomEnded(true);
       } else if (msg.type === 'pong') {
         // Just ignore pong
       }
@@ -381,12 +386,14 @@ export default function App() {
     const wrappedPeer  = { send: originalSend, _pqHandler: null };
 
     const handleOpen = async () => {
+      performance.mark('datachannel_open');
       setStatus("WebRTC Connected. Upgrading encryption...");
       addTermLine("WEBRTC_DATACHANNEL_OPEN...");
 
       try {
         sendCounter.current = 0;
         receiveCounter.current = 0;
+        performance.mark('pq_upgrade_started');
         hybridKey.current = await performPQUpgrade(
           wrappedPeer,
           classicalKey.current,
@@ -394,7 +401,9 @@ export default function App() {
           (prog) => { setStatus(prog); addTermLine(prog.toUpperCase().replace(/ /g, '_')); },
           currentRoomId.current
         );
+        performance.mark('pq_upgrade_completed');
         setIsSecure(true);
+        performance.mark('secure_ui_ready');
         setStatus("Secure P2P Channel Active");
         addTermLine("E2E_ENCRYPTED_CHANNEL_ESTABLISHED :: AES-256+ML-KEM-768", true);
       } catch (err) {
@@ -405,6 +414,7 @@ export default function App() {
     };
 
     dataChannel.current.onmessage = async (event) => {
+      performance.mark('message_received_raw');
       if (wrappedPeer._pqHandler) {
         const handled = await wrappedPeer._pqHandler(event.data);
         if (handled) return;
@@ -422,6 +432,7 @@ export default function App() {
           envelope.ciphertext, envelope.iv, hybridKey.current, 
           envelope.sequence, envelope.direction, envelope.version, currentRoomId.current
         );
+        performance.mark('message_decrypted');
         
         receiveCounter.current++;
 
@@ -465,12 +476,14 @@ export default function App() {
     e.preventDefault();
     if (!input.trim() || !isSecure || !dataChannel.current || dataChannel.current.readyState !== 'open') return;
     try {
-      const seq = sendCounter.current++;
+      const seq = sendCounter.current;
       const dir = isInitiator.current ? "initiator-to-responder" : "responder-to-initiator";
       
       const { ciphertext, iv } = await encrypt(
         input, hybridKey.current, seq, dir, 2, currentRoomId.current
       );
+      
+      sendCounter.current++;
       
       const envelope = {
         type: "chat",
@@ -481,6 +494,7 @@ export default function App() {
         ciphertext: ciphertext
       };
       
+      performance.mark('message_sent');
       dataChannel.current.send(JSON.stringify(envelope));
       
       setMessages(prev => {
