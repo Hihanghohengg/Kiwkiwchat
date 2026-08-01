@@ -4,7 +4,7 @@
 - **OS**: Windows (Playwright Chromium)
 - **Runtime**: Node.js v20 (Vite), Python 3.11 (FastAPI, Playwright)
 - **WebRTC**: Browser-native (Chrome/Chromium context)
-- **Git Commit Hash**: (TBD pending final commit)
+- **Git Commit Hash**: d53d166
 
 ## 2. Implementasi Kriptografi (Post-Quantum Key Establishment)
 Proyek ini mengimplementasikan skema pengamanan ganda (*hybrid*) untuk koneksi P2P WebRTC:
