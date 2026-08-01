@@ -2,7 +2,7 @@
 
 ## 1. System & Test Manifest
 
-- **Timestamp**: `2026-08-01T22:03:04+0700`
+- **Timestamp**: `2026-08-01T22:07:10+0700`
 - **Operating System**: Windows 10
 - **CPU**: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
 - **Total RAM**: 15.41 GB
@@ -10,7 +10,7 @@
 - **Node.js Version**: v22.17.0
 - **Browser**: Chromium 149.0.7827.55
 - **ML-KEM Version**: v2.7.0
-- **Git Commit**: `27f421968468840ebb64463e56bfad236fd0e8a5`
+- **Git Commit**: `b3d02bbed6dc03d8c883d48d6fc92f3a6164c45b`
 
 ## 2. Summary of Results
 

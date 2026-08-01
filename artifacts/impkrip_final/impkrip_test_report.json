@@ -1,6 +1,6 @@
 {
   "manifest": {
-    "timestamp": "2026-08-01T22:03:04+0700",
+    "timestamp": "2026-08-01T22:07:10+0700",
     "os": "Windows 10",
     "cpu": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
     "total_ram_gb": 15.41,
@@ -8,7 +8,7 @@
     "node_version": "v22.17.0",
     "browser": "Chromium 149.0.7827.55",
     "mlkem_version": "v2.7.0",
-    "git_commit": "27f421968468840ebb64463e56bfad236fd0e8a5"
+    "git_commit": "b3d02bbed6dc03d8c883d48d6fc92f3a6164c45b"
   },
   "summary": {
     "total": 19,
