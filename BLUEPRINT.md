@@ -12,7 +12,7 @@
 |---|---|
 | **Nama Aplikasi** | Kiw Kiw Chat |
 | **Tagline** | *"The conversation that never happened."* |
-| **Versi** | 2.4.0 |
+| **Versi** | 2.5.0 |
 | **Lisensi** | MIT License |
 | **Inspirasi** | Nullroom.io (versi ringan — tanpa Ruby, pakai React + Python) |
 
@@ -642,6 +642,7 @@ Peer A (reconnect)                    Server                    Peer B (masih ak
 | 2026-07-29 | 2.2.0 | DEPLOYMENT & TESTING — (1) Explicit CSP whitelist for WebRTC STUN/TURN servers; (2) Resolved WebRTC hang due to strict NAT & readyState race condition; (3) Smart fallback URLs (Render backend for Vercel deployment); (4) Cross-device LAN connection & CORS fixes; (5) Penambahan `test_ssdlc_trike.py` dan `test_crypto_performance.py` untuk pengujian otomatis |
 | 2026-07-30 | 2.3.0 | SECURITY AUDIT & UI OVERHAUL — (1) Lulus uji DAST (ZAP) perbaikan CORS, strict CSP, Subresource Integrity (SRI) di `index.html`; (2) Security Headers via `vercel.json` dan SPA Routing rewrites; (3) Lulus uji SAST dengan `bandit`; (4) Timer Sync Absolut (Backend kirim `expires_in` dan fallback P2P `startTs`); (5) UI peremajaan ke Light Mode (Slate/White) agar optimal di laporan akademik. |
 | 2026-07-30 | 2.4.0 | BUGFIX & RELIABILITY — (1) Penambahan mekanisme Ping/Pong di WebSocket (`App.jsx` & `main.py`) untuk mencegah Idle Timeout 60s; (2) Fix "Invalid token" untuk Peer ke-2 dengan menyematkan `ws_token` secara aman di query parameter URL (`?t=...`); (3) Menghapus penghancuran room agresif (`del rooms[room_id]`) saat koneksi WS terputus untuk mendukung fitur reconnect saat refresh sebelum batas TTL (15 menit). |
+| 2026-08-01 | 2.5.0 | SECURITY HARDENING & REFACTOR — (1) Refactor `App.jsx` menjadi komponen-komponen terpisah (`LandingPage`, `ChatRoom`, dll) dan hook (`useCountdown`); (2) Penyempurnan `finally` block di backend untuk memastikan cleanup koneksi WS saat error/timeout; (3) URL token diamankan dengan memindahkan `invite_token` ke hash/fragment bersama encryption key (`#token|key`) sehingga tidak pernah menyentuh server backend host; (4) Fitur file sharing dihapus sepenuhnya (backend & frontend) untuk mengurangi *attack surface* dan menjaga sistem minimalis; (5) Pesan log terminal direvisi agar lebih akurat; (6) Pengujian Playwright E2E ditambahkan. |
 
 ---
 

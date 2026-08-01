@@ -26,7 +26,7 @@ WORKDIR /build/frontend
 
 # Install dependencies first (layer cache — only re-runs on package.json change)
 COPY frontend/package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 
 # Copy source and build
 COPY frontend/ ./

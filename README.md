@@ -10,7 +10,7 @@ Kiw Kiw Chat adalah aplikasi percakapan real-time yang memanfaatkan **WebRTC** u
 ## 🎯 Fitur Utama
 
 - **Zero-Trace & Ephemeral:** Room akan otomatis hancur setelah 15 menit atau ketika pengguna keluar dari percakapan. Tidak ada data chat yang disimpan di server.
-- **Peer-to-Peer (WebRTC):** Chat dan transfer file dilakukan *langsung* antar browser, tanpa melalui server sebagai perantara (server hanya berfungsi untuk inisialisasi koneksi / *signaling*).
+- **Peer-to-Peer (WebRTC):** Chat dilakukan *langsung* antar browser, tanpa melalui server sebagai perantara (server hanya berfungsi untuk inisialisasi koneksi / *signaling*).
 - **Post-Quantum Ready:** Menggunakan algoritma **ML-KEM-768** (standar NIST FIPS 203) digabungkan dengan **AES-GCM-256** untuk menjamin kerahasiaan pesan dari ancaman komputasi kuantum di masa depan.
 - **No Database:** Backend murni menggunakan *in-memory state* (RAM) yang akan musnah seketika saat server di-restart.
 - **Security Audited:** Teruji ketat oleh SAST (Bandit Python) dan DAST (OWASP ZAP) compliance dengan strict CSP, SRI, dan Security Headers (`vercel.json`).

@@ -65,8 +65,7 @@ logger.propagate = False
 _raw_origins = os.environ.get("ALLOWED_ORIGINS", "https://kiwkiwchat.vercel.app,http://localhost:5173,http://localhost:4173")
 ALLOWED_ORIGINS: List[str] = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
-MAX_MSG_BYTES: int        = int(os.environ.get("MAX_MSG_BYTES",    str(5 * 1024 * 1024)))   # 5 MB (JSON signaling)
-MAX_FILE_BYTES: int       = int(os.environ.get("MAX_FILE_BYTES",   str(50 * 1024 * 1024)))  # 50 MB (file transfer metadata)
+MAX_MSG_BYTES: int        = int(os.environ.get("MAX_MSG_BYTES",    "65536"))               # 64 KB (JSON signaling)
 WS_IDLE_TIMEOUT: int      = int(os.environ.get("WS_IDLE_TIMEOUT",  "60"))                    # 60 s
 ROOM_TTL_SECONDS: int     = int(os.environ.get("ROOM_TTL_SECONDS", "900"))                   # 15 min
 TURN_URL: Optional[str]   = os.environ.get("TURN_URL")           # e.g. turn:turn.kiwkiw.chat:3478
@@ -122,8 +121,9 @@ app.add_middleware(
 
 # ─── Pydantic Models ───────────────────────────────────────────────────────────
 class RoomResponse(BaseModel):
-    room_id:     str
-    ws_token:    str          # FIX-08: token for WebSocket authentication
+    room_id:       str
+    creator_token: str
+    invite_token:  str
     turn_servers: List[Dict]
 
 
@@ -146,13 +146,14 @@ def _build_ice_servers() -> List[Dict]:
 @app.post("/rooms", response_model=RoomResponse)
 @limiter.limit("10/minute")   # FIX-05: max 10 rooms per IP per minute
 async def create_room(request: Request):
-    room_id  = str(uuid.uuid4())
-    ws_token = secrets.token_urlsafe(32)   # FIX-08: single-use WS auth token
+    room_id       = str(uuid.uuid4())
+    creator_token = secrets.token_urlsafe(32)
+    invite_token  = secrets.token_urlsafe(32)
 
     rooms[room_id] = {
         "connections": {},
         "count":       0,
-        "ws_token":    ws_token,
+        "tokens":      [creator_token, invite_token],
         "created_at":  time.time(),
     }
 
@@ -174,7 +175,8 @@ async def create_room(request: Request):
 
     return RoomResponse(
         room_id=room_id,
-        ws_token=ws_token,
+        creator_token=creator_token,
+        invite_token=invite_token,
         turn_servers=_build_ice_servers(),
     )
 
@@ -196,7 +198,7 @@ async def websocket_endpoint(
 
     room = rooms[room_id]
 
-    if token != room["ws_token"]:
+    if token not in room["tokens"]:
         await websocket.accept()
         await websocket.send_json({"type": "error", "reason": "Invalid token."})
         await websocket.close(code=1008, reason="Invalid token")
@@ -234,8 +236,6 @@ async def websocket_endpoint(
             "type":            "init",
             "initiator":       is_initiator,
             "connection_id":   connection_id,
-            "file_sharing":    True,
-            "file_size_limit": 1_073_741_824,   # 1 GB (P2P, not via server)
             "expires_in":      expires_in,
         })
 
@@ -246,97 +246,85 @@ async def websocket_endpoint(
                     await ws.send_json({"type": "peer_ready"})
 
         # ── Main receive loop ─────────────────────────────────────────────────
-        while True:
-            # FIX-06: idle timeout — close zombie connections
-            try:
-                data = await asyncio.wait_for(
-                    websocket.receive_text(),
-                    timeout=WS_IDLE_TIMEOUT,
-                )
-            except asyncio.TimeoutError:
-                await websocket.send_json({
-                    "type":   "error",
-                    "reason": "Connection closed due to inactivity.",
-                })
-                await websocket.close(code=1001, reason="Idle timeout")
-                logger.info(
-                    f"WS_IDLE_TIMEOUT room_id={room_id} connection_id={connection_id}"
-                )
-                return
+        try:
+            while True:
+                # FIX-06: idle timeout — close zombie connections
+                try:
+                    data = await asyncio.wait_for(
+                        websocket.receive_text(),
+                        timeout=WS_IDLE_TIMEOUT,
+                    )
+                except asyncio.TimeoutError:
+                    await websocket.send_json({
+                        "type":   "error",
+                        "reason": "Connection closed due to inactivity.",
+                    })
+                    await websocket.close(code=1001, reason="Idle timeout")
+                    logger.info(
+                        f"WS_IDLE_TIMEOUT room_id={room_id} connection_id={connection_id}"
+                    )
+                    return
 
-            # FIX-03: payload size guard — 5MB for JSON signaling, 50MB for file metadata
-            msg_size = len(data.encode("utf-8"))
-            # initiate_file_transfer may carry large metadata (up to 50MB)
-            # For all other message types, cap at MAX_MSG_BYTES (5MB)
-            try:
-                peeked_type = json.loads(data).get("type", "")
-            except Exception:
-                peeked_type = ""
-            effective_limit = MAX_FILE_BYTES if peeked_type == "initiate_file_transfer" else MAX_MSG_BYTES
+                # FIX-03: payload size guard — 64KB for JSON signaling
+                msg_size = len(data.encode("utf-8"))
+                
+                if msg_size > MAX_MSG_BYTES:
+                    await websocket.send_json({
+                        "type":   "error",
+                        "reason": f"Message exceeds {MAX_MSG_BYTES} byte limit.",
+                    })
+                    await websocket.close(code=1009, reason="Message too large")
+                    logger.warning(
+                        f"WS_MSG_TOO_LARGE room_id={room_id} connection_id={connection_id} "
+                        f"size={msg_size} limit={MAX_MSG_BYTES} remote={websocket.client.host}"
+                    )
+                    return
 
-            if msg_size > effective_limit:
-                await websocket.send_json({
-                    "type":   "error",
-                    "reason": f"Message exceeds {effective_limit} byte limit.",
-                })
-                await websocket.close(code=1009, reason="Message too large")
-                logger.warning(
-                    f"WS_MSG_TOO_LARGE room_id={room_id} connection_id={connection_id} "
-                    f"size={msg_size} limit={effective_limit} remote={websocket.client.host}"
-                )
-                return
+                # BUG-01 fix: handle malformed JSON gracefully
+                try:
+                    message = json.loads(data)
+                except json.JSONDecodeError:
+                    logger.warning(
+                        f"WS_MALFORMED_JSON room_id={room_id} connection_id={connection_id}"
+                    )
+                    continue    # ignore bad frames, keep connection alive
 
-            # BUG-01 fix: handle malformed JSON gracefully
-            try:
-                message = json.loads(data)
-            except json.JSONDecodeError:
-                logger.warning(
-                    f"WS_MALFORMED_JSON room_id={room_id} connection_id={connection_id}"
-                )
-                continue    # ignore bad frames, keep connection alive
+                msg_type = message.get("type")
 
-            msg_type = message.get("type")
+                if msg_type == "signal":
+                    # Relay WebRTC signaling to the other peer
+                    for cid, ws in room["connections"].items():
+                        if cid != connection_id:
+                            await ws.send_json({
+                                "type":          "signal",
+                                "data":          message.get("data"),
+                                "connection_id": connection_id,
+                            })
 
-            if msg_type == "signal":
-                # Relay WebRTC signaling to the other peer
-                for cid, ws in room["connections"].items():
-                    if cid != connection_id:
-                        await ws.send_json({
-                            "type":          "signal",
-                            "data":          message.get("data"),
-                            "connection_id": connection_id,
-                        })
+                elif msg_type == "ping":
+                    await websocket.send_json({"type": "pong"})
 
-            elif msg_type == "initiate_file_transfer":
-                # Lightweight version: always authorize (validation is P2P)
-                await websocket.send_json({"type": "file_transfer_authorized"})
+                # Silently ignore unknown message types
 
-            elif msg_type == "ping":
-                await websocket.send_json({"type": "pong"})
+        except WebSocketDisconnect:
+            logger.info(
+                f"WS_PEER_LEFT room_id={room_id} connection_id={connection_id} "
+                f"remote={websocket.client.host}"
+            )
 
-            # Silently ignore unknown message types
-
-    except WebSocketDisconnect:
+    finally:
         # ── Cleanup on disconnect ────────────────────────────────────────────
-        if connection_id in room["connections"]:
-            del room["connections"][connection_id]
-            room["count"] -= 1
+        if room_id in rooms:
+            if connection_id in rooms[room_id]["connections"]:
+                del rooms[room_id]["connections"][connection_id]
+                rooms[room_id]["count"] -= 1
 
-        # Notify remaining peer(s) — in a 2-person room this ends the session
-        for cid, ws in list(room["connections"].items()):
-            try:
-                await ws.send_json({"type": "room_ended", "reason": "peer_left"})
-            except Exception:   # BUG-02 fix
-                pass
-
-        # We no longer aggressively destroy the room on disconnect, allowing peers
-        # to reconnect (e.g., page refresh) before the TTL expires.
-        # TTL cleanup task will handle deleting the room.
-
-        logger.info(
-            f"WS_PEER_LEFT room_id={room_id} connection_id={connection_id} "
-            f"remote={websocket.client.host}"
-        )
+            # Notify remaining peer(s) — peer disconnected but room remains
+            for cid, ws in list(rooms[room_id]["connections"].items()):
+                try:
+                    await ws.send_json({"type": "peer_disconnected"})
+                except Exception:
+                    pass
 
 
 # ─── Serve compiled frontend (static files) ───────────────────────────────────
