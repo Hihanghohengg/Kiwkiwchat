@@ -1,20 +1,26 @@
 {
   "test_environment": {
-    "device": "ASUS VivoBook M1403QA (ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA)",
+    "device": "ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA (ASUS VivoBook 14X M1403QA)",
     "processor": "AMD Ryzen 5 5600H with Radeon Graphics",
-    "integrated_graphics": "AMD Radeon(TM) Graphics (Integrated)",
-    "ram": "16 GB Installed (8 GB Micron Technology DDR4-3200, 8 GB Micron Technology DDR4-3200), 15.41 GB Usable",
+    "integrated_graphics": "AMD Radeon(TM) Graphics",
+    "ram": "16 GB Installed (Dual-Channel: 8 GB Micron Technology DDR4-3200 (P0 CHANNEL A), 8 GB Micron Technology DDR4-3200 (P0 CHANNEL B)), 15.41 GB Usable",
     "total_ram_usable_gb": 15.41,
-    "storage": "INTEL SSDPEKNU512GZ (477 GB SSD, BusType: NVMe, MediaType: SSD)",
+    "storage": "INTEL SSDPEKNU512GZ (477 GB NVMe SSD, BusType: NVMe, MediaType: SSD)",
     "operating_system": "Microsoft Windows 11 Home Single Language",
-    "operating_system_version": "10.0.26200 (Build 26200, 64-bit)",
+    "operating_system_version": "10.0.26200 (Build 26200)",
     "python_version": "3.11.9",
     "node_version": "v22.17.0",
     "browser": "Chromium 149.0.7827.55",
     "mlkem_version": "^2.7.0",
-    "source_commit_tested": "0a9b3a71d93c95f580926e17acd20423f2640b65",
+    "source_commit_tested": "57006845d1e1523dde7a2bbe461550982cd7a18d",
     "git_dirty": true,
-    "timestamp": "2026-08-02T07:45:18+0700",
+    "timestamp": "2026-08-02T07:49:14+0700",
     "timezone": "WIB (+0700)"
+  },
+  "benchmark_parameters": {
+    "warmup": 20,
+    "iterations": 200,
+    "runs": 5,
+    "total_samples_per_metric": 1000
   }
 }
