@@ -1,16 +1,16 @@
 # 🚀 Kiw Kiw Chat — P2P Ephemeral Post-Quantum Messenger
 
 > *"The conversation that never happened."*  
-> Aplikasi perpesanan instan ephemeral (sementara) berbasis **Peer-to-Peer (WebRTC)** dengan keamanan **Post-Quantum Cryptography (ML-KEM-768)** dan arsitektur pengembangan aman **Microsoft SDL & Trike Threat Modeling**.
+> Aplikasi perpesanan instan ephemeral (sementara) berbasis **Peer-to-Peer (WebRTC)** dengan keamanan **PSK-assisted ML-KEM session-key establishment (ML-KEM-768)** dan arsitektur pengembangan aman **Microsoft SDL & Trike Threat Modeling**.
 
 ---
 
 ## 1. Project Overview
 
-Kiw Kiw Chat adalah platform komunikasi browser-native yang mengusung prinsip **Zero-Trace** dan **Zero-Knowledge**:
+Kiw Kiw Chat adalah platform komunikasi browser-native yang mengutamakan privasi dan sifat data yang sementara (ephemeral):
 - **Tanpa Akun & Tanpa Instalasi**: Berjalan murni di browser modern melalui WebRTC DataChannel dan Web Crypto API.
-- **Kerahasiaan Ganda (Hybrid Cryptography)**: Mengombinasikan enkripsi simetris klasik AES-GCM-256 dan enkapsulasi kunci tahan kuantum NIST FIPS 203 (ML-KEM-768).
-- **Zero-Knowledge Signaling**: Server signaling hanya bertindak sebagai *dumb relay* paket SDP/ICE tanpa pernah menerima kunci kriptografi atau konten pesan.
+- **Kerahasiaan Ganda (Hybrid Cryptography)**: Mengombinasikan enkripsi simetris klasik AES-GCM-256 dan enkapsulasi kunci tahan kuantum NIST FIPS 203 (ML-KEM-768) melalui mekanisme *PSK-assisted ML-KEM session-key establishment*.
+- **In-Memory Signaling Relay**: Server signaling bertindak sebagai *dumb relay* paket SDP/ICE tanpa pernah menerima kunci kriptografi atau konten pesan.
 - **Self-Destruct & Strict Capacity**: Batas maksimal 2 partisipan per room dan masa hidup room 15 menit melalui timer absolut.
 
 Repository ini menjadi basis implementasi untuk dua fokus riset:
@@ -26,7 +26,7 @@ Repository ini menjadi basis implementasi untuk dua fokus riset:
 │  BROWSER — Peer A (Initiator)                          │
 │  React 19 + sessionStorage (Chat/Timer Persist)        │
 │  encryption.js (AES-GCM-256 + HKDF-SHA-256)            │
-│  pq_upgrade.js (ML-KEM-768 + HMAC-SHA-256 Mutual Auth) │
+│  pq_upgrade.js (ML-KEM-768 + HMAC-SHA-256 Key Confirm) │
 │  WebSocket Client (Signaling Relay Only)               │
 └──────────────┬─────────────────────────────────────────┘
                │ WebSocket /rooms/{id}/ws (SDP/ICE Relay)
@@ -57,12 +57,12 @@ Repository ini menjadi basis implementasi untuk dua fokus riset:
 
 Track **Implementasi Kriptografi (IMPKRIP)** mengevaluasi kelayakan dan kinerja penerapan kriptografi pasca-kuantum pada browser-native context berdasarkan **Enam Parameter**:
 
-1. **Tujuan Keamanan (Security Goals)**: Confidentiality (AES-GCM-256), Integrity (AEAD Tag 128-bit), Mutual Authentication (HMAC-SHA-256), Forward Secrecy Ephemeral, dan Post-Quantum Security (ML-KEM-768).
-2. **Model Ancaman (Threat Model)**: Menangkal penyadapan pasif, manipulasi payload (MitM), kunci palsu, dan serangan replay.
-3. **Kapasitas Perangkat (Device Capacity)**: Kompatibel dengan browser modern tanpa WASM/biner eksternal pada spesifikasi hardware standar.
-4. **Performa Komputasi (Computational Performance)**: Waktu handshake lokal rata-rata 7.70 ms dan waktu enkripsi per pesan < 0.05 ms.
+1. **Tujuan Keamanan (Security Goals)**: Confidentiality (AES-GCM-256), Integrity (AEAD Tag 128-bit), Mutual Key Confirmation (HMAC-SHA-256), dan Post-Quantum Security (ML-KEM-768) melalui *PSK-assisted ML-KEM session-key establishment*.
+2. **Model Ancaman (Threat Model)**: Menangkal penyadapan pasif, manipulasi payload (MitM), kunci palsu, dan percobaan join dari pihak ketiga.
+3. **Kapasitas Perangkat (Device Capacity)**: Kompatibel dengan browser modern tanpa WASM/biner eksternal pada spesifikasi hardware laptop/PC standar.
+4. **Performa Komputasi (Computational Performance)**: Dievaluasi melalui 1.000 sampel pengukuran performa per primitif menggunakan sub-millisecond batching.
 5. **Pengalaman Pengguna (User Experience)**: Pembuatan room instan, link sharing via QR/URL, dan terminal log status kriptografi.
-6. **Risiko Salah Pakai (Misuse Risk)**: Enkripsi otomatis tanpa negosiasi cipher lemah dan auto-destruction saat sesi berakhir.
+6. **Risiko Salah Pakai (Misuse Risk)**: Enkripsi otomatis tanpa negosiasi cipher lemah dan pembersihan state/sessionStorage saat sesi berakhir.
 
 ---
 
@@ -106,8 +106,9 @@ kiwkiw/
 │   └── ssdlc/                    # Microsoft SDL, Trike threat model, traceability
 ├── artifacts/
 │   ├── impkrip_final/            # Verified IMPKRIP test reports, CSV, HTML, logs
-│   └── ssdlc_final/              # Bandit SAST, DAST, Trike, and SDL verification
+│   └── ssdlc_final/              # Bandit SAST, Header Verification, Trike, and SDL verification
 ├── README.md                     # Comprehensive project documentation
+├── .gitattributes                # Consistent line endings (LF)
 ├── .gitignore                    # Git tracking rules
 ├── .env.example                  # Environment variable blueprint
 ├── Dockerfile                    # Multi-stage production container build
@@ -150,7 +151,7 @@ npx playwright install chromium
 
 ## 7. Running the Application
 
-### Mode Development (Menjalankan Frontend & Backend Sekaligus):
+### Mode Development:
 
 ```bash
 npm start
@@ -212,7 +213,7 @@ python -m py_compile test_crypto_performance_final.py
 | **IMPKRIP** | `artifacts/impkrip_final/impkrip_test_report.html` | Visual dashboard interaktif hasil evaluasi fungsional |
 | **IMPKRIP** | `artifacts/impkrip_final/impkrip_benchmark.json` | Statistik performa 1.000 sampel per primitif |
 | **IMPKRIP** | `artifacts/impkrip_final/impkrip_benchmark.csv` | Dataset tabular benchmark dengan metadata hardware terverifikasi |
-| **IMPKRIP** | `artifacts/impkrip_final/impkrip_environment.json` | Metadata perangkat Ryzen 5 5600H, RAM 16GB, Windows 11 |
+| **IMPKRIP** | `artifacts/impkrip_final/impkrip_environment.json` | Metadata spesifikasi hardware terverifikasi |
 | **SSDLC** | `artifacts/ssdlc_final/bandit_report.json` | Hasil pemindaian SAST Bandit backend |
 | **SSDLC** | `artifacts/ssdlc_final/ssdlc_trike_verification_report.md` | Laporan verifikasi kontrol mitigasi Trike (T-01..14) |
 | **SSDLC** | `artifacts/ssdlc_final/zap_dast_verification.md` | Evaluasi CSP, SRI, dan HTTP Security Headers |
@@ -222,7 +223,7 @@ python -m py_compile test_crypto_performance_final.py
 
 ## 11. Known Limitations
 
-1. **Replay Protection Scope (`RP-01: PARTIAL`)**: Proteksi replay pada level pertukaran kunci (`ATK-03`) berstatus PASS melalui mutual nonce binding, namun evaluasi replay envelope data aplikasi secara end-to-end dicatat sebagai PARTIAL karena WebRTC SCTP layer telah memiliki proteksi internal (SSRC sequence numbers).
+1. **Replay Protection Scope (`RP-01: PARTIAL`)**: Proteksi replay pada level pertukaran kunci berstatus PASS melalui mutual nonce binding (`KC-02`), namun evaluasi replay raw envelope data aplikasi dicatat secara objektif sebagai PARTIAL karena WebRTC SCTP layer telah memiliki proteksi internal (SSRC sequence numbers).
 2. **P2P Direct NAT Traversal**: Menggunakan STUN Google publik; lingkungan *symmetric NAT to symmetric NAT* memerlukan relay TURN server tambahan untuk konektivitas 100%.
 3. **Browser Refresh Trade-off**: Refresh browser mempertahankan riwayat chat di tab yang me-refresh via `sessionStorage`, tetapi memutus koneksi WebRTC sementara hingga re-handshake berhasil.
 

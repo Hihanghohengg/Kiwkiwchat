@@ -9,13 +9,13 @@ Dokumen ini memuat daftar lengkap **Security Requirements (SR-01 s/d SR-18)**, r
 | ID | Kategori | Deskripsi Kebutuhan Keamanan | Status Implementasi |
 |---|---|---|---|
 | **SR-01** | Confidentiality | Seluruh konten percakapan dienkripsi E2E menggunakan AES-GCM-256 via WebRTC DataChannel. | ✅ Terverifikasi |
-| **SR-02** | Key Management | Kunci enkripsi klasikal didistribusikan out-of-band via URL fragment (#) dan tidak pernah melewati server. | ✅ Terverifikasi |
+| **SR-02** | Key Management | Kunci enkripsi klasikal didistribusikan out-of-band via URL fragment (#) dan tidak pernah melewati server backend. | ✅ Terverifikasi |
 | **SR-03** | Post-Quantum | Sistem mengimplementasikan algoritma tahan kuantum NIST FIPS 203 (ML-KEM-768). | ✅ Terverifikasi |
 | **SR-04** | Key Derivation | Kunci sesi akhir diderivasi dari dua entropi independen menggunakan HKDF-SHA-256 (RFC 5869). | ✅ Terverifikasi |
 | **SR-05** | Data Protection | Tidak ada penyimpanan permanen; memori session storage dibersihkan saat room dihancurkan. | ✅ Terverifikasi |
-| **SR-06** | Privacy/Logging | Server signaling beroperasi zero-knowledge tanpa mencatat konten pesan atau kunci privat. | ✅ Terverifikasi |
+| **SR-06** | Privacy/Logging | Server signaling beroperasi sebagai dumb relay in-memory tanpa mencatat konten pesan atau kunci. | ✅ Terverifikasi |
 | **SR-07** | P2P Transport | Saluran komunikasi peer-to-peer diamankan dengan enkripsi ganda (DTLS + Hybrid Application Key). | ✅ Terverifikasi |
-| **SR-08** | Mutual Auth | Pertukaran kunci post-quantum diverifikasi secara mutual menggunakan tanda tangan HMAC-SHA-256 dan nonces. | ✅ Terverifikasi |
+| **SR-08** | Mutual Auth | Pertukaran kunci post-quantum diverifikasi secara mutual menggunakan tag HMAC-SHA-256 dan nonces. | ✅ Terverifikasi |
 | **SR-09** | Access Control | Kapasitas room dibatasi secara ketat hanya untuk 2 partisipan; koneksi ke-3 ditolak seketika (Close 1008). | ✅ Terverifikasi |
 | **SR-10** | Ephemeral State| Masa hidup room dibatasi maksimum 15 menit melalui timer absolut tersinkronisasi di backend dan UI. | ✅ Terverifikasi |
 | **SR-11** | Room Lifecycle | Pemutusan koneksi permanen oleh salah satu peer memicu penghapusan room dan event `room_ended`. | ✅ Terverifikasi |
@@ -24,7 +24,7 @@ Dokumen ini memuat daftar lengkap **Security Requirements (SR-01 s/d SR-18)**, r
 | **SR-14** | Access Control | Endpoint WebSocket menolak koneksi ke room ID yang tidak pernah dibuat melalui `POST /rooms`. | ✅ Terverifikasi |
 | **SR-15** | Availability | Endpoint pembuatan room dilindungi rate limiting 10 request/IP/menit untuk mencegah DoS. | ✅ Terverifikasi |
 | **SR-16** | DoS Prevention | Ukuran payload WebSocket dibatasi maksimal 64 KB; koneksi idle > 60 detik ditutup otomatis. | ✅ Terverifikasi |
-| **SR-17** | SAST Compliance | Kode sumber backend lolos audit Static Application Security Testing menggunakan Bandit (0 Vuln). | ✅ Terverifikasi |
+| **SR-17** | SAST Compliance | Kode sumber backend lolos audit SAST Bandit (0 High, 1 Med B104 accepted deployment finding, 3 Low B110 residual debt). | ✅ Terverifikasi |
 | **SR-18** | DAST Compliance | Aplikasi menerapkan Content Security Policy ketat, Subresource Integrity, dan header keamanan HTTP. | ✅ Terverifikasi |
 
 ---
@@ -59,7 +59,7 @@ Dokumen ini memuat daftar lengkap **Security Requirements (SR-01 s/d SR-18)**, r
    - Pengguna dapat langsung menekan tombol `[ HAPUS ROOM ]` untuk membersihkan sesi di server dan browser seketika.
    - Sesi otomatis hangus dalam 15 menit jika pengguna lupa menghancurkan room.
 2. **Mitigasi Kerentanan Server Signaling**:
-   - Karena server beroperasi *zero-knowledge*, penyerang yang menguasai server tidak dapat mendekripsi percakapan P2P.
-   - Prosedur restart instan container server untuk menghapus seluruh in-memory state.
+   - Karena server tidak menyimpan kunci atau pesan, penyerang yang menguasai server tidak dapat mendekripsi percakapan P2P.
+   - Prosedur restart container server untuk membersihkan in-memory state.
 3. **Pembaruan Kerentanan Dependensi**:
-   - Audit berkala menggunakan dependabot/npm audit dan pembaruan versi library post-quantum (`mlkem`).
+   - Audit berkala menggunakan npm audit dan pembaruan versi library post-quantum (`mlkem`).

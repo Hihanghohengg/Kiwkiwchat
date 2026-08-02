@@ -1,6 +1,6 @@
-# Laporan Verifikasi DAST & Web Security — Kiw Kiw Chat
+# Laporan Verifikasi Konfigurasi Keamanan & HTTP Headers — Kiw Kiw Chat
 
-Dokumen ini mendokumentasikan bukti kepatuhan keamanan dinamis (*Dynamic Application Security Testing*) pada Kiw Kiw Chat.
+Dokumen ini mendokumentasikan bukti kepatuhan konfigurasi keamanan web dan header HTTP dinamis pada Kiw Kiw Chat.
 
 ---
 

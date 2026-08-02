@@ -209,14 +209,6 @@ def get_system_metadata(args, browser_version=None):
             "timestamp": now_tz,
             "timezone": "WIB (+0700)"
         },
-        "initial_user_provided_specification": {
-            "device": "ASUS Vivobook 14X M1403QA",
-            "processor": "AMD Ryzen 7",
-            "integrated_graphics": "AMD Radeon Vega 7",
-            "ram": "8 GB Dual-Channel",
-            "storage": "512 GB M.2 NVMe SSD",
-            "audit_note": "Initial target placeholder specification. Actual verified hardware environment is recorded in test_environment above."
-        },
         "benchmark_parameters": {
             "warmup": args.warmup,
             "iterations": args.iterations,

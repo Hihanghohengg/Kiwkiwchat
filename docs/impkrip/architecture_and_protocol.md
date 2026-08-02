@@ -1,6 +1,6 @@
 # Arsitektur & Alur Protokol Kriptografi IMPKRIP
 
-Dokumen ini mendeskripsikan implementasi arsitektur dan alur protokol kriptografi pasca-kuantum (*Post-Quantum Cryptography*) pada aplikasi Kiw Kiw Chat.
+Dokumen ini mendeskripsikan implementasi arsitektur dan alur protokol kriptografi pasca-kuantum (*Post-Quantum Cryptography*) pada aplikasi Kiw Kiw Chat menggunakan skema **PSK-assisted ML-KEM session-key establishment**.
 
 ---
 
@@ -20,7 +20,7 @@ graph TD
         URL_Hash["URL Fragment (#token|classical_key)"]
     end
 
-    subgraph Signaling["FastAPI WebSocket Relay (Zero-Knowledge)"]
+    subgraph Signaling["FastAPI WebSocket Dumb Relay"]
         WS_Relay["WebSocket Signaling Server (/rooms/{id}/ws)"]
     end
 
@@ -47,12 +47,12 @@ graph TD
 
 ## 2. Alur Protokol Kriptografi 3-Pesan
 
-Pertukaran kunci menggunakan kombinasi **ML-KEM-768 (NIST FIPS 203)**, **HKDF-SHA-256**, **HMAC-SHA-256**, dan **AES-GCM-256**:
+Pertukaran kunci menggunakan skema **PSK-assisted ML-KEM session-key establishment** yang mengombinasikan **ML-KEM-768 (NIST FIPS 203)**, **HKDF-SHA-256**, **HMAC-SHA-256 Mutual Key Confirmation**, dan **AES-GCM-256**:
 
 ```
 PEER A (INITIATOR)                                         PEER B (RESPONDER)
        │                                                          │
-       │  1. Bangkitkan Classical Key (256-bit AES)               │
+       │  1. Bangkitkan Pre-Shared Key Klasikal (256-bit AES)     │
        │     Disematkan di URL Fragment (#token|classicalKey)    │
        │                                                          │
        │  2. Bangkitkan Pasangan Kunci Ephemeral ML-KEM-768       │
@@ -75,7 +75,7 @@ PEER A (INITIATOR)                                         PEER B (RESPONDER)
        │                                                          │
        │  6. Dekapsulasi Secret ML-KEM-768:                       │
        │     ss = MlKem768.decap(c, dk)                           │
-       │     Hapus dk dari memori (`delete peer._pqSecretKey`)    │
+       │     Hapus referensi dk (`delete peer._pqSecretKey`)      │
        │  7. Derivasi Kunci Sesi:                                 │
        │     (encKey, confKey) = HKDF(ss, classicalKey)           │
        │  8. Verifikasi respHmac menggunakan confKey              │
@@ -88,9 +88,9 @@ PEER A (INITIATOR)                                         PEER B (RESPONDER)
        ▼                                                          ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
 │                   HYBRID SESSION ENCRYPTION (AES-GCM-256)                │
-│  - Enkripsi Pesan & File P2P menggunakan `encKey`                        │
+│  - Enkripsi Pesan P2P menggunakan `encKey`                               │
 │  - Nonce acak 96-bit (12 bytes) fresh per pesan                          │
-│  - AAD Binding (Session ID + Sequence Counter)                           │
+│  - AAD Binding (Session ID + Direction + Sequence Counter)               │
 │  - Auth Tag 128-bit untuk verifikasi integritas data                     │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
@@ -102,14 +102,14 @@ PEER A (INITIATOR)                                         PEER B (RESPONDER)
 1. **ML-KEM-768 (CRYSTALS-Kyber, NIST FIPS 203)**:
    - Tingkat Keamanan: NIST Security Level 3 (setara AES-192 / tahan serangan kuantum Shor).
    - Ukuran Public Key: 1.184 byte.
-   - Ukuran Secret Key: 2.400 byte (ephemeral, dihapus setelah dekapsulasi).
+   - Ukuran Secret Key: 2.400 byte (ephemeral, referensi dihapus setelah dekapsulasi).
    - Ukuran Ciphertext: 1.088 byte.
    - Ukuran Shared Secret: 32 byte (256 bit).
 2. **HKDF-SHA-256 (RFC 5869)**:
    - Menggabungkan entropi kuantum (`ss`) dan entropi klasik (`classicalKey`).
    - Melakukan *key separation* untuk menghasilkan `encryptionKey` dan `confirmationKey` 256-bit independen.
 3. **HMAC-SHA-256 (RFC 2104)**:
-   - Digunakan untuk mutual key confirmation vector.
+   - Digunakan untuk *Mutual Key Confirmation*.
    - Mengikat label arah, `initiatorNonce`, dan `responderNonce` untuk menjamin kesegaran (*freshness*) dan mencegah manipulasi MitM.
 4. **AES-GCM-256 (NIST SP 800-38D)**:
    - Menyediakan Authenticated Encryption with Associated Data (AEAD).

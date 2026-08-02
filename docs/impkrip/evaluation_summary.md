@@ -1,6 +1,6 @@
 # Ringkasan Evaluasi 6 Parameter IMPKRIP
 
-Dokumen ini memetakan implementasi sistem Kiw Kiw Chat terhadap **Enam Parameter Evaluasi Kriptografi Terapan**.
+Dokumen ini memetakan implementasi sistem Kiw Kiw Chat terhadap **Enam Parameter Evaluasi Kriptografi Terapan** menggunakan data hasil pengujian final.
 
 ---
 
@@ -8,19 +8,26 @@ Dokumen ini memetakan implementasi sistem Kiw Kiw Chat terhadap **Enam Parameter
 
 | Parameter Evaluasi | Implementasi & Kontrol Teknis | Hasil Uji / Bukti Utama | Status |
 |---|---|---|---|
-| **1. Tujuan Keamanan (Security Goals)** | Mengombinasikan ML-KEM-768 (PQC), AES-GCM-256 (AEAD), HKDF-SHA-256 (Key Fusion & Separation), dan HMAC-SHA-256 (Mutual Key Confirmation). | Lulus uji unit kriptografi (PQ-01..02, KD-01..02, KC-01..02, AE-01..04) dan integritas pesan. | **TERPENUHI** |
-| **2. Model Ancaman (Threat Model)** | Menangkal penyadapan pasif, manipulasi payload (MitM), kunci tidak valid, replay attack, dan percobaan join dari pihak ketiga (*third-peer lockout*). | Lulus uji negatif (ATK-01, ATK-02, ATK-03, ATK-04, E2E-03). Evaluasi replay envelope tercatat pada RP-01. | **TERPENUHI** |
-| **3. Kapasitas Perangkat (Device Capacity)** | Berjalan murni *browser-native* tanpa dependensi biner/WASM berat. Ringan untuk perangkat konsumen standar. | Diuji pada Ryzen 5 5600H, RAM 16 GB, Chromium 133; utilisasi CPU < 5%, alokasi RAM per tab < 60 MB. | **TERPENUHI** |
-| **4. Performa Komputasi (Computational Performance)** | Total pertukaran kunci end-to-end lokal rata-rata hanya 7.70 ms (median) dengan throughput > 100 handshake/detik. Enkripsi/dekripsi per pesan < 0.05 ms. | Hasil benchmark 1.000 sampel: ML-KEM Encap 2.60 ms, Decap 3.10 ms, AES-GCM Encrypt 0.044 ms, Cold start 19.30 ms. | **TERPENUHI** |
-| **5. Pengalaman Pengguna (User Experience)** | Zero-friction: Satu klik buat room, link sharing instan dengan click-to-reveal & QR code, sinkronisasi countdown timer, dan terminal visualisasi status kripto. | Lulus uji E2E dua arah (E2E-01, E2E-02) dan pengujian UX interaktif. | **TERPENUHI** |
-| **6. Risiko Salah Pakai (Misuse Risk)** | Enkripsi otomatis tanpa opsi algoritma lemah, kunci out-of-band via URL fragment, timer TTL 15 menit, dan auto-cleanup memori/sessionStorage saat room dihancurkan. | Lulus uji pembersihan memori (E2E-04). Risiko pembagian link dikurangi dengan blur URL default dan expiration room. | **TERPENUHI** |
+| **1. Tujuan Keamanan (Security Goals)** | Mengombinasikan ML-KEM-768 (PQC), AES-GCM-256 (AEAD), HKDF-SHA-256 (Key Separation), dan HMAC-SHA-256 (Mutual Key Confirmation) melalui skema *PSK-assisted ML-KEM session-key establishment*. | Lulus seluruh uji unit kriptografi (PQ-01..04, KD-01..04, KC-01..02, AE-01..04). | **TERPENUHI** |
+| **2. Model Ancaman (Threat Model)** | Menangkal penyadapan pasif, manipulasi payload (MitM), kunci tidak valid, replay attack, dan percobaan join dari pihak ketiga (*third-peer lockout*). | Lulus uji penolakan tampering dan unauthorized join (KC-02, AE-02, AE-03, AE-04, E2E-03). Evaluasi replay envelope tercatat pada RP-01 (PARTIAL). | **TERPENUHI** |
+| **3. Kapasitas Perangkat (Device Capacity)** | Berjalan murni *browser-native* tanpa dependensi biner/WASM eksternal. | Diuji pada lingkungan komputasi fisik: AMD Ryzen 5 5600H, RAM 16 GB, Chromium (Playwright engine). | **TERPENUHI** |
+| **4. Performa Komputasi (Computational Performance)** | Evaluasi waktu komputasi per primitif dan overhead protokol melalui 1.000 sampel per primitif (5 run x 200 iterasi) dengan sub-millisecond batching. | Data lengkap tercatat pada `impkrip_benchmark.json` dan `impkrip_benchmark.csv`. | **TERPENUHI** |
+| **5. Pengalaman Pengguna (User Experience)** | Desain zero-friction: Satu klik buat room, link sharing instan via QR code/URL fragment, sinkronisasi countdown timer, dan terminal visualisasi status kripto. | Lulus uji E2E dua arah (E2E-01, E2E-02) secara konsisten pada seluruh independent runs. | **TERPENUHI** |
+| **6. Risiko Salah Pakai (Misuse Risk)** | Enkripsi otomatis tanpa opsi algoritma lemah, kunci out-of-band via URL fragment (#), timer TTL 15 menit, dan pembersihan state/sessionStorage saat room dihancurkan. | Lulus uji pembersihan state (E2E-04). Risiko kebocoran tautan dimitigasi dengan pembatasan kapasitas 2 partisipan dan masa hidup room 15 menit. | **TERPENUHI** |
 
 ---
 
 ## 2. Ringkasan Status Pengujian Fungsional
 
+- **Canonical Test Suite**:
+  - Unit ML-KEM: `PQ-01`, `PQ-02`, `PQ-03`, `PQ-04`
+  - Unit Key Derivation: `KD-01`, `KD-02`, `KD-03`, `KD-04`
+  - Unit Key Confirmation: `KC-01`, `KC-02`
+  - Unit Authenticated Encryption: `AE-01`, `AE-02`, `AE-03`, `AE-04`
+  - End-to-End System: `E2E-01`, `E2E-02`, `E2E-03`, `E2E-04`
+  - Replay Protection Evaluation: `RP-01`
 - **Total Kasus Uji**: 19 Kasus Uji
-- **PASS**: 18 Kasus Uji (94.74%)
-- **PARTIAL**: 1 Kasus Uji (`RP-01` Replay Protection Evaluation — dicatat secara jujur karena evaluasi envelope aplikasi)
-- **FAIL**: 0 Kasus Uji (0.00%)
-- **E2E Stability**: 3/3 Independent E2E Runs Passed (100% Success Rate)
+- **PASS**: 18 Kasus Uji
+- **PARTIAL**: 1 Kasus Uji (`RP-01` dicatat secara objektif sebagai PARTIAL karena evaluasi envelope aplikasi)
+- **FAIL**: 0 Kasus Uji
+- **E2E Multi-Run Stability**: 3/3 Independent E2E Runs SUCCESS (100%)
