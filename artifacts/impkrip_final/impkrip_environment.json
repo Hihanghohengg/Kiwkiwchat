@@ -1,34 +1,20 @@
 {
   "test_environment": {
-    "device": "ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA (ASUS VivoBook 14X M1403QA)",
+    "device": "ASUS VivoBook M1403QA (ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA)",
     "processor": "AMD Ryzen 5 5600H with Radeon Graphics",
-    "integrated_graphics": "AMD Radeon(TM) Graphics",
-    "ram": "16 GB Installed (Dual-Channel: 8 GB Micron Technology DDR4-3200 (P0 CHANNEL A), 8 GB Micron Technology DDR4-3200 (P0 CHANNEL B)), 15.41 GB Usable",
+    "integrated_graphics": "AMD Radeon(TM) Graphics (Integrated)",
+    "ram": "16 GB Installed (8 GB Micron Technology DDR4-3200, 8 GB Micron Technology DDR4-3200), 15.41 GB Usable",
     "total_ram_usable_gb": 15.41,
-    "storage": "INTEL SSDPEKNU512GZ (477 GB NVMe SSD, BusType: NVMe, MediaType: SSD)",
+    "storage": "INTEL SSDPEKNU512GZ (477 GB SSD, BusType: NVMe, MediaType: SSD)",
     "operating_system": "Microsoft Windows 11 Home Single Language",
-    "operating_system_version": "10.0.26200 (Build 26200)",
+    "operating_system_version": "10.0.26200 (Build 26200, 64-bit)",
     "python_version": "3.11.9",
     "node_version": "v22.17.0",
     "browser": "Chromium 149.0.7827.55",
     "mlkem_version": "^2.7.0",
-    "source_commit_tested": "c07cb8cba9435970af87b923c6929285154ed630",
-    "git_dirty": true,
-    "timestamp": "2026-08-02T07:36:26+0700",
+    "source_commit_tested": "60ad98b0865824ef5fbf1253393dd18dc50d03b4",
+    "git_dirty": false,
+    "timestamp": "2026-08-02T07:44:13+0700",
     "timezone": "WIB (+0700)"
-  },
-  "initial_user_provided_specification": {
-    "device": "ASUS Vivobook 14X M1403QA",
-    "processor": "AMD Ryzen 7",
-    "integrated_graphics": "AMD Radeon Vega 7",
-    "ram": "8 GB Dual-Channel",
-    "storage": "512 GB M.2 NVMe SSD",
-    "audit_note": "Initial target placeholder specification. Actual verified hardware environment is recorded in test_environment above."
-  },
-  "benchmark_parameters": {
-    "warmup": 20,
-    "iterations": 200,
-    "runs": 5,
-    "total_samples_per_metric": 1000
   }
 }
