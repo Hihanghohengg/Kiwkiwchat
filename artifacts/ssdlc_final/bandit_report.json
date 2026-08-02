@@ -1,40 +1,40 @@
 {
   "errors": [],
-  "generated_at": "2026-08-02T00:29:43Z",
+  "generated_at": "2026-08-02T00:31:25Z",
   "metrics": {
-    ".\\backend/main.py": {
-      "CONFIDENCE.HIGH": 2,
+    "_totals": {
+      "CONFIDENCE.HIGH": 3,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 1,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
-      "SEVERITY.LOW": 2,
+      "SEVERITY.LOW": 3,
       "SEVERITY.MEDIUM": 1,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 262,
+      "loc": 269,
       "nosec": 0,
       "skipped_tests": 0
     },
-    "_totals": {
-      "CONFIDENCE.HIGH": 2,
+    "backend/main.py": {
+      "CONFIDENCE.HIGH": 3,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 1,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
-      "SEVERITY.LOW": 2,
+      "SEVERITY.LOW": 3,
       "SEVERITY.MEDIUM": 1,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 262,
+      "loc": 269,
       "nosec": 0,
       "skipped_tests": 0
     }
   },
   "results": [
     {
-      "code": "167                     await ws.close(code=1008, reason=\"Room TTL expired\")\n168                 except Exception:   # BUG-02 fix: no bare except\n169                     pass\n170             del rooms[r_id]\n",
+      "code": "168                     await ws.close(code=1008, reason=\"Room TTL expired\")\n169                 except Exception:   # BUG-02 fix: no bare except\n170                     pass\n171             del rooms[r_id]\n",
       "col_offset": 16,
       "end_col_offset": 24,
-      "filename": ".\\backend/main.py",
+      "filename": "backend/main.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 703,
@@ -42,20 +42,20 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Try, Except, Pass detected.",
-      "line_number": 168,
+      "line_number": 169,
       "line_range": [
-        168,
-        169
+        169,
+        170
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b110_try_except_pass.html",
       "test_id": "B110",
       "test_name": "try_except_pass"
     },
     {
-      "code": "325                 await ws.send_json({\"type\": \"room_ended\", \"reason\": \"peer_left\"})\n326             except Exception:   # BUG-02 fix\n327                 pass\n328 \n",
-      "col_offset": 12,
-      "end_col_offset": 20,
-      "filename": ".\\backend/main.py",
+      "code": "312                             await ws.close(code=1008, reason=\"Room destroyed by peer\")\n313                         except Exception:\n314                             pass\n315                     if room_id in rooms:\n",
+      "col_offset": 24,
+      "end_col_offset": 32,
+      "filename": "backend/main.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 703,
@@ -63,20 +63,41 @@
       },
       "issue_severity": "LOW",
       "issue_text": "Try, Except, Pass detected.",
-      "line_number": 326,
+      "line_number": 313,
       "line_range": [
-        326,
-        327
+        313,
+        314
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b110_try_except_pass.html",
       "test_id": "B110",
       "test_name": "try_except_pass"
     },
     {
-      "code": "356         app,\n357         host=\"0.0.0.0\",\n358         port=8000,\n",
+      "code": "337                     await ws.send_json({\"type\": \"peer_disconnected\"})\n338                 except Exception:\n339                     pass\n340 \n",
+      "col_offset": 16,
+      "end_col_offset": 24,
+      "filename": "backend/main.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 703,
+        "link": "https://cwe.mitre.org/data/definitions/703.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Try, Except, Pass detected.",
+      "line_number": 338,
+      "line_range": [
+        338,
+        339
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b110_try_except_pass.html",
+      "test_id": "B110",
+      "test_name": "try_except_pass"
+    },
+    {
+      "code": "359         app,\n360         host=\"0.0.0.0\",\n361         port=8000,\n",
       "col_offset": 13,
       "end_col_offset": 22,
-      "filename": ".\\backend/main.py",
+      "filename": "backend/main.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -84,9 +105,9 @@
       },
       "issue_severity": "MEDIUM",
       "issue_text": "Possible binding to all interfaces.",
-      "line_number": 357,
+      "line_number": 360,
       "line_range": [
-        357
+        360
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b104_hardcoded_bind_all_interfaces.html",
       "test_id": "B104",

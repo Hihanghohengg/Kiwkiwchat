@@ -12,9 +12,9 @@
     "node_version": "v22.17.0",
     "browser": "Chromium 149.0.7827.55",
     "mlkem_version": "^2.7.0",
-    "source_commit_tested": "e178c6113824159df3bdd585cb08fb3132ca8581",
+    "source_commit_tested": "c07cb8cba9435970af87b923c6929285154ed630",
     "git_dirty": true,
-    "timestamp": "2026-08-01T22:21:21+0700",
+    "timestamp": "2026-08-02T07:36:26+0700",
     "timezone": "WIB (+0700)"
   },
   "initial_user_provided_specification": {
@@ -24,5 +24,11 @@
     "ram": "8 GB Dual-Channel",
     "storage": "512 GB M.2 NVMe SSD",
     "audit_note": "Initial target placeholder specification. Actual verified hardware environment is recorded in test_environment above."
+  },
+  "benchmark_parameters": {
+    "warmup": 20,
+    "iterations": 200,
+    "runs": 5,
+    "total_samples_per_metric": 1000
   }
 }

@@ -4,18 +4,18 @@
 
 | Property | Verified Value |
 |---|---|
-| **Device Model** | `ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA (ASUS VivoBook 14X M1403QA)` |
+| **Device Model** | `ASUS VivoBook M1403QA (ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA)` |
 | **Processor (CPU)** | `AMD Ryzen 5 5600H with Radeon Graphics` |
-| **RAM Configuration** | `16 GB Installed (Dual-Channel: 8 GB Micron Technology DDR4-3200 (P0 CHANNEL A), 8 GB Micron Technology DDR4-3200 (P0 CHANNEL B)), 15.41 GB Usable` |
-| **Integrated Graphics** | `AMD Radeon(TM) Graphics` |
-| **Storage (BusType/Media)** | `INTEL SSDPEKNU512GZ (477 GB NVMe SSD, BusType: NVMe, MediaType: SSD)` |
-| **Operating System** | `Microsoft Windows 11 Home Single Language` (`10.0.26200 (Build 26200)`) |
+| **RAM Configuration** | `16 GB Installed (8 GB Micron Technology DDR4-3200, 8 GB Micron Technology DDR4-3200), 15.41 GB Usable` |
+| **Integrated Graphics** | `AMD Radeon(TM) Graphics (Integrated)` |
+| **Storage (BusType/Media)** | `INTEL SSDPEKNU512GZ (477 GB SSD, BusType: NVMe, MediaType: SSD)` |
+| **Operating System** | `Microsoft Windows 11 Home Single Language` (`10.0.26200 (Build 26200, 64-bit)`) |
 | **Python Version** | `3.11.9` |
 | **Node.js Version** | `v22.17.0` |
 | **Browser Engine** | `Chromium 149.0.7827.55` |
 | **ML-KEM Package** | `^2.7.0` |
-| **Source Commit Tested** | `e178c6113824159df3bdd585cb08fb3132ca8581` (Git Dirty: `True`) |
-| **Timestamp & Timezone** | `2026-08-01T22:21:21+0700` (WIB (+0700)) |
+| **Source Commit Tested** | `c07cb8cba9435970af87b923c6929285154ed630` (Git Dirty: `True`) |
+| **Timestamp & Timezone** | `2026-08-02T07:32:40+0700` (WIB (+0700)) |
 
 ## 2. Summary of Results
 
