@@ -1,0 +1,14 @@
+Use_Case_ID,Use_Case_Name,Abuse_Case_ID,Abuse_Case_Name,Security_Requirement_ID,Security_Requirement_Title
+UC-01,Inisialisasi Room Baru,AC-06,Room Creation Flooding,SR-15,Rate Limiting API
+UC-02,Berbagi Tautan Undangan,AC-01,Signaling Key Interception,SR-02,Zero-Knowledge Relay via URL Fragment
+UC-03,Peer B Bergabung ke Room,AC-02,Unauthorized Room Entry,SR-08; SR-14,Room Existence & Token Auth
+UC-04,Pertukaran Sinyal WebRTC,AC-07,WebSocket Frame Bombing,SR-16,Signaling Frame & Timeout Guard
+UC-04,Pertukaran Sinyal WebRTC,AC-08,CORS Spoofing,SR-13,CORS Origin Whitelisting
+UC-05,Handshake Pasca-Kuantum,AC-03,MitM & Quantum Sniffing,SR-03; SR-04; SR-08,PQC Session-Key Establishment & Mutual Key Confirmation
+UC-06,Obrolan Terenkripsi P2P,AC-04,DataChannel Sniffing & Replay,SR-01; SR-07,AES-GCM App Layer Encryption & AAD Binding
+UC-07,Penghitungan Waktu Room,AC-10,Zombie Room Hijacking,SR-10,Strict 15-Minute Room TTL
+UC-08,Penyegaran Tab / Navigasi,AC-09,Client Storage Forensics,SR-05; SR-12,Ephemeral Client Storage & Auto Purge
+UC-09,Pemusnahan Room Manual,AC-02,Post-Exit Room Reuse,SR-11,Instant Room Purging
+UC-10,Penolakan Peer ke-3,AC-02,Third-Party Eavesdropping,SR-09,Strict 2-Peer Max Capacity
+N/A,Integritas Kode Backend,AC-06,Static Code Flaws,SR-17,SAST Security Quality Gate
+N/A,Ketahanan Frontend Web,AC-08,UI Script Injection,SR-18,Security Headers & CSP

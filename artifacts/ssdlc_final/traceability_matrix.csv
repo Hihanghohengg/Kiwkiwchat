@@ -1,0 +1,18 @@
+Use_Case_ID,Abuse_Case_ID,Security_Requirement_ID,Trike_Threat_ID,Implementation_Control,Test_Case_ID_Or_Method,Verification_Status
+UC-01,AC-06,SR-15,T-13,backend/main.py:create_room,Code Review (backend/main.py),CODE REVIEW ONLY
+UC-02,AC-01,SR-02,T-03; T-07,frontend/src/App.jsx:generateRoomKey,E2E-01; E2E-04,PASS
+UC-03,AC-02,SR-08; SR-14,T-04; T-12,backend/main.py:websocket_endpoint,E2E-03; Code Review,PASS / CODE REVIEW
+UC-04,AC-07,SR-16,T-14,backend/main.py:MAX_MSG_BYTES,Code Review (backend/main.py),CODE REVIEW ONLY
+UC-04,AC-08,SR-13,T-11,backend/main.py:ALLOWED_ORIGINS,Code Review (backend/main.py),CODE REVIEW ONLY
+UC-05,AC-03,SR-03,T-02,frontend/src/crypto/mlkem.js,PQ-01; PQ-02; PQ-03; PQ-04,PASS
+UC-05,AC-03,SR-04,T-02,frontend/src/crypto/encryption.js,KD-01; KD-02; KD-03; KD-04,PASS
+UC-05,AC-03,SR-08,T-05,frontend/src/crypto/pq_upgrade.js,KC-01; KC-02,PASS
+UC-05,AC-03,SR-06,T-06,frontend/src/crypto/pq_upgrade.js,Code Review & Heap Profile,PARTIAL
+UC-06,AC-04,SR-01; SR-07,T-01,frontend/src/crypto/encryption.js,AE-01; AE-02; AE-03; E2E-01,PASS
+UC-06,AC-04,SR-07,T-08,frontend/src/crypto/encryption.js,AE-04; RP-01,PARTIAL
+UC-07,AC-10,SR-10,T-07; T-09,backend/main.py:destroy_room_later,E2E-04,PASS
+UC-08,AC-09,SR-05; SR-12,T-10,frontend/src/utils/storage.js,E2E-04,PASS
+UC-09,AC-02,SR-11,T-09,backend/main.py:websocket_endpoint,E2E-04,PASS
+UC-10,AC-02,SR-09,T-04,backend/main.py:count >= 2,E2E-03,PASS
+N/A,AC-06,SR-17,T-15,backend/.bandit,Automated Bandit SAST Scan,PASS
+N/A,AC-08,SR-18,T-16,frontend/index.html; backend/main.py,Configuration Review,PASS (WITH CAVEAT)

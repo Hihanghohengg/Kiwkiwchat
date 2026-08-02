@@ -1,6 +1,6 @@
 {
   "errors": [],
-  "generated_at": "2026-08-02T00:43:51Z",
+  "generated_at": "2026-08-02T11:39:40Z",
   "metrics": {
     "_totals": {
       "CONFIDENCE.HIGH": 3,
@@ -15,7 +15,7 @@
       "nosec": 0,
       "skipped_tests": 0
     },
-    "backend/main.py": {
+    "backend\\main.py": {
       "CONFIDENCE.HIGH": 3,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 1,
@@ -34,7 +34,7 @@
       "code": "168                     await ws.close(code=1008, reason=\"Room TTL expired\")\n169                 except Exception:   # BUG-02 fix: no bare except\n170                     pass\n171             del rooms[r_id]\n",
       "col_offset": 16,
       "end_col_offset": 24,
-      "filename": "backend/main.py",
+      "filename": "backend\\main.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 703,
@@ -55,7 +55,7 @@
       "code": "312                             await ws.close(code=1008, reason=\"Room destroyed by peer\")\n313                         except Exception:\n314                             pass\n315                     if room_id in rooms:\n",
       "col_offset": 24,
       "end_col_offset": 32,
-      "filename": "backend/main.py",
+      "filename": "backend\\main.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 703,
@@ -76,7 +76,7 @@
       "code": "337                     await ws.send_json({\"type\": \"peer_disconnected\"})\n338                 except Exception:\n339                     pass\n340 \n",
       "col_offset": 16,
       "end_col_offset": 24,
-      "filename": "backend/main.py",
+      "filename": "backend\\main.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 703,
@@ -97,7 +97,7 @@
       "code": "359         app,\n360         host=\"0.0.0.0\",\n361         port=8000,\n",
       "col_offset": 13,
       "end_col_offset": 22,
-      "filename": "backend/main.py",
+      "filename": "backend\\main.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,

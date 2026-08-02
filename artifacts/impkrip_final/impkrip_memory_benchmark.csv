@@ -1,0 +1,16 @@
+# Device: ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA (ASUS VivoBook 14X M1403QA)
+# Processor: AMD Ryzen 5 5600H with Radeon Graphics
+# RAM: 16 GB Installed (Dual-Channel: 8 GB Micron Technology DDR4-3200 (P0 CHANNEL A), 8 GB Micron Technology DDR4-3200 (P0 CHANNEL B)), 15.41 GB Usable
+# Operating System: Microsoft Windows 11 Home Single Language (10.0.26200 (Build 26200))
+# Runtime: Python 3.11.9, Node v22.17.0, Browser Chromium 149.0.7827.55, ML-KEM ^2.7.0
+# Measurement: Chromium CDP Runtime.getHeapUsage (5 runs, 20 warmup, 200 iterations, batch checkpoint 20)
+Metric,Samples,Mean_Bytes,Median_Bytes,Min_Bytes,Max_Bytes,StdDev_Bytes,Mean_MiB,Median_MiB,Min_MiB,Max_MiB,StdDev_MiB
+baseline_used_heap,5,5332033.60,5332008.00,5331972.00,5332192.00,90.09,5.0850,5.0850,5.0850,5.0852,0.0001
+post_keygen_used_heap,5,5712376.80,5580856.00,5520828.00,6236944.00,302365.24,5.4477,5.3223,5.2651,5.9480,0.2884
+delta_baseline_to_keygen,5,380343.20,248664.00,188816.00,904960.00,302395.99,0.3627,0.2371,0.1801,0.8630,0.2884
+post_pq_upgrade_used_heap,5,5870739.20,5878532.00,5661764.00,6041336.00,136629.26,5.5988,5.6062,5.3995,5.7615,0.1303
+delta_baseline_to_pq_upgrade,5,538705.60,546520.00,329780.00,709364.00,136617.34,0.5137,0.5212,0.3145,0.6765,0.1303
+max_observed_used_heap,5,17452304.00,18952656.00,5859880.00,32715616.00,11667783.19,16.6438,18.0747,5.5884,31.2000,11.1273
+delta_baseline_to_max_observed,5,12120270.40,13620672.00,527872.00,27383644.00,11667771.48,11.5588,12.9897,0.5034,26.1151,11.1273
+retained_used_heap,5,13833213.60,6300024.00,5660484.00,32715616.00,11956624.28,13.1924,6.0082,5.3983,31.2000,11.4027
+delta_baseline_to_retained,5,8501180.00,967832.00,328476.00,27383644.00,11956670.67,8.1074,0.9230,0.3133,26.1151,11.4028

@@ -211,13 +211,17 @@ python -m py_compile test_crypto_performance_final.py
 |---|---|---|
 | **IMPKRIP** | `artifacts/impkrip_final/impkrip_test_report.json` | Laporan JSON pengujian fungsional (18 PASS, 1 PARTIAL) |
 | **IMPKRIP** | `artifacts/impkrip_final/impkrip_test_report.html` | Visual dashboard interaktif hasil evaluasi fungsional |
-| **IMPKRIP** | `artifacts/impkrip_final/impkrip_benchmark.json` | Statistik performa 1.000 sampel per primitif |
-| **IMPKRIP** | `artifacts/impkrip_final/impkrip_benchmark.csv` | Dataset tabular benchmark dengan metadata hardware terverifikasi |
-| **IMPKRIP** | `artifacts/impkrip_final/impkrip_environment.json` | Metadata spesifikasi hardware terverifikasi |
-| **SSDLC** | `artifacts/ssdlc_final/bandit_report.json` | Hasil pemindaian SAST Bandit backend |
-| **SSDLC** | `artifacts/ssdlc_final/ssdlc_trike_verification_report.md` | Laporan verifikasi kontrol mitigasi Trike (T-01..14) |
-| **SSDLC** | `artifacts/ssdlc_final/zap_dast_verification.md` | Evaluasi CSP, SRI, dan HTTP Security Headers |
-| **SSDLC** | `artifacts/ssdlc_final/microsoft_sdl_evidence.md` | Bukti kepatuhan 7 fase Microsoft SDL |
+| **IMPKRIP** | `artifacts/impkrip_final/impkrip_benchmark.json` | Statistik performa latency & throughput 1.000 sampel |
+| **IMPKRIP** | `artifacts/impkrip_final/impkrip_memory_benchmark.json` | Data pengukuran JavaScript Heap memori CDP V8 |
+| **IMPKRIP** | `artifacts/impkrip_final/impkrip_environment.json` | Metadata spesifikasi hardware & software terverifikasi |
+| **SSDLC** | `artifacts/ssdlc_final/canonical_ssdlc_results.md` | Single Source of Truth hasil evaluasi SSDLC & Trike |
+| **SSDLC** | `artifacts/ssdlc_final/evidence_consistency_review.md` | Log audit rekonsiliasi kontradiksi data & status |
+| **SSDLC** | `artifacts/ssdlc_final/ssdlc_final_verification_report.md` | Laporan sintesis master verifikasi Microsoft SDL |
+| **SSDLC** | `artifacts/ssdlc_final/traceability_matrix.md` | Matriks keterlacakan hulu-hilir (Use Case -> Threat -> Test) |
+| **SSDLC** | `artifacts/ssdlc_final/bandit_report.json` | Raw output pemindaian SAST Bandit backend |
+| **SSDLC** | `artifacts/ssdlc_final/npm_audit_report.json` | Raw output audit dependensi NPM frontend |
+| **SSDLC** | `artifacts/ssdlc_final/pip_audit_report.json` | Raw output audit dependensi Pip backend |
+| **SSDLC** | `artifacts/ssdlc_final/release_security_checklist.md` | Lembar evaluasi Final Security Review (FSR) |
 
 ---
 

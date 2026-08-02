@@ -1,0 +1,815 @@
+{
+  "manifest": {
+    "test_environment": {
+      "device": "ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA (ASUS VivoBook 14X M1403QA)",
+      "processor": "AMD Ryzen 5 5600H with Radeon Graphics",
+      "integrated_graphics": "AMD Radeon(TM) Graphics",
+      "ram": "16 GB Installed (Dual-Channel: 8 GB Micron Technology DDR4-3200 (P0 CHANNEL A), 8 GB Micron Technology DDR4-3200 (P0 CHANNEL B)), 15.41 GB Usable",
+      "total_ram_usable_gb": 15.41,
+      "storage": "INTEL SSDPEKNU512GZ (477 GB NVMe SSD, BusType: NVMe, MediaType: SSD)",
+      "operating_system": "Microsoft Windows 11 Home Single Language",
+      "operating_system_version": "10.0.26200 (Build 26200)",
+      "python_version": "3.11.9",
+      "node_version": "v22.17.0",
+      "browser": "Chromium 149.0.7827.55",
+      "mlkem_version": "^2.7.0",
+      "source_commit_tested": "d98ca5fe51f34d9633d57bd24c8e4de3ef05763a",
+      "git_dirty": true,
+      "timestamp": "2026-08-02T17:44:00+0700",
+      "timezone": "WIB (+0700)"
+    },
+    "benchmark_parameters": {
+      "warmup": 20,
+      "iterations": 200,
+      "runs": 5,
+      "batch_size": 20,
+      "sampling_interval": "Every 20 iterations during measured workload, plus dedicated lifecycle checkpoints (baseline, post-keygen, post-pq-upgrade, post-workload)",
+      "measurement_method": "Chromium DevTools Protocol (CDP) Runtime.getHeapUsage with --enable-precise-memory-info and initial pre-baseline GC via HeapProfiler.collectGarbage"
+    }
+  },
+  "summary_statistics_bytes": {
+    "baseline_used_heap": {
+      "mean": 5332033.6,
+      "median": 5332008,
+      "min": 5331972,
+      "max": 5332192,
+      "stddev": 90.0933,
+      "samples": 5
+    },
+    "post_keygen_used_heap": {
+      "mean": 5712376.8,
+      "median": 5580856,
+      "min": 5520828,
+      "max": 6236944,
+      "stddev": 302365.2409,
+      "samples": 5
+    },
+    "delta_baseline_to_keygen": {
+      "mean": 380343.2,
+      "median": 248664,
+      "min": 188816,
+      "max": 904960,
+      "stddev": 302395.9876,
+      "samples": 5
+    },
+    "post_pq_upgrade_used_heap": {
+      "mean": 5870739.2,
+      "median": 5878532,
+      "min": 5661764,
+      "max": 6041336,
+      "stddev": 136629.2646,
+      "samples": 5
+    },
+    "delta_baseline_to_pq_upgrade": {
+      "mean": 538705.6,
+      "median": 546520,
+      "min": 329780,
+      "max": 709364,
+      "stddev": 136617.3437,
+      "samples": 5
+    },
+    "max_observed_used_heap": {
+      "mean": 17452304,
+      "median": 18952656,
+      "min": 5859880,
+      "max": 32715616,
+      "stddev": 11667783.1854,
+      "samples": 5
+    },
+    "delta_baseline_to_max_observed": {
+      "mean": 12120270.4,
+      "median": 13620672,
+      "min": 527872,
+      "max": 27383644,
+      "stddev": 11667771.4808,
+      "samples": 5
+    },
+    "retained_used_heap": {
+      "mean": 13833213.6,
+      "median": 6300024,
+      "min": 5660484,
+      "max": 32715616,
+      "stddev": 11956624.2823,
+      "samples": 5
+    },
+    "delta_baseline_to_retained": {
+      "mean": 8501180,
+      "median": 967832,
+      "min": 328476,
+      "max": 27383644,
+      "stddev": 11956670.6684,
+      "samples": 5
+    }
+  },
+  "summary_statistics_mib": {
+    "baseline_used_heap": {
+      "mean": 5.085,
+      "median": 5.085,
+      "min": 5.085,
+      "max": 5.0852,
+      "stddev": 0.0001,
+      "samples": 5
+    },
+    "post_keygen_used_heap": {
+      "mean": 5.4477,
+      "median": 5.3223,
+      "min": 5.2651,
+      "max": 5.948,
+      "stddev": 0.2884,
+      "samples": 5
+    },
+    "delta_baseline_to_keygen": {
+      "mean": 0.3627,
+      "median": 0.2371,
+      "min": 0.1801,
+      "max": 0.863,
+      "stddev": 0.2884,
+      "samples": 5
+    },
+    "post_pq_upgrade_used_heap": {
+      "mean": 5.5988,
+      "median": 5.6062,
+      "min": 5.3995,
+      "max": 5.7615,
+      "stddev": 0.1303,
+      "samples": 5
+    },
+    "delta_baseline_to_pq_upgrade": {
+      "mean": 0.5137,
+      "median": 0.5212,
+      "min": 0.3145,
+      "max": 0.6765,
+      "stddev": 0.1303,
+      "samples": 5
+    },
+    "max_observed_used_heap": {
+      "mean": 16.6438,
+      "median": 18.0747,
+      "min": 5.5884,
+      "max": 31.2,
+      "stddev": 11.1273,
+      "samples": 5
+    },
+    "delta_baseline_to_max_observed": {
+      "mean": 11.5588,
+      "median": 12.9897,
+      "min": 0.5034,
+      "max": 26.1151,
+      "stddev": 11.1273,
+      "samples": 5
+    },
+    "retained_used_heap": {
+      "mean": 13.1924,
+      "median": 6.0082,
+      "min": 5.3983,
+      "max": 31.2,
+      "stddev": 11.4027,
+      "samples": 5
+    },
+    "delta_baseline_to_retained": {
+      "mean": 8.1074,
+      "median": 0.923,
+      "min": 0.3133,
+      "max": 26.1151,
+      "stddev": 11.4028,
+      "samples": 5
+    }
+  },
+  "runs": [
+    {
+      "run": 1,
+      "baseline_used_heap_bytes": 5331984,
+      "baseline_used_heap_mib": 5.085,
+      "baseline_total_heap_bytes": 5832704,
+      "baseline_total_heap_mib": 5.5625,
+      "post_keygen_used_heap_bytes": 6236944,
+      "post_keygen_used_heap_mib": 5.948,
+      "delta_baseline_to_keygen_bytes": 904960,
+      "delta_baseline_to_keygen_mib": 0.863,
+      "post_pq_upgrade_used_heap_bytes": 5661764,
+      "post_pq_upgrade_used_heap_mib": 5.3995,
+      "delta_baseline_to_pq_upgrade_bytes": 329780,
+      "delta_baseline_to_pq_upgrade_mib": 0.3145,
+      "max_observed_used_heap_bytes": 18952656,
+      "max_observed_used_heap_mib": 18.0747,
+      "delta_baseline_to_max_observed_bytes": 13620672,
+      "delta_baseline_to_max_observed_mib": 12.9897,
+      "retained_used_heap_bytes": 18829456,
+      "retained_used_heap_mib": 17.9572,
+      "delta_baseline_to_retained_bytes": 13497472,
+      "delta_baseline_to_retained_mib": 12.8722,
+      "checkpoints": [
+        {
+          "checkpoint": "baseline",
+          "used_bytes": 5331984,
+          "used_mib": 5.085,
+          "total_bytes": 5832704,
+          "total_mib": 5.5625
+        },
+        {
+          "checkpoint": "post_keygen",
+          "used_bytes": 6236944,
+          "used_mib": 5.948,
+          "total_bytes": 8454144,
+          "total_mib": 8.0625,
+          "delta_from_baseline_bytes": 904960,
+          "delta_from_baseline_mib": 0.863
+        },
+        {
+          "checkpoint": "post_pq_upgrade",
+          "used_bytes": 5661764,
+          "used_mib": 5.3995,
+          "total_bytes": 8978432,
+          "total_mib": 8.5625,
+          "delta_from_baseline_bytes": 329780,
+          "delta_from_baseline_mib": 0.3145
+        },
+        {
+          "checkpoint": "warmup_20",
+          "used_bytes": 12017240,
+          "used_mib": 11.4605,
+          "total_bytes": 25763840,
+          "total_mib": 24.5703
+        },
+        {
+          "checkpoint": "iteration_20",
+          "used_bytes": 5698188,
+          "used_mib": 5.4342,
+          "total_bytes": 23920640,
+          "total_mib": 22.8125
+        },
+        {
+          "checkpoint": "iteration_40",
+          "used_bytes": 9520584,
+          "used_mib": 9.0795,
+          "total_bytes": 25501696,
+          "total_mib": 24.3203
+        },
+        {
+          "checkpoint": "iteration_60",
+          "used_bytes": 9306876,
+          "used_mib": 8.8757,
+          "total_bytes": 25239552,
+          "total_mib": 24.0703
+        },
+        {
+          "checkpoint": "iteration_80",
+          "used_bytes": 5731548,
+          "used_mib": 5.466,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        },
+        {
+          "checkpoint": "iteration_100",
+          "used_bytes": 18943752,
+          "used_mib": 18.0662,
+          "total_bytes": 43597824,
+          "total_mib": 41.5781
+        },
+        {
+          "checkpoint": "iteration_120",
+          "used_bytes": 5751632,
+          "used_mib": 5.4852,
+          "total_bytes": 40697856,
+          "total_mib": 38.8125
+        },
+        {
+          "checkpoint": "iteration_140",
+          "used_bytes": 18952656,
+          "used_mib": 18.0747,
+          "total_bytes": 43335680,
+          "total_mib": 41.3281
+        },
+        {
+          "checkpoint": "iteration_160",
+          "used_bytes": 5655456,
+          "used_mib": 5.3935,
+          "total_bytes": 40435712,
+          "total_mib": 38.5625
+        },
+        {
+          "checkpoint": "iteration_180",
+          "used_bytes": 5660216,
+          "used_mib": 5.398,
+          "total_bytes": 50397184,
+          "total_mib": 48.0625
+        },
+        {
+          "checkpoint": "iteration_200",
+          "used_bytes": 18829456,
+          "used_mib": 17.9572,
+          "total_bytes": 77414400,
+          "total_mib": 73.8281
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "baseline_used_heap_bytes": 5332192,
+      "baseline_used_heap_mib": 5.0852,
+      "baseline_total_heap_bytes": 5832704,
+      "baseline_total_heap_mib": 5.5625,
+      "post_keygen_used_heap_bytes": 5580856,
+      "post_keygen_used_heap_mib": 5.3223,
+      "delta_baseline_to_keygen_bytes": 248664,
+      "delta_baseline_to_keygen_mib": 0.2371,
+      "post_pq_upgrade_used_heap_bytes": 5912184,
+      "post_pq_upgrade_used_heap_mib": 5.6383,
+      "delta_baseline_to_pq_upgrade_bytes": 579992,
+      "delta_baseline_to_pq_upgrade_mib": 0.5531,
+      "max_observed_used_heap_bytes": 23854836,
+      "max_observed_used_heap_mib": 22.7497,
+      "delta_baseline_to_max_observed_bytes": 18522644,
+      "delta_baseline_to_max_observed_mib": 17.6646,
+      "retained_used_heap_bytes": 6300024,
+      "retained_used_heap_mib": 6.0082,
+      "delta_baseline_to_retained_bytes": 967832,
+      "delta_baseline_to_retained_mib": 0.923,
+      "checkpoints": [
+        {
+          "checkpoint": "baseline",
+          "used_bytes": 5332192,
+          "used_mib": 5.0852,
+          "total_bytes": 5832704,
+          "total_mib": 5.5625
+        },
+        {
+          "checkpoint": "post_keygen",
+          "used_bytes": 5580856,
+          "used_mib": 5.3223,
+          "total_bytes": 8978432,
+          "total_mib": 8.5625,
+          "delta_from_baseline_bytes": 248664,
+          "delta_from_baseline_mib": 0.2371
+        },
+        {
+          "checkpoint": "post_pq_upgrade",
+          "used_bytes": 5912184,
+          "used_mib": 5.6383,
+          "total_bytes": 9240576,
+          "total_mib": 8.8125,
+          "delta_from_baseline_bytes": 579992,
+          "delta_from_baseline_mib": 0.5531
+        },
+        {
+          "checkpoint": "warmup_20",
+          "used_bytes": 8962472,
+          "used_mib": 8.5473,
+          "total_bytes": 27721728,
+          "total_mib": 26.4375
+        },
+        {
+          "checkpoint": "iteration_20",
+          "used_bytes": 12749700,
+          "used_mib": 12.1591,
+          "total_bytes": 29302784,
+          "total_mib": 27.9453
+        },
+        {
+          "checkpoint": "iteration_40",
+          "used_bytes": 12001784,
+          "used_mib": 11.4458,
+          "total_bytes": 26812416,
+          "total_mib": 25.5703
+        },
+        {
+          "checkpoint": "iteration_60",
+          "used_bytes": 16448040,
+          "used_mib": 15.6861,
+          "total_bytes": 36519936,
+          "total_mib": 34.8281
+        },
+        {
+          "checkpoint": "iteration_80",
+          "used_bytes": 9947892,
+          "used_mib": 9.487,
+          "total_bytes": 43589632,
+          "total_mib": 41.5703
+        },
+        {
+          "checkpoint": "iteration_100",
+          "used_bytes": 23006944,
+          "used_mib": 21.9411,
+          "total_bytes": 45662208,
+          "total_mib": 43.5469
+        },
+        {
+          "checkpoint": "iteration_120",
+          "used_bytes": 16487948,
+          "used_mib": 15.7241,
+          "total_bytes": 44122112,
+          "total_mib": 42.0781
+        },
+        {
+          "checkpoint": "iteration_140",
+          "used_bytes": 9974564,
+          "used_mib": 9.5125,
+          "total_bytes": 42803200,
+          "total_mib": 40.8203
+        },
+        {
+          "checkpoint": "iteration_160",
+          "used_bytes": 23854836,
+          "used_mib": 22.7497,
+          "total_bytes": 45924352,
+          "total_mib": 43.7969
+        },
+        {
+          "checkpoint": "iteration_180",
+          "used_bytes": 12061152,
+          "used_mib": 11.5024,
+          "total_bytes": 43327488,
+          "total_mib": 41.3203
+        },
+        {
+          "checkpoint": "iteration_200",
+          "used_bytes": 6300024,
+          "used_mib": 6.0082,
+          "total_bytes": 42008576,
+          "total_mib": 40.0625
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "baseline_used_heap_bytes": 5331972,
+      "baseline_used_heap_mib": 5.085,
+      "baseline_total_heap_bytes": 5832704,
+      "baseline_total_heap_mib": 5.5625,
+      "post_keygen_used_heap_bytes": 5701736,
+      "post_keygen_used_heap_mib": 5.4376,
+      "delta_baseline_to_keygen_bytes": 369764,
+      "delta_baseline_to_keygen_mib": 0.3526,
+      "post_pq_upgrade_used_heap_bytes": 6041336,
+      "post_pq_upgrade_used_heap_mib": 5.7615,
+      "delta_baseline_to_pq_upgrade_bytes": 709364,
+      "delta_baseline_to_pq_upgrade_mib": 0.6765,
+      "max_observed_used_heap_bytes": 32715616,
+      "max_observed_used_heap_mib": 31.2,
+      "delta_baseline_to_max_observed_bytes": 27383644,
+      "delta_baseline_to_max_observed_mib": 26.1151,
+      "retained_used_heap_bytes": 32715616,
+      "retained_used_heap_mib": 31.2,
+      "delta_baseline_to_retained_bytes": 27383644,
+      "delta_baseline_to_retained_mib": 26.1151,
+      "checkpoints": [
+        {
+          "checkpoint": "baseline",
+          "used_bytes": 5331972,
+          "used_mib": 5.085,
+          "total_bytes": 5832704,
+          "total_mib": 5.5625
+        },
+        {
+          "checkpoint": "post_keygen",
+          "used_bytes": 5701736,
+          "used_mib": 5.4376,
+          "total_bytes": 8978432,
+          "total_mib": 8.5625,
+          "delta_from_baseline_bytes": 369764,
+          "delta_from_baseline_mib": 0.3526
+        },
+        {
+          "checkpoint": "post_pq_upgrade",
+          "used_bytes": 6041336,
+          "used_mib": 5.7615,
+          "total_bytes": 8978432,
+          "total_mib": 8.5625,
+          "delta_from_baseline_bytes": 709364,
+          "delta_from_baseline_mib": 0.6765
+        },
+        {
+          "checkpoint": "warmup_20",
+          "used_bytes": 8880180,
+          "used_mib": 8.4688,
+          "total_bytes": 27459584,
+          "total_mib": 26.1875
+        },
+        {
+          "checkpoint": "iteration_20",
+          "used_bytes": 12619188,
+          "used_mib": 12.0346,
+          "total_bytes": 28778496,
+          "total_mib": 27.4453
+        },
+        {
+          "checkpoint": "iteration_40",
+          "used_bytes": 15934244,
+          "used_mib": 15.1961,
+          "total_bytes": 28090368,
+          "total_mib": 26.7891
+        },
+        {
+          "checkpoint": "iteration_60",
+          "used_bytes": 9532208,
+          "used_mib": 9.0906,
+          "total_bytes": 26550272,
+          "total_mib": 25.3203
+        },
+        {
+          "checkpoint": "iteration_80",
+          "used_bytes": 20516208,
+          "used_mib": 19.5658,
+          "total_bytes": 45551616,
+          "total_mib": 43.4414
+        },
+        {
+          "checkpoint": "iteration_100",
+          "used_bytes": 22219140,
+          "used_mib": 21.1898,
+          "total_bytes": 45662208,
+          "total_mib": 43.5469
+        },
+        {
+          "checkpoint": "iteration_120",
+          "used_bytes": 13348968,
+          "used_mib": 12.7306,
+          "total_bytes": 44068864,
+          "total_mib": 42.0273
+        },
+        {
+          "checkpoint": "iteration_140",
+          "used_bytes": 7573808,
+          "used_mib": 7.2229,
+          "total_bytes": 42749952,
+          "total_mib": 40.7695
+        },
+        {
+          "checkpoint": "iteration_160",
+          "used_bytes": 20715748,
+          "used_mib": 19.7561,
+          "total_bytes": 45387776,
+          "total_mib": 43.2852
+        },
+        {
+          "checkpoint": "iteration_180",
+          "used_bytes": 18879352,
+          "used_mib": 18.0048,
+          "total_bytes": 44384256,
+          "total_mib": 42.3281
+        },
+        {
+          "checkpoint": "iteration_200",
+          "used_bytes": 32715616,
+          "used_mib": 31.2,
+          "total_bytes": 80576512,
+          "total_mib": 76.8438
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "baseline_used_heap_bytes": 5332008,
+      "baseline_used_heap_mib": 5.085,
+      "baseline_total_heap_bytes": 5832704,
+      "baseline_total_heap_mib": 5.5625,
+      "post_keygen_used_heap_bytes": 5521520,
+      "post_keygen_used_heap_mib": 5.2657,
+      "delta_baseline_to_keygen_bytes": 189512,
+      "delta_baseline_to_keygen_mib": 0.1807,
+      "post_pq_upgrade_used_heap_bytes": 5859880,
+      "post_pq_upgrade_used_heap_mib": 5.5884,
+      "delta_baseline_to_pq_upgrade_bytes": 527872,
+      "delta_baseline_to_pq_upgrade_mib": 0.5034,
+      "max_observed_used_heap_bytes": 5859880,
+      "max_observed_used_heap_mib": 5.5884,
+      "delta_baseline_to_max_observed_bytes": 527872,
+      "delta_baseline_to_max_observed_mib": 0.5034,
+      "retained_used_heap_bytes": 5660484,
+      "retained_used_heap_mib": 5.3983,
+      "delta_baseline_to_retained_bytes": 328476,
+      "delta_baseline_to_retained_mib": 0.3133,
+      "checkpoints": [
+        {
+          "checkpoint": "baseline",
+          "used_bytes": 5332008,
+          "used_mib": 5.085,
+          "total_bytes": 5832704,
+          "total_mib": 5.5625
+        },
+        {
+          "checkpoint": "post_keygen",
+          "used_bytes": 5521520,
+          "used_mib": 5.2657,
+          "total_bytes": 8454144,
+          "total_mib": 8.0625,
+          "delta_from_baseline_bytes": 189512,
+          "delta_from_baseline_mib": 0.1807
+        },
+        {
+          "checkpoint": "post_pq_upgrade",
+          "used_bytes": 5859880,
+          "used_mib": 5.5884,
+          "total_bytes": 8978432,
+          "total_mib": 8.5625,
+          "delta_from_baseline_bytes": 527872,
+          "delta_from_baseline_mib": 0.5034
+        },
+        {
+          "checkpoint": "warmup_20",
+          "used_bytes": 5681556,
+          "used_mib": 5.4184,
+          "total_bytes": 23396352,
+          "total_mib": 22.3125
+        },
+        {
+          "checkpoint": "iteration_20",
+          "used_bytes": 5698412,
+          "used_mib": 5.4344,
+          "total_bytes": 23396352,
+          "total_mib": 22.3125
+        },
+        {
+          "checkpoint": "iteration_40",
+          "used_bytes": 5713308,
+          "used_mib": 5.4486,
+          "total_bytes": 23396352,
+          "total_mib": 22.3125
+        },
+        {
+          "checkpoint": "iteration_60",
+          "used_bytes": 5715340,
+          "used_mib": 5.4506,
+          "total_bytes": 23396352,
+          "total_mib": 22.3125
+        },
+        {
+          "checkpoint": "iteration_80",
+          "used_bytes": 5620680,
+          "used_mib": 5.3603,
+          "total_bytes": 23396352,
+          "total_mib": 22.3125
+        },
+        {
+          "checkpoint": "iteration_100",
+          "used_bytes": 5627356,
+          "used_mib": 5.3667,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        },
+        {
+          "checkpoint": "iteration_120",
+          "used_bytes": 5629492,
+          "used_mib": 5.3687,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        },
+        {
+          "checkpoint": "iteration_140",
+          "used_bytes": 5635040,
+          "used_mib": 5.374,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        },
+        {
+          "checkpoint": "iteration_160",
+          "used_bytes": 5644380,
+          "used_mib": 5.3829,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        },
+        {
+          "checkpoint": "iteration_180",
+          "used_bytes": 5660104,
+          "used_mib": 5.3979,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        },
+        {
+          "checkpoint": "iteration_200",
+          "used_bytes": 5660484,
+          "used_mib": 5.3983,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        }
+      ]
+    },
+    {
+      "run": 5,
+      "baseline_used_heap_bytes": 5332012,
+      "baseline_used_heap_mib": 5.085,
+      "baseline_total_heap_bytes": 5832704,
+      "baseline_total_heap_mib": 5.5625,
+      "post_keygen_used_heap_bytes": 5520828,
+      "post_keygen_used_heap_mib": 5.2651,
+      "delta_baseline_to_keygen_bytes": 188816,
+      "delta_baseline_to_keygen_mib": 0.1801,
+      "post_pq_upgrade_used_heap_bytes": 5878532,
+      "post_pq_upgrade_used_heap_mib": 5.6062,
+      "delta_baseline_to_pq_upgrade_bytes": 546520,
+      "delta_baseline_to_pq_upgrade_mib": 0.5212,
+      "max_observed_used_heap_bytes": 5878532,
+      "max_observed_used_heap_mib": 5.6062,
+      "delta_baseline_to_max_observed_bytes": 546520,
+      "delta_baseline_to_max_observed_mib": 0.5212,
+      "retained_used_heap_bytes": 5660488,
+      "retained_used_heap_mib": 5.3983,
+      "delta_baseline_to_retained_bytes": 328476,
+      "delta_baseline_to_retained_mib": 0.3133,
+      "checkpoints": [
+        {
+          "checkpoint": "baseline",
+          "used_bytes": 5332012,
+          "used_mib": 5.085,
+          "total_bytes": 5832704,
+          "total_mib": 5.5625
+        },
+        {
+          "checkpoint": "post_keygen",
+          "used_bytes": 5520828,
+          "used_mib": 5.2651,
+          "total_bytes": 8978432,
+          "total_mib": 8.5625,
+          "delta_from_baseline_bytes": 188816,
+          "delta_from_baseline_mib": 0.1801
+        },
+        {
+          "checkpoint": "post_pq_upgrade",
+          "used_bytes": 5878532,
+          "used_mib": 5.6062,
+          "total_bytes": 8978432,
+          "total_mib": 8.5625,
+          "delta_from_baseline_bytes": 546520,
+          "delta_from_baseline_mib": 0.5212
+        },
+        {
+          "checkpoint": "warmup_20",
+          "used_bytes": 5676212,
+          "used_mib": 5.4133,
+          "total_bytes": 23658496,
+          "total_mib": 22.5625
+        },
+        {
+          "checkpoint": "iteration_20",
+          "used_bytes": 5698408,
+          "used_mib": 5.4344,
+          "total_bytes": 23920640,
+          "total_mib": 22.8125
+        },
+        {
+          "checkpoint": "iteration_40",
+          "used_bytes": 5712856,
+          "used_mib": 5.4482,
+          "total_bytes": 23134208,
+          "total_mib": 22.0625
+        },
+        {
+          "checkpoint": "iteration_60",
+          "used_bytes": 5715344,
+          "used_mib": 5.4506,
+          "total_bytes": 23134208,
+          "total_mib": 22.0625
+        },
+        {
+          "checkpoint": "iteration_80",
+          "used_bytes": 5620512,
+          "used_mib": 5.3601,
+          "total_bytes": 23134208,
+          "total_mib": 22.0625
+        },
+        {
+          "checkpoint": "iteration_100",
+          "used_bytes": 5627224,
+          "used_mib": 5.3665,
+          "total_bytes": 39911424,
+          "total_mib": 38.0625
+        },
+        {
+          "checkpoint": "iteration_120",
+          "used_bytes": 5629532,
+          "used_mib": 5.3687,
+          "total_bytes": 39911424,
+          "total_mib": 38.0625
+        },
+        {
+          "checkpoint": "iteration_140",
+          "used_bytes": 5635044,
+          "used_mib": 5.374,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        },
+        {
+          "checkpoint": "iteration_160",
+          "used_bytes": 5644384,
+          "used_mib": 5.3829,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        },
+        {
+          "checkpoint": "iteration_180",
+          "used_bytes": 5660108,
+          "used_mib": 5.3979,
+          "total_bytes": 40173568,
+          "total_mib": 38.3125
+        },
+        {
+          "checkpoint": "iteration_200",
+          "used_bytes": 5660488,
+          "used_mib": 5.3983,
+          "total_bytes": 50397184,
+          "total_mib": 48.0625
+        }
+      ]
+    }
+  ]
+}

@@ -1,38 +1,57 @@
-# Laporan Verifikasi Konfigurasi Keamanan & HTTP Headers — Kiw Kiw Chat
+# Laporan Tinjauan Konfigurasi Keamanan Web & HTTP Headers — Kiw Kiw Chat
 
-Dokumen ini mendokumentasikan bukti kepatuhan konfigurasi keamanan web dan header HTTP dinamis pada Kiw Kiw Chat.
-
----
-
-## 1. Evaluasi Header Keamanan HTTP
-
-Konfigurasi keamanan diterapkan melalui `vercel.json` dan middleware backend FastAPI:
-
-| Header Keamanan | Nilai Konfigurasi | Perlindungan yang Diberikan |
-|---|---|---|
-| **Strict-Transport-Security** | `max-age=63072000; includeSubDomains; preload` | Memaksa koneksi HTTPS aman dan mencegah downgrade attacks. |
-| **X-Frame-Options** | `DENY` | Mencegah serangan *Clickjacking* dengan melarang embedding dalam iframe. |
-| **X-Content-Type-Options** | `nosniff` | Mencegah browser melakukan MIME-type sniffing pada file statis. |
-| **Referrer-Policy** | `no-referrer` | Mencegah kebocoran URL fragment atau metadata jalur ke pihak ketiga. |
-| **Permissions-Policy** | `camera=(), microphone=(), geolocation=()` | Menonaktifkan API perangkat sensitif yang tidak digunakan oleh aplikasi. |
+> [!NOTE]
+> **Status**: **Configuration Review (DAST Automated Scan: BLOCKED / NOT EXECUTED)**  
+> Dokumen ini memverifikasi deklarasi konfigurasi HTTP Security Headers dan Content Security Policy pada kode sumber.
 
 ---
 
-## 2. Kebijakan Keamanan Konten (Content Security Policy)
+## 1. Evaluasi Header Keamanan HTTP (Configuration Review)
 
-Didefinisikan pada `frontend/index.html` dan `vercel.json`:
+Konfigurasi keamanan dideklarasikan melalui `vercel.json` dan middleware backend FastAPI (`backend/main.py`):
 
-```text
-default-src 'self';
-script-src 'self' 'unsafe-inline';
-style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-font-src 'self' https://fonts.gstatic.com;
-connect-src 'self' ws: wss: https: stun:*.google.com:19302 stun:*.cloudflare.com:3478;
-img-src 'self' data: blob:;
-frame-ancestors 'none';
+| Header Keamanan | Nilai Konfigurasi Terpasang | Perlindungan yang Diharapkan | Status Review |
+|---|---|---|:---:|
+| **Strict-Transport-Security** | `max-age=31536000; includeSubDomains; preload` | Memaksa koneksi HTTPS aman dan mitigasi SSL stripping di lingkungan produksi. | **CONFIGURED** |
+| **X-Frame-Options** | `DENY` | Mencegah serangan *Clickjacking* dengan melarang embedding dalam iframe. | **CONFIGURED** |
+| **X-Content-Type-Options** | `nosniff` | Mencegah browser melakukan MIME-type sniffing pada file statis. | **CONFIGURED** |
+| **Referrer-Policy** | `no-referrer` | Mencegah kebocoran URL path/metadata ke pihak ketiga saat navigasi keluar. | **CONFIGURED** |
+| **Permissions-Policy** | `geolocation=(), microphone=(), camera=()` | Menonaktifkan API perangkat sensitif yang tidak digunakan oleh aplikasi. | **CONFIGURED** |
+
+---
+
+## 2. Kebijakan Keamanan Konten (Content Security Policy Review)
+
+Deklarasi CSP aktual pada `frontend/index.html`:
+
+```html
+<meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        connect-src 'self'
+                    wss://kiwkiwchat.vercel.app
+                    https://kiwkiwchat.vercel.app
+                    wss://*.onrender.com
+                    https://*.onrender.com
+                    ws://localhost:8000
+                    http://localhost:8000
+                    ws://localhost:5173
+                    http://localhost:5173
+                    ws://localhost:4173
+                    http://localhost:4173
+                    stun:stun.l.google.com:19302
+                    turn:openrelay.metered.ca:80
+                    turn:openrelay.metered.ca:443;
+        script-src  'self';
+        style-src   'self' https://fonts.googleapis.com 'unsafe-inline';
+        font-src    https://fonts.gstatic.com;
+        img-src     'self' data:;
+        base-uri    'self';
+        form-action 'self';
+      " />
 ```
 
-### Analisis Kepatuhan:
-- **No External Untrusted Scripts**: Hanya memuat skrip lokal yang ter-bundle.
-- **Strict WebSocket & STUN Whitelist**: Pembatasan target koneksi hanya ke backend signaling dan STUN servers terpercaya.
-- **Subresource Integrity (SRI)**: Seluruh font eksternal menggunakan hash integritas untuk mencegah tampering.
+### Analisis Kepatuhan & Residual Risk:
+1. **Script Restriction**: `script-src` dibatasi ke `'self'`, mencegah eksekusi skrip dari domain luar yang tidak diizinkan.
+2. **Residual Risk pada `style-src`**: Masih terdapat directive `'unsafe-inline'` pada `style-src` untuk mendukung style dinamis library UI. Hal ini dicatat sebagai residual risk; direkomendasikan penggunaan nonce-based atau hash-based styling untuk deployment produksi tingkat tinggi.
+3. **Subresource Integrity (SRI)**: Atribut `integrity` terpasang secara eksplisit pada Google Fonts CSS stylesheet di `frontend/index.html`. Modul JavaScript aplikasi lokal dibundel oleh Vite tanpa SRI terpisah pada bundle lokal.

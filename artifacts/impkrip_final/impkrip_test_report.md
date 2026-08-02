@@ -14,8 +14,8 @@
 | **Node.js Version** | `v22.17.0` |
 | **Browser Engine** | `Chromium 149.0.7827.55` |
 | **ML-KEM Package** | `^2.7.0` |
-| **Source Commit Tested** | `0a9b3a71d93c95f580926e17acd20423f2640b65` (Git Dirty: `True`) |
-| **Timestamp & Timezone** | `2026-08-02T07:45:18+0700` (WIB (+0700)) |
+| **Source Commit Tested** | `d98ca5fe51f34d9633d57bd24c8e4de3ef05763a` (Git Dirty: `True`) |
+| **Timestamp & Timezone** | `2026-08-02T18:39:25+0700` (WIB (+0700)) |
 
 ## 2. Summary of Results
 
