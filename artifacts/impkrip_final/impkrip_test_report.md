@@ -2,39 +2,20 @@
 
 ## 1. Test Environment & System Specification
 
-### Target Device Specification (Manual Baseline)
-
-- **Device**: ASUS Vivobook 14X M1403QA
-- **Processor**: AMD Ryzen 7
-- **Integrated Graphics**: AMD Radeon Vega 7
-- **RAM**: 8 GB Dual-Channel
-- **Storage**: 512 GB M.2 NVMe SSD
-
-### System Detected Specification (Auto-Probed)
-
-- **Device Model**: `VivoBook_ASUSLaptop M1403QA_M1403QA`
-- **Exact CPU Model**: `AMD Ryzen 5 5600H with Radeon Graphics`
-- **CPU Architecture**: `AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD`
-- **Total RAM Detected**: `15.41 GB`
-- **Operating System**: `Windows 10` (Version `10.0.26200`)
-- **Python Version**: `3.11.9`
-- **Node.js Version**: `v22.17.0`
-- **Browser Engine**: `Chromium 149.0.7827.55`
-- **ML-KEM Package**: `^2.7.0`
-- **Storage Detected**: `INTEL SSDPEKNU512GZ (512 GB NVMe SSD)`
-- **Timestamp & Timezone**: `2026-08-01T22:11:51+0700` (WIB (+0700))
-- **Git Commit Hash**: `609a1fe1c529e0e7fe27ac4fde6eb1da5022af46`
-
-### Specification Comparison & Discrepancy Notes
-
-> [!NOTE]
-> Processor Discrepancy: Target spesifikasi manual mencantumkan 'AMD Ryzen 7', sedangkan deteksi aktual hardware mendeteksi 'AMD Ryzen 5 5600H with Radeon Graphics'.
-
-> [!NOTE]
-> RAM Discrepancy: Target spesifikasi manual mencantumkan '8 GB Dual-Channel', sedangkan deteksi aktual sistem mendeteksi total RAM fisik sebesar 15.41 GB (RAM terpasang/upgrade 16 GB).
-
-> [!NOTE]
-> Graphics & Storage: Deteksi sistem mendeteksi 'AMD Radeon(TM) Graphics' dan SSD 512 GB (INTEL SSDPEKNU512GZ) sesuai profil perangkat.
+| Property | Verified Value |
+|---|---|
+| **Device Model** | `ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA (ASUS VivoBook 14X M1403QA)` |
+| **Processor (CPU)** | `AMD Ryzen 5 5600H with Radeon Graphics` |
+| **RAM Configuration** | `16 GB Installed (Dual-Channel: 8 GB Micron Technology DDR4-3200 (P0 CHANNEL A), 8 GB Micron Technology DDR4-3200 (P0 CHANNEL B)), 15.41 GB Usable` |
+| **Integrated Graphics** | `AMD Radeon(TM) Graphics` |
+| **Storage (BusType/Media)** | `INTEL SSDPEKNU512GZ (477 GB NVMe SSD, BusType: NVMe, MediaType: SSD)` |
+| **Operating System** | `Microsoft Windows 11 Home Single Language` (`10.0.26200 (Build 26200)`) |
+| **Python Version** | `3.11.9` |
+| **Node.js Version** | `v22.17.0` |
+| **Browser Engine** | `Chromium 149.0.7827.55` |
+| **ML-KEM Package** | `^2.7.0` |
+| **Source Commit Tested** | `e178c6113824159df3bdd585cb08fb3132ca8581` (Git Dirty: `True`) |
+| **Timestamp & Timezone** | `2026-08-01T22:21:21+0700` (WIB (+0700)) |
 
 ## 2. Summary of Results
 
@@ -57,8 +38,8 @@
 | `KD-02` | HKDF Classical Secret Dependency | Different classical secrets result in distinct session keys | Distinct session keys derived | **PASS** |
 | `KD-03` | HKDF Post-Quantum Secret Dependency | Different ML-KEM shared secrets result in distinct session keys | Distinct session keys derived | **PASS** |
 | `KD-04` | HKDF Domain Key Separation | Derived encryptionKey and confirmationKey are cryptographically distinct | Encryption key and confirmation key are distinct | **PASS** |
-| `KC-01` | HMAC Mutual Key Confirmation Verification | Valid HMAC confirmation tag over handshake transcript is verified | HMAC confirmation tag verified successfully | **PASS** |
-| `KC-02` | HMAC Tampered Handshake Rejection | Tampered handshake payload is rejected during HMAC confirmation | Tampered handshake HMAC successfully rejected | **PASS** |
+| `KC-01` | HMAC Mutual Key Confirmation Verification | Valid HMAC confirmation tag over handshake transcript is verified using derived confirmationKey | HMAC confirmation tag verified successfully with derived confirmationKey | **PASS** |
+| `KC-02` | HMAC Tampered Handshake Rejection | Tampered handshake payload is rejected during HMAC confirmation using derived confirmationKey | Tampered handshake HMAC successfully rejected with derived confirmationKey | **PASS** |
 | `AE-01` | AES-GCM-256 Authenticated Encryption/Decryption | Valid plaintext encrypted and decrypted with AAD matches original string | Decrypted plaintext matches original message | **PASS** |
 | `AE-02` | AES-GCM-256 Tampered Ciphertext Authentication | Bit-flipped ciphertext fails GCM tag authentication and throws error | Tampered ciphertext rejected by WebCrypto GCM tag check | **PASS** |
 | `AE-03` | AES-GCM-256 Key Authenticity Verification | Decryption with unassociated AES key fails authentication tag verification | Decryption with wrong key rejected | **PASS** |

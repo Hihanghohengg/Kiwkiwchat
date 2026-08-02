@@ -9,11 +9,12 @@
         .container { max-width: 1200px; margin: 0 auto; }
         h1, h2, h3 { color: #38bdf8; }
         .card { background: #1e293b; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #334155; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
         .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
         .stat-card { background: #0f172a; padding: 1rem; border-radius: 6px; border: 1px solid #334155; text-align: center; }
         .stat-value { font-size: 2rem; font-weight: bold; margin-top: 0.5rem; }
-        .spec-box { background: #0f172a; border-radius: 6px; padding: 1rem; border: 1px solid #334155; font-size: 0.92rem; line-height: 1.6; }
+        .spec-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+        .spec-table td { padding: 8px 12px; border-bottom: 1px solid #334155; font-size: 0.95rem; }
+        .spec-table td:first-child { width: 28%; color: #94a3b8; font-weight: 600; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; font-size: 0.95rem; }
         th { background: #0f172a; color: #94a3b8; font-weight: 600; }
@@ -26,30 +27,18 @@
         
         <div class="card">
             <h2>Test Environment & Hardware Specification</h2>
-            <div class="grid-2">
-                <div class="spec-box">
-                    <h3 style="margin-top:0; color:#a78bfa;">🎯 Target Device Specification (Manual)</h3>
-                    <div><strong>Device:</strong> ASUS Vivobook 14X M1403QA</div>
-                    <div><strong>Processor:</strong> AMD Ryzen 7</div>
-                    <div><strong>Integrated Graphics:</strong> AMD Radeon Vega 7</div>
-                    <div><strong>RAM:</strong> 8 GB Dual-Channel</div>
-                    <div><strong>Storage:</strong> 512 GB M.2 NVMe SSD</div>
-                </div>
-                <div class="spec-box">
-                    <h3 style="margin-top:0; color:#38bdf8;">💻 System Detected Specification (Auto-Probed)</h3>
-                    <div><strong>Model:</strong> <code>VivoBook_ASUSLaptop M1403QA_M1403QA</code></div>
-                    <div><strong>Exact CPU:</strong> <code>AMD Ryzen 5 5600H with Radeon Graphics</code></div>
-                    <div><strong>RAM Detected:</strong> <code>15.41 GB</code></div>
-                    <div><strong>OS:</strong> <code>Windows 10 (10.0.26200)</code></div>
-                    <div><strong>Python:</strong> <code>3.11.9</code> | <strong>Node:</strong> <code>v22.17.0</code></div>
-                    <div><strong>Browser:</strong> <code>Chromium 149.0.7827.55</code></div>
-                    <div><strong>ML-KEM:</strong> <code>^2.7.0</code></div>
-                    <div><strong>Commit:</strong> <code>609a1fe1c529e0e7fe27ac4fde6eb1da5022af46</code></div>
-                    <div><strong>Time:</strong> <code>2026-08-01T22:11:51+0700 (WIB (+0700))</code></div>
-                </div>
-            </div>
-            <h3>Discrepancy & Observation Notes</h3>
-            <div style="background:#1e293b; border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;"><strong>⚠️ Note:</strong> Processor Discrepancy: Target spesifikasi manual mencantumkan 'AMD Ryzen 7', sedangkan deteksi aktual hardware mendeteksi 'AMD Ryzen 5 5600H with Radeon Graphics'.</div><div style="background:#1e293b; border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;"><strong>⚠️ Note:</strong> RAM Discrepancy: Target spesifikasi manual mencantumkan '8 GB Dual-Channel', sedangkan deteksi aktual sistem mendeteksi total RAM fisik sebesar 15.41 GB (RAM terpasang/upgrade 16 GB).</div><div style="background:#1e293b; border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;"><strong>⚠️ Note:</strong> Graphics & Storage: Deteksi sistem mendeteksi 'AMD Radeon(TM) Graphics' dan SSD 512 GB (INTEL SSDPEKNU512GZ) sesuai profil perangkat.</div>
+            <table class="spec-table">
+                <tr><td>Device Model</td><td><code>ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA (ASUS VivoBook 14X M1403QA)</code></td></tr>
+                <tr><td>Processor (CPU)</td><td><code>AMD Ryzen 5 5600H with Radeon Graphics</code></td></tr>
+                <tr><td>RAM Configuration</td><td><code>16 GB Installed (Dual-Channel: 8 GB Micron Technology DDR4-3200 (P0 CHANNEL A), 8 GB Micron Technology DDR4-3200 (P0 CHANNEL B)), 15.41 GB Usable</code></td></tr>
+                <tr><td>Integrated Graphics</td><td><code>AMD Radeon(TM) Graphics</code></td></tr>
+                <tr><td>Storage (BusType/Media)</td><td><code>INTEL SSDPEKNU512GZ (477 GB NVMe SSD, BusType: NVMe, MediaType: SSD)</code></td></tr>
+                <tr><td>Operating System</td><td><code>Microsoft Windows 11 Home Single Language (10.0.26200 (Build 26200))</code></td></tr>
+                <tr><td>Runtime Environment</td><td>Python <code>3.11.9</code> &bull; Node.js <code>v22.17.0</code> &bull; <code>Chromium 149.0.7827.55</code></td></tr>
+                <tr><td>ML-KEM Package</td><td><code>^2.7.0</code></td></tr>
+                <tr><td>Source Commit Tested</td><td><code>e178c6113824159df3bdd585cb08fb3132ca8581</code> (Git Dirty: <code>True</code>)</td></tr>
+                <tr><td>Timestamp</td><td><code>2026-08-01T22:21:21+0700 (WIB (+0700))</code></td></tr>
+            </table>
         </div>
 
         <div class="grid-stats">
@@ -140,16 +129,16 @@
             <tr>
                 <td><code>KC-01</code></td>
                 <td><strong>HMAC Mutual Key Confirmation Verification</strong></td>
-                <td>Valid HMAC confirmation tag over handshake transcript is verified</td>
-                <td>HMAC confirmation tag verified successfully</td>
+                <td>Valid HMAC confirmation tag over handshake transcript is verified using derived confirmationKey</td>
+                <td>HMAC confirmation tag verified successfully with derived confirmationKey</td>
                 <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
             </tr>
             
             <tr>
                 <td><code>KC-02</code></td>
                 <td><strong>HMAC Tampered Handshake Rejection</strong></td>
-                <td>Tampered handshake payload is rejected during HMAC confirmation</td>
-                <td>Tampered handshake HMAC successfully rejected</td>
+                <td>Tampered handshake payload is rejected during HMAC confirmation using derived confirmationKey</td>
+                <td>Tampered handshake HMAC successfully rejected with derived confirmationKey</td>
                 <td style="text-align:center;"><span style="background:#10b981; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">PASS</span></td>
             </tr>
             

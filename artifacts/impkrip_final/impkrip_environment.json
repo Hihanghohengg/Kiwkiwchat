@@ -1,38 +1,28 @@
 {
-  "target_manual_specification": {
-    "device": "ASUS Vivobook 14X M1403QA",
-    "processor": "AMD Ryzen 7",
-    "integrated_graphics": "AMD Radeon Vega 7",
-    "ram": "8 GB Dual-Channel",
-    "storage": "512 GB M.2 NVMe SSD"
-  },
-  "system_detected_specification": {
-    "device_model": "VivoBook_ASUSLaptop M1403QA_M1403QA",
-    "exact_cpu": "AMD Ryzen 5 5600H with Radeon Graphics",
-    "cpu_raw": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
-    "total_ram_gb": 15.41,
-    "os": "Windows 10",
-    "os_version": "10.0.26200",
+  "test_environment": {
+    "device": "ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop M1403QA_M1403QA (ASUS VivoBook 14X M1403QA)",
+    "processor": "AMD Ryzen 5 5600H with Radeon Graphics",
+    "integrated_graphics": "AMD Radeon(TM) Graphics",
+    "ram": "16 GB Installed (Dual-Channel: 8 GB Micron Technology DDR4-3200 (P0 CHANNEL A), 8 GB Micron Technology DDR4-3200 (P0 CHANNEL B)), 15.41 GB Usable",
+    "total_ram_usable_gb": 15.41,
+    "storage": "INTEL SSDPEKNU512GZ (477 GB NVMe SSD, BusType: NVMe, MediaType: SSD)",
+    "operating_system": "Microsoft Windows 11 Home Single Language",
+    "operating_system_version": "10.0.26200 (Build 26200)",
     "python_version": "3.11.9",
     "node_version": "v22.17.0",
     "browser": "Chromium 149.0.7827.55",
     "mlkem_version": "^2.7.0",
-    "storage_detected": "INTEL SSDPEKNU512GZ (512 GB NVMe SSD)",
-    "git_commit": "609a1fe1c529e0e7fe27ac4fde6eb1da5022af46",
-    "timestamp": "2026-08-01T22:12:06+0700",
+    "source_commit_tested": "e178c6113824159df3bdd585cb08fb3132ca8581",
+    "git_dirty": true,
+    "timestamp": "2026-08-01T22:21:21+0700",
     "timezone": "WIB (+0700)"
   },
-  "discrepancy_and_environment_notes": [
-    "Processor Discrepancy: Target spesifikasi manual mencantumkan 'AMD Ryzen 7', sedangkan deteksi aktual hardware mendeteksi 'AMD Ryzen 5 5600H with Radeon Graphics'.",
-    "RAM Discrepancy: Target spesifikasi manual mencantumkan '8 GB Dual-Channel', sedangkan deteksi aktual sistem mendeteksi total RAM fisik sebesar 15.41 GB (RAM terpasang/upgrade 16 GB).",
-    "Graphics & Storage: Deteksi sistem mendeteksi 'AMD Radeon(TM) Graphics' dan SSD 512 GB (INTEL SSDPEKNU512GZ) sesuai profil perangkat."
-  ],
-  "benchmark_parameters": {
-    "warmup": 20,
-    "iterations": 200,
-    "runs": 5,
-    "total_samples_per_metric": 1000
-  },
-  "timestamp": "2026-08-01T22:12:06+0700",
-  "git_commit": "609a1fe1c529e0e7fe27ac4fde6eb1da5022af46"
+  "initial_user_provided_specification": {
+    "device": "ASUS Vivobook 14X M1403QA",
+    "processor": "AMD Ryzen 7",
+    "integrated_graphics": "AMD Radeon Vega 7",
+    "ram": "8 GB Dual-Channel",
+    "storage": "512 GB M.2 NVMe SSD",
+    "audit_note": "Initial target placeholder specification. Actual verified hardware environment is recorded in test_environment above."
+  }
 }

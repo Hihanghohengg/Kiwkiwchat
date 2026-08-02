@@ -99,7 +99,11 @@ window.runBenchmarkV2 = async function (config) {
         const wrongKey = await enc.importKey(await enc.generateKey());
         try { await enc.decrypt(ct, iv, wrongKey, 0, 'initiator-to-responder', 2, 'bench-room'); } catch { results.negative.aesWrongKey = true; }
 
-        const hmacKey = await crypto.subtle.importKey("raw", new Uint8Array(32).fill(1), { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]);
+        const testClassicalForHmac = await enc.importKey(await enc.generateKey());
+        const testPqForHmac = new Uint8Array(32).fill(1);
+        const testTranscriptForHmac = new Uint8Array(32).fill(2);
+        const testHmacDerived = await enc.deriveSessionKeys(testClassicalForHmac, testPqForHmac, testTranscriptForHmac);
+        const hmacKey = testHmacDerived.confirmationKey;
         const payload = new Uint8Array(32).fill(2);
         const sig = await crypto.subtle.sign("HMAC", hmacKey, payload);
         const badPayload = new Uint8Array(32).fill(2); badPayload[0] ^= 0xFF;
@@ -171,10 +175,10 @@ window.runBenchmarkV2 = async function (config) {
 
             // AES KeyGen
             let benchKeyB64, benchKey;
-            await measure(isWarmup ? [] : results.aes.keygen, async () => {
+            await measureBatch(isWarmup ? [] : results.aes.keygen, async () => {
                 benchKeyB64 = await enc.generateKey();
                 benchKey = await enc.importKey(benchKeyB64);
-            });
+            }, 10);
 
             // HKDF deriveSessionKeys
             let derivedKeys;
@@ -258,12 +262,12 @@ window.runBenchmarkV2 = async function (config) {
                 results.coldStart['aes_enc100k'] = tEnc100k;
                 results.coldStart['aes_dec100k'] = tDec100k;
             }
-            await measure(isWarmup ? [] : results.aes.enc100k, async () => {
+            await measureBatch(isWarmup ? [] : results.aes.enc100k, async () => {
                 ct100k = await enc.encrypt(payload100k, benchKey, i, 'initiator-to-responder', 2, 'bench');
-            });
-            await measure(isWarmup ? [] : results.aes.dec100k, async () => {
+            }, 5);
+            await measureBatch(isWarmup ? [] : results.aes.dec100k, async () => {
                 await enc.decrypt(ct100k.ciphertext, ct100k.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
-            });
+            }, 5);
         }
 
         // --- PROTOCOL SIMULATION ---

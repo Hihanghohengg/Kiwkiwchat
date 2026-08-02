@@ -35,9 +35,10 @@ def get_system_metadata(browser_version=None):
     os_caption = "Microsoft Windows 11 Home Single Language"
     os_version = "10.0.26200"
     os_build = "26200"
+    os_arch = "64-bit"
     try:
         out = subprocess.check_output(
-            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version, BuildNumber | ConvertTo-Json"],
+            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version, BuildNumber, OSArchitecture | ConvertTo-Json"],
             stderr=subprocess.DEVNULL
         ).decode().strip()
         if out:
@@ -45,16 +46,17 @@ def get_system_metadata(browser_version=None):
             os_caption = os_data.get("Caption", os_caption).strip()
             os_version = str(os_data.get("Version", os_version)).strip()
             os_build = str(os_data.get("BuildNumber", os_build)).strip()
+            os_arch = str(os_data.get("OSArchitecture", os_arch)).strip()
     except Exception:
         pass
 
     # 3. RAM Modules & Total
     total_ram_usable_gb = round(psutil.virtual_memory().total / (1024 ** 3), 2)
     ram_installed_gb = 16
-    ram_config = "16 GB Installed (Dual-Channel: 2x 8 GB Micron DDR4-3200), 15.41 GB Usable"
+    ram_config = "16 GB Installed (2x 8 GB Micron DDR4-3200), 15.41 GB Usable"
     try:
         out = subprocess.check_output(
-            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_PhysicalMemory | Select-Object BankLabel, Capacity, Speed, Manufacturer | ConvertTo-Json"],
+            ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_PhysicalMemory | Select-Object Capacity, Speed, Manufacturer, PartNumber | ConvertTo-Json"],
             stderr=subprocess.DEVNULL
         ).decode().strip()
         if out:
@@ -68,15 +70,13 @@ def get_system_metadata(browser_version=None):
                 cap_gb = round(int(m.get("Capacity", 0)) / (1024 ** 3))
                 mfg = m.get("Manufacturer", "").strip()
                 spd = m.get("Speed", "")
-                bank = m.get("BankLabel", "").strip()
-                modules_desc.append(f"{cap_gb} GB {mfg} DDR4-{spd} ({bank})")
-            channel_str = "Dual-Channel" if len(mem_data) == 2 else f"{len(mem_data)} Modules"
-            ram_config = f"{ram_installed_gb} GB Installed ({channel_str}: {', '.join(modules_desc)}), {total_ram_usable_gb} GB Usable"
+                modules_desc.append(f"{cap_gb} GB {mfg} DDR4-{spd}".strip())
+            ram_config = f"{ram_installed_gb} GB Installed ({', '.join(modules_desc)}), {total_ram_usable_gb} GB Usable"
     except Exception:
         pass
 
     # 4. Storage & BusType
-    storage_desc = "INTEL SSDPEKNU512GZ (512 GB NVMe SSD, BusType: NVMe, MediaType: SSD)"
+    storage_desc = "INTEL SSDPEKNU512GZ (512 GB SSD, BusType: NVMe, MediaType: SSD)"
     try:
         out = subprocess.check_output(
             ["powershell", "-NoProfile", "-Command", "Get-PhysicalDisk | Select-Object FriendlyName, MediaType, BusType, Size | ConvertTo-Json"],
@@ -92,26 +92,26 @@ def get_system_metadata(browser_version=None):
                 mtype = d.get("MediaType", "").strip()
                 btype = d.get("BusType", "").strip()
                 dsize = round(int(d.get("Size", 0)) / (1024 ** 3))
-                disk_descs.append(f"{fname} ({dsize} GB NVMe SSD, BusType: {btype}, MediaType: {mtype})")
+                disk_descs.append(f"{fname} ({dsize} GB SSD, BusType: {btype}, MediaType: {mtype})")
             if disk_descs:
                 storage_desc = "; ".join(disk_descs)
     except Exception:
         pass
 
     # 5. GPU
-    gpu_name = "AMD Radeon(TM) Graphics"
+    gpu_name = "AMD Radeon(TM) Graphics (Integrated)"
     try:
         out = subprocess.check_output(
             ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name"],
             stderr=subprocess.DEVNULL
         ).decode().strip()
         if out:
-            gpu_name = out
+            gpu_name = f"{out} (Integrated)" if "Integrated" not in out else out
     except Exception:
         pass
 
     # 6. Computer Model
-    device_model = "ASUS VivoBook 14X M1403QA (VivoBook_ASUSLaptop M1403QA_M1403QA)"
+    device_model = "ASUS VivoBook M1403QA (VivoBook_ASUSLaptop M1403QA_M1403QA)"
     try:
         out = subprocess.check_output(
             ["powershell", "-NoProfile", "-Command", "Get-CimInstance Win32_ComputerSystem | Select-Object Manufacturer, Model | ConvertTo-Json"],
@@ -121,7 +121,7 @@ def get_system_metadata(browser_version=None):
             cs_data = json.loads(out)
             mfg = cs_data.get("Manufacturer", "").strip()
             mdl = cs_data.get("Model", "").strip()
-            device_model = f"{mfg} {mdl} (ASUS VivoBook 14X M1403QA)"
+            device_model = f"ASUS VivoBook M1403QA ({mfg} {mdl})"
     except Exception:
         pass
 
@@ -156,7 +156,7 @@ def get_system_metadata(browser_version=None):
             "total_ram_usable_gb": total_ram_usable_gb,
             "storage": storage_desc,
             "operating_system": os_caption,
-            "operating_system_version": f"{os_version} (Build {os_build})",
+            "operating_system_version": f"{os_version} (Build {os_build}, {os_arch})",
             "python_version": platform.python_version(),
             "node_version": node_v,
             "browser": f"Chromium {browser_version}" if browser_version else "Chromium",
@@ -303,6 +303,8 @@ async def run_impkrip_final(args):
                             run_record["details"][test_id] = "FAIL"
                             e2e_errors[test_id] = str(ex)
                 finally:
+                    if any(status == "FAIL" for status in run_record["details"].values()):
+                        run_record["status"] = "FAIL"
                     await b_instance.close()
                     e2e_runs_history.append(run_record)
             
