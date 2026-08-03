@@ -1,8 +1,9 @@
----
 # Bandit configuration file for testing Kiw Kiw Chat Backend
 exclude_dirs:
-  - tests
-  - venv
-  - .venv
-  - __pycache__
+  - "tests"
+  - "venv"
+  - ".venv"
+  - "__pycache__"
 skips: []
+
+

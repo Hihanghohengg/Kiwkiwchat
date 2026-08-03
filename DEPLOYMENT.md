@@ -28,7 +28,7 @@ Karena GitHub Pages dan Vercel tidak dirancang untuk menjalankan server Python W
    - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 5. Gulir ke bawah dan klik **Advanced** untuk menambahkan **Environment Variables**:
    - `ALLOWED_ORIGINS` = `https://<nama-domain-vercel-kamu.vercel.app>` *(Nanti bisa diupdate setelah Vercel selesai dibuat)*
-   - `MAX_MSG_BYTES` = `5242880`
+   - `MAX_MSG_BYTES` = `65536`
    - `WS_IDLE_TIMEOUT` = `60`
    - `ROOM_TTL_SECONDS` = `900`
 6. Klik **Create Web Service**. Tunggu beberapa menit hingga status menjadi *Live*.

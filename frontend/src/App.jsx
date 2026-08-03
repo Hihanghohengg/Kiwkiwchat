@@ -152,7 +152,9 @@ export default function App() {
     try {
       setStatus("Generating secure room identity...");
       addTermLine("INITIALIZING_QUANTUM_SAFE_PARAMETERS...");
-      const delayMs = Math.floor(Math.random() * (5000 - 3000 + 1) + 3000);
+      const delayMs = import.meta.env.VITE_TEST_MODE 
+        ? 50 
+        : Math.floor(Math.random() * (5000 - 3000 + 1) + 3000);
       await new Promise(r => setTimeout(r, delayMs));
 
       const response = await fetch(`${API_URL}/rooms`, {
@@ -514,6 +516,7 @@ export default function App() {
 
   return (
     <ChatRoom
+      roomId={roomId}
       isSecure={isSecure}
       status={status}
       isUrgent={timerSeconds <= 120}
