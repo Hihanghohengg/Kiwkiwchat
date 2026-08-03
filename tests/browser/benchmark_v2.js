@@ -9,6 +9,7 @@ window.runBenchmarkV2 = async function (config) {
         mlkem: { keygen: [], encap: [], decap: [] },
         aes: {
             keygen: [],
+            enc32b: [], dec32b: [],
             enc1k: [], dec1k: [],
             enc10k: [], dec10k: [],
             enc100k: [], dec100k: []
@@ -134,6 +135,10 @@ window.runBenchmarkV2 = async function (config) {
         results.negative.hkdfDifferentTranscript = !areEqual(eEnc1, eEnc4);
 
         // --- BENCHMARK PRIMITIVE LOOPS ---
+        const payload32b = "A".repeat(32);
+        if (new TextEncoder().encode(payload32b).byteLength !== 32) {
+            throw new Error("payload32b must be exactly 32 bytes UTF-8");
+        }
         const payload1k = "A".repeat(1024);
         const payload10k = "A".repeat(10240);
         const payload100k = "A".repeat(102400);
@@ -210,6 +215,25 @@ window.runBenchmarkV2 = async function (config) {
             }, 10);
             await measureBatch(isWarmup ? [] : results.hmac.verify, async () => {
                 await crypto.subtle.verify("HMAC", hmacBenchKey, hmacSig, payload);
+            }, 10);
+
+            // AES Encrypt/Decrypt 32 B (Paper Payload Alignment)
+            let ct32b;
+            if (isFirst) {
+                const tEnc32b = await measure([], async () => {
+                    ct32b = await enc.encrypt(payload32b, benchKey, i, 'initiator-to-responder', 2, 'bench');
+                });
+                const tDec32b = await measure([], async () => {
+                    await enc.decrypt(ct32b.ciphertext, ct32b.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
+                });
+                results.coldStart['aes_enc32b'] = tEnc32b;
+                results.coldStart['aes_dec32b'] = tDec32b;
+            }
+            await measureBatch(isWarmup ? [] : results.aes.enc32b, async () => {
+                ct32b = await enc.encrypt(payload32b, benchKey, i, 'initiator-to-responder', 2, 'bench');
+            }, 10);
+            await measureBatch(isWarmup ? [] : results.aes.dec32b, async () => {
+                await enc.decrypt(ct32b.ciphertext, ct32b.iv, benchKey, i, 'initiator-to-responder', 2, 'bench');
             }, 10);
 
             // AES Encrypt/Decrypt 1 KB
@@ -335,8 +359,12 @@ window.runBenchmarkV2 = async function (config) {
 
                 if (isFirst) {
                     resObj.cold = dur;
-                    if (!isLatent) results.coldStart['protocol_0ms'] = dur;
-                    else results.coldStart['protocol_5ms'] = dur;
+                    if (!isLatent) {
+                        results.coldStart['protocol_0ms'] = dur;
+                        results.coldStart['full_pq_upgrade_cold_start'] = dur;
+                    } else {
+                        results.coldStart['protocol_5ms'] = dur;
+                    }
                 } else if (!isWarmup) {
                     resObj.warm.push(dur);
                     resObj.initiatorTime.push(tAEnd - tStart);

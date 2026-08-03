@@ -180,10 +180,23 @@ def get_system_metadata(args, browser_version=None):
     except Exception:
         pass
 
-    git_dirty = False
+    tracked_source_dirty = False
     try:
-        dirty_out = subprocess.check_output(["git", "status", "--porcelain"], stderr=subprocess.DEVNULL).decode().strip()
-        git_dirty = bool(dirty_out)
+        tracked_out = subprocess.check_output(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        tracked_source_dirty = bool(tracked_out)
+    except Exception:
+        pass
+
+    working_tree_has_untracked = False
+    try:
+        untracked_out = subprocess.check_output(
+            ["git", "status", "--porcelain"],
+            stderr=subprocess.DEVNULL
+        ).decode().strip()
+        working_tree_has_untracked = bool(untracked_out)
     except Exception:
         pass
 
@@ -205,7 +218,10 @@ def get_system_metadata(args, browser_version=None):
             "browser": f"Chromium {browser_version}" if browser_version else "Chromium",
             "mlkem_version": mlkem_ver,
             "source_commit_tested": git_commit,
-            "git_dirty": git_dirty,
+            "tracked_source_dirty": tracked_source_dirty,
+            "working_tree_has_untracked_files": working_tree_has_untracked,
+            "generated_output_directory": os.path.abspath(args.output_dir),
+            "git_dirty": tracked_source_dirty,
             "timestamp": now_tz,
             "timezone": "WIB (+0700)"
         },
@@ -269,12 +285,16 @@ async def run_benchmark(args):
                 "hkdf_derive": [],
                 "hmac_sign": [],
                 "hmac_verify": [],
+                "hmac_mutual_confirm": [],
+                "aes_enc_32b": [],
+                "aes_dec_32b": [],
                 "aes_enc_1k": [],
                 "aes_dec_1k": [],
                 "aes_enc_10k": [],
                 "aes_dec_10k": [],
                 "aes_enc_100k": [],
                 "aes_dec_100k": [],
+                "aes_throughput_MBps": [],
                 "aes_throughput_mbps": [],
                 "protocol_0ms": [],
                 "protocol_5ms": []
@@ -287,9 +307,19 @@ async def run_benchmark(args):
                 
                 raw_metrics["hkdf_derive"].extend(res["hkdf"]["deriveSessionKeys"])
                 
-                raw_metrics["hmac_sign"].extend(res["hmac"]["sign"])
-                raw_metrics["hmac_verify"].extend(res["hmac"]["verify"])
+                # HMAC mutual confirmation: sign + verify local execution cost (not network RTT)
+                sign_samples = res["hmac"]["sign"]
+                verify_samples = res["hmac"]["verify"]
+                if len(sign_samples) != len(verify_samples):
+                    raise ValueError(f"HMAC sign samples count ({len(sign_samples)}) does not match verify samples count ({len(verify_samples)})")
                 
+                raw_metrics["hmac_sign"].extend(sign_samples)
+                raw_metrics["hmac_verify"].extend(verify_samples)
+                for s, v in zip(sign_samples, verify_samples):
+                    raw_metrics["hmac_mutual_confirm"].append(s + v)
+                
+                raw_metrics["aes_enc_32b"].extend(res["aes"]["enc32b"])
+                raw_metrics["aes_dec_32b"].extend(res["aes"]["dec32b"])
                 raw_metrics["aes_enc_1k"].extend(res["aes"]["enc1k"])
                 raw_metrics["aes_dec_1k"].extend(res["aes"]["dec1k"])
                 raw_metrics["aes_enc_10k"].extend(res["aes"]["enc10k"])
@@ -297,11 +327,12 @@ async def run_benchmark(args):
                 raw_metrics["aes_enc_100k"].extend(res["aes"]["enc100k"])
                 raw_metrics["aes_dec_100k"].extend(res["aes"]["dec100k"])
                 
-                # Compute throughput in MB/s for 100KB encryption timings
+                # Compute throughput in MB/s (Megabytes per second) for 100KB encryption timings
                 for t in res["aes"]["enc100k"]:
                     if t > 0:
-                        mbps = (0.1 / (t / 1000.0))
-                        raw_metrics["aes_throughput_mbps"].append(mbps)
+                        mb_per_sec = (0.1 / (t / 1000.0))
+                        raw_metrics["aes_throughput_MBps"].append(mb_per_sec)
+                        raw_metrics["aes_throughput_mbps"].append(mb_per_sec)
                         
                 raw_metrics["protocol_0ms"].extend(res["protocol"]["warm"])
                 raw_metrics["protocol_5ms"].extend(res["protocolLatent"]["warm"])
@@ -320,6 +351,16 @@ async def run_benchmark(args):
             benchmark_data = {
                 "manifest": manifest,
                 "cold_start": cold_starts_combined,
+                "cold_start_definitions": {
+                    "full_pq_upgrade_cold_start": "Single un-cached full PQ upgrade handshake execution (ML-KEM KeyGen + Encap + Decap + HKDF + HMAC confirmation) on fresh browser context before warm loops without simulated latency.",
+                    "primitive_cold_starts": "First un-cached iteration sample per individual cryptographic primitive."
+                },
+                "throughput_metadata": {
+                    "metric": "aes_throughput_MBps",
+                    "unit": "Megabytes per second (MB/s)",
+                    "payload_size": "100 KB (0.1 MB)",
+                    "formula": "0.1 MB / (elapsed_ms / 1000.0) -> MB/s"
+                },
                 "statistics": stats
             }
             with open(os.path.join(args.output_dir, "impkrip_benchmark.json"), "w", encoding="utf-8") as f:
@@ -335,7 +376,7 @@ async def run_benchmark(args):
                 f.write(f"# Storage: {env['storage']}\n")
                 f.write(f"# Operating System: {env['operating_system']} ({env['operating_system_version']})\n")
                 f.write(f"# Runtime: Python {env['python_version']}, Node {env['node_version']}, Browser {env['browser']}, ML-KEM {env['mlkem_version']}\n")
-                f.write(f"# Source Commit Tested: {env['source_commit_tested']} (Git Dirty: {env['git_dirty']})\n")
+                f.write(f"# Source Commit Tested: {env['source_commit_tested']} (Tracked Source Dirty: {env['tracked_source_dirty']}, Untracked Files: {env['working_tree_has_untracked_files']})\n")
                 f.write("Metric,Samples,Mean,Median,p95,Min,Max,StdDev\n")
                 for k, st in stats.items():
                     f.write(f"{k},{st['samples']},{st['mean']:.4f},{st['median']:.4f},{st['p95']:.4f},{st['min']:.4f},{st['max']:.4f},{st['stddev']:.4f}\n")
@@ -369,7 +410,7 @@ async def run_benchmark(args):
                 f.write(f"| **Node.js Version** | `{env['node_version']}` |\n")
                 f.write(f"| **Browser Engine** | `{env['browser']}` |\n")
                 f.write(f"| **ML-KEM Package** | `{env['mlkem_version']}` |\n")
-                f.write(f"| **Source Commit Tested** | `{env['source_commit_tested']}` (Git Dirty: `{env['git_dirty']}`) |\n")
+                f.write(f"| **Source Commit Tested** | `{env['source_commit_tested']}` (Tracked Source Dirty: `{env['tracked_source_dirty']}`, Untracked Files: `{env['working_tree_has_untracked_files']}`) |\n")
                 f.write(f"| **Timestamp & Timezone** | `{env['timestamp']}` ({env['timezone']}) |\n\n")
                 
                 f.write("## 2. Benchmark Statistical Distribution\n\n")
@@ -377,19 +418,23 @@ async def run_benchmark(args):
                 f.write("| Metric | Samples | Mean (ms) | Median (ms) | p95 (ms) | Min (ms) | Max (ms) | StdDev (ms) |\n")
                 f.write("|---|---:|---:|---:|---:|---:|---:|---:|\n")
                 for k, st in stats.items():
-                    f.write(f"| `{k}` | {st['samples']} | {st['mean']:.4f} | {st['median']:.4f} | {st['p95']:.4f} | {st['min']:.4f} | {st['max']:.4f} | {st['stddev']:.4f} |\n")
+                    unit = "MB/s" if "throughput" in k else "ms"
+                    f.write(f"| `{k}` | {st['samples']} | {st['mean']:.4f} {unit} | {st['median']:.4f} {unit} | {st['p95']:.4f} {unit} | {st['min']:.4f} {unit} | {st['max']:.4f} {unit} | {st['stddev']:.4f} {unit} |\n")
                 
                 f.write("\n## 3. Cold Start Performance\n\n")
-                f.write("| Operation | Cold Start (ms) |\n|---|---:|\n")
+                f.write("Cold start measures the latency of the very first un-cached invocation on a clean browser execution context prior to V8 JIT optimization:\n\n")
+                f.write("| Operation | Cold Start (ms) | Notes |\n|---|---:|---|\n")
                 for k, v in cold_starts_combined.items():
-                    f.write(f"| `{k}` | {v:.4f} |\n")
+                    note = "Full 3-step PQ handshake" if "protocol" in k or "full_pq" in k else "Individual primitive first execution"
+                    f.write(f"| `{k}` | {v:.4f} | {note} |\n")
                     
                 f.write("\n## 4. Key Takeaways & Discussion\n\n")
                 f.write("- **Crypto-Only PQ Upgrade (`protocol_0ms`)**: Post-quantum key establishment handshakes execute in sub-50ms median in-browser using microtask scheduling without artificial delay.\n")
                 f.write("- **Protocol Simulation (`protocol_5ms`)**: Incorporating realistic 5ms transport latency adds approximately two round-trip message delays, matching theoretical expectations.\n")
                 f.write("- **Post-Quantum Primitive Efficiency**: ML-KEM-768 key encapsulation and decapsulation execute in under 1 ms per operation.\n")
                 f.write("- **Sub-Millisecond Batching**: High-frequency primitive operations (ML-KEM, HKDF, HMAC, AES) are measured using batched loops (10 iterations per batch sample) to overcome browser timer resolution limits.\n")
-                f.write("- **Symmetric Throughput**: AES-GCM-256 provides high throughput with minimal CPU overhead for chat payload sizes.\n")
+                f.write("- **Symmetric Throughput (`aes_throughput_MBps`)**: AES-GCM-256 authenticated encryption throughput is evaluated in Megabytes per second (MB/s) on 100 KB payloads.\n")
+                f.write("- **HMAC Mutual Confirmation (`hmac_mutual_confirm`)**: Evaluates the combined local cost of sign confirmation tag + verify confirmation tag over handshake transcripts.\n")
 
             print(f"[+] All benchmark artifacts generated in {args.output_dir}")
             
