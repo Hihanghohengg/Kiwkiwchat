@@ -13,7 +13,7 @@ $$\text{Use Case} \longrightarrow \text{Abuse Case} \longrightarrow \text{Securi
 | **UC-02** (Link Share) | **AC-01** (Signaling Sniff) | **SR-02** (Key in Fragment) | **T-03, T-07** (Relay Sniff / URL Leak) | `frontend/src/App.jsx:generateRoomKey` | `E2E-01`, `E2E-04` | `impkrip_test_report.json` | **PASS** |
 | **UC-03** (Peer B Join) | **AC-02** (Unauthorized Entry) | **SR-08, SR-14** (Token Auth) | **T-04, T-12** (3rd Peer / Rogue WS) | `backend/main.py:websocket_endpoint` | `E2E-03`, `BT-01`, `BT-05` | `impkrip_test_report.json`, `backend_websocket_test_results.json` | **PASS** |
 | **UC-04** (Signaling) | **AC-07** (WS Frame Bomb) | **SR-16** (Frame & Idle Guard) | **T-14** (Memory Exhaustion) | `backend/main.py:MAX_MSG_BYTES, WS_IDLE_TIMEOUT` | `BT-03`, `BT-04`, `BT-06` | `backend_websocket_test_results.json` | **PASS** |
-| **UC-04** (Signaling) | **AC-08** (CORS Spoofing) | **SR-13** (CORS Whitelist) | **T-11** (CORS Bypass) | `backend/main.py:ALLOWED_ORIGINS` | Static Code Review | `backend/main.py:114-119` | **CODE_REVIEW_ONLY** |
+| **UC-04** (Signaling) | **AC-08** (CORS Spoofing) | **SR-13** (CORS Whitelist) | **T-11** (CORS Bypass) | `backend/main.py:ALLOWED_ORIGINS` | `BT-07`, `BT-08` (Dynamic CORS Preflight Tests) & Code Review | `backend_websocket_test_results.json` | **PASS** |
 | **UC-05** (PQ Upgrade) | **AC-03** (Quantum Sniffing) | **SR-03** (ML-KEM-768) | **T-02** (Quantum Cryptanalysis) | `frontend/src/crypto/mlkem.js` | `PQ-01`, `PQ-02`, `PQ-03`, `PQ-04` | `impkrip_test_report.json` | **PASS** |
 | **UC-05** (PQ Upgrade) | **AC-03** (Key Derivation) | **SR-04** (HKDF Fusion) | **T-02** (Quantum Cryptanalysis) | `frontend/src/crypto/encryption.js` | `KD-01`, `KD-02`, `KD-03`, `KD-04` | `impkrip_test_report.json` | **PASS** |
 | **UC-05** (PQ Upgrade) | **AC-03** (Handshake Tamper) | **SR-08** (HMAC Transcript) | **T-05** (MitM Handshake) | `frontend/src/crypto/pq_upgrade.js` | `KC-01`, `KC-02` | `impkrip_test_report.json` | **PASS** |
@@ -32,8 +32,8 @@ $$\text{Use Case} \longrightarrow \text{Abuse Case} \longrightarrow \text{Securi
 ## 2. Ringkasan Status 16 Ancaman Trike (T-01 s/d T-16)
 
 - **Total Ancaman**: 16 (100% terpetakan ke kebutuhan dan kontrol).
-- **PASS / PASS_WITH_FINDINGS**: 12 Ancaman (`T-01`, `T-02`, `T-03`, `T-04`, `T-05`, `T-07`, `T-09`, `T-10`, `T-12`, `T-13`, `T-14`, `T-15`)
-- **CODE_REVIEW_ONLY**: 1 Ancaman (`T-11` — CORS Whitelist pada `backend/main.py:ALLOWED_ORIGINS`; pengujian dinamis lintas origin dengan raw evidence belum diotomasi di test harness).
+- **PASS / PASS_WITH_FINDINGS**: 13 Ancaman (`T-01`, `T-02`, `T-03`, `T-04`, `T-05`, `T-07`, `T-09`, `T-10`, `T-11`, `T-12`, `T-13`, `T-14`, `T-15`)
+  - Termasuk `T-11` yang kini telah diverifikasi secara dinamis via `BT-07` dan `BT-08`.
 - **PARTIAL / OPEN_MEDIUM**: 3 Ancaman:
   - `T-06`: Batasan runtime JavaScript V8 Engine (tidak menjamin deterministic physical RAM zeroization).
   - `T-08`: Status `RP-01` PARTIAL (validasi sequence counter di application envelope; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual).

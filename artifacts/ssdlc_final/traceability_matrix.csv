@@ -3,7 +3,7 @@ UC-01,AC-06,SR-15,T-13,backend/main.py:create_room,BT-02,backend_websocket_test_
 UC-02,AC-01,SR-02,T-03; T-07,frontend/src/App.jsx:generateRoomKey,E2E-01; E2E-04,impkrip_test_report.json,PASS
 UC-03,AC-02,SR-08; SR-14,T-04; T-12,backend/main.py:websocket_endpoint,E2E-03; BT-01; BT-05,backend_websocket_test_results.json,PASS
 UC-04,AC-07,SR-16,T-14,backend/main.py:MAX_MSG_BYTES; WS_IDLE_TIMEOUT,BT-03; BT-04; BT-06,backend_websocket_test_results.json,PASS
-UC-04,AC-08,SR-13,T-11,backend/main.py:ALLOWED_ORIGINS,Static Code Review,backend/main.py:114-119,CODE_REVIEW_ONLY
+UC-04,AC-08,SR-13,T-11,backend/main.py:ALLOWED_ORIGINS,BT-07; BT-08; Code Review,backend_websocket_test_results.json,PASS
 UC-05,AC-03,SR-03,T-02,frontend/src/crypto/mlkem.js,PQ-01; PQ-02; PQ-03; PQ-04,impkrip_test_report.json,PASS
 UC-05,AC-03,SR-04,T-02,frontend/src/crypto/encryption.js,KD-01; KD-02; KD-03; KD-04,impkrip_test_report.json,PASS
 UC-05,AC-03,SR-08,T-05,frontend/src/crypto/pq_upgrade.js,KC-01; KC-02,impkrip_test_report.json,PASS

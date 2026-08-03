@@ -1,6 +1,6 @@
 # Inventaris Pengujian Keamanan (Security Test Inventory) — Kiw Kiw Chat
 
-Dokumen ini menyajikan inventaris lengkap dari seluruh kasus uji keamanan pada **Kiw Kiw Chat**, mencakup 19 kasus uji kriptografi & E2E (`test_impkrip_final.py`), 6 kasus uji dinamis backend & WebSocket (`test_backend_websocket_security.py`), inspeksi kode statis CORS, audit statis SAST (Bandit), audit dependensi SCA (npm audit & pip-audit), dan pemindaian pasif DAST (OWASP ZAP).
+Dokumen ini menyajikan inventaris lengkap dari seluruh kasus uji keamanan pada **Kiw Kiw Chat**, mencakup 19 kasus uji kriptografi & E2E (`test_impkrip_final.py`), 8 kasus uji dinamis backend, CORS & WebSocket (`test_backend_websocket_security.py`), audit statis SAST (Bandit), audit dependensi SCA (npm audit & pip-audit), dan pemindaian pasif DAST (OWASP ZAP).
 
 ---
 
@@ -32,7 +32,7 @@ Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file://
 
 ---
 
-## 2. Inventaris 6 Kasus Uji Dinamis Minimum Backend API & WebSocket Signaling (BT-01 s/d BT-06)
+## 2. Inventaris 8 Kasus Uji Dinamis Minimum Backend API & WebSocket Signaling (BT-01 s/d BT-08)
 
 Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`):
 
@@ -44,6 +44,8 @@ Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`
 | **BT-04** | WS Resiliency | Pengiriman frame malformed / JSON rusak ke soket signaling aktif. | SR-16 | T-14 | **PASS** | Frame diabaikan tanpa crash, soket tetap hidup dan merespon ping normal. |
 | **BT-05** | Room Teardown | Pengiriman sinyal `destroy_room` dan verifikasi penolakan koneksi baru berikutnya. | SR-11 | T-09, T-12 | **PASS** | Room dihapus seketika dari memori server; rekoneksi ditolak dengan 'Room not found' (kode 1008). |
 | **BT-06** | WS Idle Timeout | Pemeriksaan timeout inaktivitas soket signaling WebSocket (`WS_IDLE_TIMEOUT=3s` di test env). | SR-16 | T-14 | **PASS** | Koneksi idle terputus tepat setelah timeout dengan error inactivity dan close code 1001. |
+| **BT-07** | CORS Whitelist | Validasi preflight OPTIONS dengan trusted origin (`https://kiwkiwchat.vercel.app`). | SR-13 | T-11 | **PASS** | Status 200, `Access-Control-Allow-Origin` sesuai trusted origin, method `POST` diizinkan. |
+| **BT-08** | CORS Restriction | Validasi preflight OPTIONS dengan untrusted origin (`https://untrusted.example`). | SR-13 | T-11 | **PASS** | Status 400 'Disallowed CORS origin', `Access-Control-Allow-Origin` tidak diberikan ke untrusted domain. |
 
 ---
 
@@ -51,7 +53,7 @@ Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`
 
 | Kontrol / Alat | Deskripsi Prosedur Evaluasi | Security Requirement | Trike Threat Terkait | Status Evaluasi | Catatan Bukti |
 |---|---|---|---|:---:|---|
-| **CORS Code Inspection** | Inspeksi deklarasi whitelist origin pada `backend/main.py:114-119`. | SR-13 | T-11 | **CODE_REVIEW_ONLY** | Whitelist `ALLOWED_ORIGINS` terdefinisi; pengujian dinamis lintas origin belum diotomasi di test harness. |
+| **CORS Dynamic & Code Audit** | Validasi preflight OPTIONS (BT-07 & BT-08) dan inspeksi deklarasi whitelist pada `backend/main.py:114-119`. | SR-13 | T-11 | **PASS** | Dynamic tests BT-07 & BT-08 lolos 100%; whitelist `ALLOWED_ORIGINS` terdefinisi dan ditegakkan secara presisi. |
 | **Bandit v1.9.4 (SAST)** | Pemindaian keamanan statis kode Python backend (`backend/`, 269 LOC). | SR-17 | T-15 | **PASS (0 High)** | 0 High, 1 Med (B104 binding), 3 Low (B110 pass). Raw: [`bandit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/bandit_report.json). |
 | **NPM Audit (SCA)** | Pemindaian kerentanan dependensi frontend (113 paket dipindai). | SR-17 | T-15 | **PASS (0 Vulns)** | 0 kerentanan terdeteksi. Raw: [`npm_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/npm_audit_report.json). |
 | **Pip-audit (SCA)** | Pemindaian dependensi backend Python. | SR-17 | T-15 | **OPEN / PARTIAL** | Ditemukan 17 advisory PyPI terbuka (FastAPI/Starlette/multipart). Raw: [`pip_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/pip_audit_report.json). |

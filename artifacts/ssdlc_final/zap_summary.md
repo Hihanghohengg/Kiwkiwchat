@@ -66,4 +66,4 @@ Dokumen ini memuat ringkasan eksekutif hasil pemindaian keamanan dinamis (*Dynam
 3. **Batasan Kesimpulan**:
    - Pemindaian ZAP membuktikan kebersihan dari kerentanan High severity pada frontend statis Vercel.
    - Pemindaian ZAP **bukan bukti bahwa seluruh sistem atau backend bebas dari celah keamanan**.
-   - Keamanan backend API dan signaling WebSocket diverifikasi secara terpisah melalui pengujian dinamis lokal (kasus uji `BT-01` s/d `BT-06`) dan tinjauan kode statis Bandit.
+   - Keamanan backend API dan signaling WebSocket diverifikasi secara terpisah melalui pengujian dinamis lokal (kasus uji `BT-01` s/d `BT-08`) dan tinjauan kode statis Bandit.

@@ -28,7 +28,7 @@ Dokumen ini menyajikan status verifikasi kontrol keamanan berbasis pemodelan anc
 | **T-08** | Serangan Replay Pesan Aplikasi | IV acak 12-byte + sequence counter & direction pada AAD | Automated Unit (`AE-04`) & Envelope Test (`RP-01`) | **PARTIAL** | Sequence validation terverifikasi pada envelope layer; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual. |
 | **T-09** | Pengambilalihan Sesi Pasca Exit | Pembersihan room di memori server dan emit `room_ended` | Automated Multi-run E2E (`E2E-04`) & Dynamic WS (`BT-05`) | **PASS** | Terverifikasi 3/3 putaran pengujian independen dan dynamic test BT-05. |
 | **T-10** | Ekstraksi Cache Browser Pasca Sesi | Penyimpanan `sessionStorage` per-tab & pembersihan total | Automated Multi-run E2E (`E2E-04`) | **PASS** | Data terhapus saat room destroy / tab close. |
-| **T-11** | Akses API Lintas Domain (CORS) | CORS Whitelist dibatasi ke `ALLOWED_ORIGINS` | Static Code Review | **CODE_REVIEW_ONLY** | Inspeksi kode sumber `backend/main.py:114-119` memverifikasi whitelist origin; pengujian dinamis lintas origin belum diotomasi di test harness. |
+| **T-11** | Akses API Lintas Domain (CORS) | CORS Whitelist dibatasi ke `ALLOWED_ORIGINS` | Automated Dynamic Tests (`BT-07`, `BT-08`) & Code Review | **PASS** | Terverifikasi dinamis: Preflight OPTIONS untuk trusted origin (`https://kiwkiwchat.vercel.app`) menghasilkan 200 dengan ACAO; untrusted origin (`https://untrusted.example`) ditolak dengan status 400 tanpa ACAO. |
 | **T-12** | Koneksi Liar Langsung ke WS | Pemeriksaan keberadaan room di memori server & validasi token | Automated Dynamic Tests (`BT-01`, `BT-05`) | **PASS** | Terverifikasi dinamis: room/token tidak valid ditolak kode 1008. |
 | **T-13** | DoS Flooding Pembuatan Room | Rate limiting 10 req/IP/menit via SlowAPI pada `POST /rooms` | Automated Dynamic Test (`BT-02`) | **PASS** | Terverifikasi dinamis: 10 request pertama diterima (HTTP 200), request berikutnya menghasilkan HTTP 429. |
 | **T-14** | Memory Exhaustion via Frame WS | Batas frame 64 KB (`MAX_MSG_BYTES`) & idle timeout 60s | Automated Dynamic Tests (`BT-03`, `BT-04`, `BT-06`) | **PASS** | Terverifikasi dinamis: frame > 64 KB ditolak kode 1009; frame rusak diabaikan; idle timeout ditutup kode 1001. |
@@ -40,6 +40,6 @@ Dokumen ini menyajikan status verifikasi kontrol keamanan berbasis pemodelan anc
 ## 3. Kesimpulan Verifikasi
 
 Register ancaman Trike telah terpetakan secara lengkap (**100% mapped**) ke kontrol arsitektur dan kode sumber:
-- **PASS / PASS_WITH_FINDINGS**: 12 Ancaman (`T-01`, `T-02`, `T-03`, `T-04`, `T-05`, `T-07`, `T-09`, `T-10`, `T-12`, `T-13`, `T-14`, `T-15`).
-- **CODE_REVIEW_ONLY**: 1 Ancaman (`T-11` — CORS Whitelist di backend/main.py).
+- **PASS / PASS_WITH_FINDINGS**: 13 Ancaman (`T-01`, `T-02`, `T-03`, `T-04`, `T-05`, `T-07`, `T-09`, `T-10`, `T-11`, `T-12`, `T-13`, `T-14`, `T-15`).
+  - Termasuk `T-11` yang kini telah diverifikasi secara dinamis via `BT-07` dan `BT-08`.
 - **PARTIAL / OPEN_MEDIUM**: 3 Ancaman (`T-06`, `T-08`, `T-16`) sesuai batasan runtime JavaScript, lingkup test harness envelope, dan temuan terbuka CSP pada scanner DAST.

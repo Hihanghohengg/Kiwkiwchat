@@ -1,32 +1,34 @@
 # Laporan Hasil Pengujian Dinamis Minimum Backend API & WebSocket Signaling — Kiw Kiw Chat
 
-Dokumen ini menyajikan hasil empiris pengujian keamanan dinamis minimum terhadap endpoint REST API dan protokol WebSocket Signaling pada **Kiw Kiw Chat** (Prototipe Riset) di lingkungan uji lokal (*Local Test Environment*).
+Dokumen ini menyajikan hasil empiris pengujian keamanan dinamis minimum terhadap endpoint REST API, kebijakan CORS, dan protokol WebSocket Signaling pada **Kiw Kiw Chat** (Prototipe Riset) di lingkungan uji lokal (*Local Test Environment*).
 
 ---
 
 ## 1. Metadata Lingkungan Pengujian
 
-- **Target Sistem**: REST API (`POST /rooms`) & WebSocket Signaling (`/rooms/{room_id}/ws`)
+- **Target Sistem**: REST API (`POST /rooms`), CORS Preflight (`OPTIONS /rooms`) & WebSocket Signaling (`/rooms/{room_id}/ws`)
 - **Lingkungan Uji**: http://127.0.0.1:8000 (Local Test Harness)
 - **Sistem Operasi**: Windows 10 (10.0.26200) (AMD64)
 - **Python Runtime**: Python 3.11.9 (CPython)
-- **Git Commit**: `a60bf9fabbf691d3fabb425b42ec0405219dfa8d` (Dirty: `True`)
-- **Waktu Eksekusi**: 2026-08-03T03:41:28.347927+00:00
+- **Git Commit**: `5ba96e22895f8bd4df67b0d004a9ff2c02722f12` (Dirty: `True`)
+- **Waktu Eksekusi**: 2026-08-03T04:20:15.605084+00:00
 - **Injected Idle Timeout**: 3s (via test environment variable WS_IDLE_TIMEOUT=3)
-- **Status Evaluasi Keseluruhan**: **6/6 PASS (100%)**
+- **Status Evaluasi Keseluruhan**: **8/8 PASS (100.0%)**
 
 ---
 
-## 2. Ringkasan Hasil Pengujian Minimum (BT-01 s/d BT-06)
+## 2. Ringkasan Hasil Pengujian Minimum (BT-01 s/d BT-08)
 
 | Test ID | Nama Kasus Uji | Target Endpoint | Ancaman Trike | Status | Waktu |
 |:---:|---|---|---|:---:|:---:|
-| **BT-01** | Third Peer Rejection (Strict 2-peer capacity enforcement) | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-04 (Penyusupan Pihak Ketiga ke Dalam Room / 3rd Peer Join) | **PASS** | 2026-08-03T03:41:23.252763+00:00 |
-| **BT-02** | API Rate Limiting on POST /rooms (HTTP 429 enforcement) | `POST http://127.0.0.1:8000/rooms` | T-13 (DoS Flooding Pembuatan Room / Resource Exhaustion) | **PASS** | 2026-08-03T03:41:20.831648+00:00 |
-| **BT-03** | Oversized WebSocket Payload Rejection (MAX_MSG_BYTES 64 KB guard) | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-14 (Exhaustion Memori Melalui Frame WebSocket Raksasa) | **PASS** | 2026-08-03T03:41:23.634333+00:00 |
-| **BT-04** | Malformed WebSocket Message Handling (Crash Resilience & Input Sanitization) | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-14 (Exhaustion Memori / Server Crash via Malformed Input) | **PASS** | 2026-08-03T03:41:24.222794+00:00 |
-| **BT-05** | Explicit Room Destruction & Post-Destruction Reconnection Rejection | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-09 (Pengambilalihan Sesi Setelah Salah Satu Peer Keluar) | **PASS** | 2026-08-03T03:41:24.680745+00:00 |
-| **BT-06** | WebSocket Idle Timeout Disconnection (WS_IDLE_TIMEOUT Inactivity Guard) | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-14 (Exhaustion Memori Melalui Koneksi Idle / Zombie Sockets) | **PASS** | 2026-08-03T03:41:28.142812+00:00 |
+| **BT-01** | Third Peer Rejection (Strict 2-peer capacity enforcement) | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-04 (Penyusupan Pihak Ketiga ke Dalam Room / 3rd Peer Join) | **PASS** | 2026-08-03T04:20:10.111523+00:00 |
+| **BT-02** | API Rate Limiting on POST /rooms (HTTP 429 enforcement) | `POST http://127.0.0.1:8000/rooms` | T-13 (DoS Flooding Pembuatan Room / Resource Exhaustion) | **PASS** | 2026-08-03T04:20:06.805541+00:00 |
+| **BT-03** | Oversized WebSocket Payload Rejection (MAX_MSG_BYTES 64 KB guard) | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-14 (Memory Exhaustion / WebSocket Payload Flooding) | **PASS** | 2026-08-03T04:20:10.530443+00:00 |
+| **BT-04** | Malformed WebSocket Message Handling (Parser resilience) | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-14 (Server Crash / Unhandled Exception via Malformed JSON) | **PASS** | 2026-08-03T04:20:11.664535+00:00 |
+| **BT-05** | Destroy Room and Reconnection (Room lifecycle teardown & reject on reconnect) | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-09 (Pengambilalihan Sesi Ephemeral Pasca Teardown) | **PASS** | 2026-08-03T04:20:12.023547+00:00 |
+| **BT-06** | WebSocket Idle Timeout Disconnection (WS_IDLE_TIMEOUT Inactivity Guard) | `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}` | T-14 (Exhaustion Memori Melalui Koneksi Idle / Zombie Sockets) | **PASS** | 2026-08-03T04:20:15.373778+00:00 |
+| **BT-07** | Trusted Origin CORS Preflight (CORS Whitelist Verification) | `OPTIONS http://127.0.0.1:8000/rooms` | T-11 (Akses API Lintas Domain Tanpa Izin / CORS Bypass) | **PASS** | 2026-08-03T04:20:07.179722+00:00 |
+| **BT-08** | Untrusted Origin CORS Preflight (CORS Origin Restriction Verification) | `OPTIONS http://127.0.0.1:8000/rooms` | T-11 (Akses API Lintas Domain Tanpa Izin / CORS Bypass) | **PASS** | 2026-08-03T04:20:07.557737+00:00 |
 
 ---
 
@@ -41,12 +43,12 @@ Dokumen ini menyajikan hasil empiris pengujian keamanan dinamis minimum terhadap
 - **Expected Result**: Peer 3 is rejected with a 'room_full' frame and WebSocket close code 1008 when attempting to join a room with 2 active peers.
 - **Actual Result**: Peer 3 rejected with frame: {'type': 'room_full', 'reason': 'This room already has 2 participants.'}, close code: 1008
 - **Status Verifikasi**: **PASS**
-- **Raw Evidence**: `room_id=e78c70e5-dd3a-40b7-9429-ced39bfc4bb4, peer1_connected=True, peer2_connected=True, peer3_response_frame={'type': 'room_full', 'reason': 'This room already has 2 participants.'}, ws_close_code=1008`
+- **Raw Evidence**: `room_id=346239af-2df4-4dd7-a4e0-6d2dc7e91451, peer1_connected=True, peer2_connected=True, peer3_response_frame={'type': 'room_full', 'reason': 'This room already has 2 participants.'}, ws_close_code=1008`
 - **Batasan & Scope Limit**: Evaluated on signaling relay level in local test environment; does not evaluate browser endpoint compromise.
 
 ```json
 {
-  "room_id": "e78c70e5-dd3a-40b7-9429-ced39bfc4bb4",
+  "room_id": "346239af-2df4-4dd7-a4e0-6d2dc7e91451",
   "peer3_frame": {
     "type": "room_full",
     "reason": "This room already has 2 participants."
@@ -101,87 +103,90 @@ Dokumen ini menyajikan hasil empiris pengujian keamanan dinamis minimum terhadap
 ### BT-03 — Oversized WebSocket Payload Rejection (MAX_MSG_BYTES 64 KB guard)
 
 - **Target**: `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}`
-- **Kerangka Kerja**: Microsoft SDL & Trike Threat Modeling (T-14 (Exhaustion Memori Melalui Frame WebSocket Raksasa))
-- **Security Requirement**: SR-16 (MAX_MSG_BYTES 64 KB Payload Guard & Socket Close 1009)
+- **Kerangka Kerja**: Microsoft SDL & Trike Threat Modeling (T-14 (Memory Exhaustion / WebSocket Payload Flooding))
+- **Security Requirement**: SR-16 (MAX_MSG_BYTES 64 KB Payload Limit & Close Code 1009)
 - **Command / Execution Method**: `python tests/security/test_backend_websocket_security.py --test BT-03`
-- **Expected Result**: Sending a message payload exceeding MAX_MSG_BYTES (65,536 bytes) causes connection termination with WebSocket close code 1009.
-- **Actual Result**: Oversized frame (65694 B) rejected with error frame: {'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}, close code: 1009
+- **Expected Result**: WebSocket frames exceeding MAX_MSG_BYTES (65,536 bytes) are rejected and connection is terminated with close code 1009 or explicit rejection frame.
+- **Actual Result**: Oversized frame (66,560 bytes) rejected: close code 1009, response frame: {'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}
 - **Status Verifikasi**: **PASS**
-- **Raw Evidence**: `room_id=9c56fdf2-d94d-40c0-9a59-5e57827d538a, payload_size_bytes=65694, max_limit=65536, error_frame={'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}, close_code=1009`
-- **Batasan & Scope Limit**: Evaluated at single-frame size limit; does not evaluate continuous streaming fragmentation memory attacks.
+- **Raw Evidence**: `room_id=3fd28180-da02-4094-b4f3-5515d0bbc140, payload_bytes=66588, max_limit=65536, ws_close_code=1009, error_frame={'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}`
+- **Batasan & Scope Limit**: Evaluated on single frame exceeding 64 KB; does not simulate streaming multi-gigabyte TCP stream fragmentation.
 
 ```json
 {
-  "room_id": "9c56fdf2-d94d-40c0-9a59-5e57827d538a",
-  "payload_size_bytes": 65694,
+  "room_id": "3fd28180-da02-4094-b4f3-5515d0bbc140",
+  "payload_size_bytes": 66588,
+  "close_code": 1009,
   "error_frame": {
     "type": "error",
     "reason": "Message exceeds 65536 byte limit."
-  },
-  "close_code": 1009
+  }
 }
 ```
 
 ---
 
-### BT-04 — Malformed WebSocket Message Handling (Crash Resilience & Input Sanitization)
+### BT-04 — Malformed WebSocket Message Handling (Parser resilience)
 
 - **Target**: `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}`
-- **Kerangka Kerja**: Microsoft SDL & Trike Threat Modeling (T-14 (Exhaustion Memori / Server Crash via Malformed Input))
-- **Security Requirement**: SR-16 (Robust JSON Parsing & Graceful Error Handling)
+- **Kerangka Kerja**: Microsoft SDL & Trike Threat Modeling (T-14 (Server Crash / Unhandled Exception via Malformed JSON))
+- **Security Requirement**: SR-16 (WebSocket Message Schema Validation & Error Resilience)
 - **Command / Execution Method**: `python tests/security/test_backend_websocket_security.py --test BT-04`
-- **Expected Result**: Malformed frames (invalid JSON, empty object, missing type, invalid field types) are handled gracefully without server exception or crash; subsequent valid frames succeed.
-- **Actual Result**: Server handled 4 malformed cases gracefully without crash and responded to ping with pong.
+- **Expected Result**: Malformed messages (non-JSON, empty object, missing type, invalid data types) are safely ignored or rejected without causing backend server crash.
+- **Actual Result**: Processed 6 malformed payloads without unhandled exceptions; server health verified post-test.
 - **Status Verifikasi**: **PASS**
-- **Raw Evidence**: `room_id=e5edf1f1-c889-42f9-8b85-21a68bfcf7c4, tested_malformed_cases=4, cases=['invalid_json', 'empty_object', 'missing_type', 'invalid_field_type'], server_ping_response={'type': 'pong'}`
-- **Batasan & Scope Limit**: Evaluates structural payload resilience; does not substitute full RFC 6455 protocol-level fuzzing.
+- **Raw Evidence**: `room_id=aae754a6-d9fa-4d3b-8f6a-bd4ef7088e80, cases_tested=6, cases_list=['invalid_json', 'empty_object', 'missing_type', 'invalid_type_field', 'null_type', 'unsupported_type'], server_responsive=True`
+- **Batasan & Scope Limit**: Structural mutation fuzzing of JSON payload; not a full RFC 6455 transport-layer frame mutation fuzzer.
 
 ```json
 {
-  "room_id": "e5edf1f1-c889-42f9-8b85-21a68bfcf7c4",
-  "malformed_cases": [
+  "tested_cases": [
     {
-      "label": "invalid_json",
-      "payload": "NOT_JSON_DATA_<<<>>>@@@",
-      "sent": true
+      "case": "invalid_json",
+      "payload_sent": "{not_valid_json: 1234,"
     },
     {
-      "label": "empty_object",
-      "payload": "{}",
-      "sent": true
+      "case": "empty_object",
+      "payload_sent": "{}"
     },
     {
-      "label": "missing_type",
-      "payload": "{\"payload\": \"untyped_data\", \"value\": 42}",
-      "sent": true
+      "case": "missing_type",
+      "payload_sent": "{\"payload\": \"no_type_field\"}"
     },
     {
-      "label": "invalid_field_type",
-      "payload": "{\"type\": 12345, \"data\": [\"invalid_type_array\"]}",
-      "sent": true
+      "case": "invalid_type_field",
+      "payload_sent": "{\"type\": 12345}"
+    },
+    {
+      "case": "null_type",
+      "payload_sent": "{\"type\": null}"
+    },
+    {
+      "case": "unsupported_type",
+      "payload_sent": "{\"type\": \"UNSUPPORTED_MALICIOUS_TYPE\"}"
     }
   ],
-  "ping_pong_verified": true
+  "server_survived": true
 }
 ```
 
 ---
 
-### BT-05 — Explicit Room Destruction & Post-Destruction Reconnection Rejection
+### BT-05 — Destroy Room and Reconnection (Room lifecycle teardown & reject on reconnect)
 
 - **Target**: `ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}`
-- **Kerangka Kerja**: Microsoft SDL & Trike Threat Modeling (T-09 (Pengambilalihan Sesi Setelah Salah Satu Peer Keluar))
-- **Security Requirement**: SR-11 (Instant Room Destruction & Memory Table Purging)
+- **Kerangka Kerja**: Microsoft SDL & Trike Threat Modeling (T-09 (Pengambilalihan Sesi Ephemeral Pasca Teardown))
+- **Security Requirement**: SR-10 (Explicit Room Destruction & Post-Session Reconnection Invalidation)
 - **Command / Execution Method**: `python tests/security/test_backend_websocket_security.py --test BT-05`
-- **Expected Result**: Destroying room terminates all peer connections and rejects subsequent reconnection attempts with 'Room not found' (close code 1008).
+- **Expected Result**: When a peer initiates destroy_room, peer 2 receives 'room_ended' frame and socket is closed; subsequent reconnection attempts to the destroyed room are rejected ('Room not found').
 - **Actual Result**: Room destroyed: Peer 2 received 'room_ended' frame (code: 1008); reconnect rejected with {'type': 'error', 'reason': 'Room not found or expired.'} (code: 1008).
 - **Status Verifikasi**: **PASS**
-- **Raw Evidence**: `room_id=934ade68-b9b3-4eb7-8c4b-c9601973021c, peer2_room_ended=True, peer2_close_code=1008, reconnect_rejected=True, reconnect_frame={'type': 'error', 'reason': 'Room not found or expired.'}, reconnect_close_code=1008`
-- **Batasan & Scope Limit**: Evaluates in-memory session cleanup; does not evaluate distributed memory cache synchronization across multiple nodes.
+- **Raw Evidence**: `room_id=4675a157-f4da-48ac-9249-6ee4b10fefd8, peer2_room_ended=True, peer2_close_code=1008, reconnect_rejected=True, reconnect_frame={'type': 'error', 'reason': 'Room not found or expired.'}, reconnect_close_code=1008`
+- **Batasan & Scope Limit**: Evaluated on server-side in-memory room store eviction; browser-side tab cleanup evaluated in Playwright E2E-04.
 
 ```json
 {
-  "room_id": "934ade68-b9b3-4eb7-8c4b-c9601973021c",
+  "room_id": "4675a157-f4da-48ac-9249-6ee4b10fefd8",
   "peer2_room_ended": true,
   "reconnect_error_frame": {
     "type": "error",
@@ -202,14 +207,14 @@ Dokumen ini menyajikan hasil empiris pengujian keamanan dinamis minimum terhadap
 - **Expected Result**: An idle connection exceeding WS_IDLE_TIMEOUT (3.0s in test env) is terminated with close code 1001 and an inactivity timeout error frame.
 - **Actual Result**: Idle connection closed after 3.00s with frame: {'type': 'error', 'reason': 'Connection closed due to inactivity.'}, close code: 1001
 - **Status Verifikasi**: **PASS**
-- **Raw Evidence**: `room_id=56850f19-c012-4b3c-bfde-5420a49cdf8a, injected_timeout_threshold=3.0s, measured_elapsed=3.00s, timeout_frame={'type': 'error', 'reason': 'Connection closed due to inactivity.'}, close_code=1001`
+- **Raw Evidence**: `room_id=dd5986e1-b8ea-4e05-b1f4-bf7aedc82ff1, injected_timeout_threshold=3.0s, measured_elapsed=3.00s, timeout_frame={'type': 'error', 'reason': 'Connection closed due to inactivity.'}, close_code=1001`
 - **Batasan & Scope Limit**: Injected 3.0s timeout in test harness; production environment uses 60.0s default timeout.
 
 ```json
 {
-  "room_id": "56850f19-c012-4b3c-bfde-5420a49cdf8a",
+  "room_id": "dd5986e1-b8ea-4e05-b1f4-bf7aedc82ff1",
   "injected_timeout_threshold_seconds": 3.0,
-  "measured_elapsed_seconds": 3.004,
+  "measured_elapsed_seconds": 2.997,
   "timeout_frame": {
     "type": "error",
     "reason": "Connection closed due to inactivity."
@@ -220,11 +225,83 @@ Dokumen ini menyajikan hasil empiris pengujian keamanan dinamis minimum terhadap
 
 ---
 
+### BT-07 — Trusted Origin CORS Preflight (CORS Whitelist Verification)
+
+- **Target**: `OPTIONS http://127.0.0.1:8000/rooms`
+- **Kerangka Kerja**: Microsoft SDL & Trike Threat Modeling (T-11 (Akses API Lintas Domain Tanpa Izin / CORS Bypass))
+- **Security Requirement**: SR-13 (CORS Origin Whitelisting pada API Endpoint)
+- **Command / Execution Method**: `python tests/security/test_backend_websocket_security.py --test BT-07`
+- **Expected Result**: OPTIONS preflight with trusted Origin (https://kiwkiwchat.vercel.app) returns Access-Control-Allow-Origin matching the trusted origin, allows method POST, and does not use conflicting wildcard configurations.
+- **Actual Result**: Status: 200; Access-Control-Allow-Origin: 'https://kiwkiwchat.vercel.app' (matched: True); Access-Control-Allow-Methods: 'POST, OPTIONS' (POST allowed: True); Access-Control-Allow-Headers: 'Accept, Accept-Language, Content-Language, Content-Type'.
+- **Status Verifikasi**: **PASS**
+- **Raw Evidence**: `req_origin=https://kiwkiwchat.vercel.app, resp_status=200, resp_allow_origin=https://kiwkiwchat.vercel.app, resp_allow_methods=POST, OPTIONS, resp_allow_headers=Accept, Accept-Language, Content-Language, Content-Type, all_headers={'date': 'Mon, 03 Aug 2026 04:20:06 GMT', 'server': 'uvicorn', 'vary': 'Origin', 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-max-age': '600', 'access-control-allow-headers': 'Accept, Accept-Language, Content-Language, Content-Type', 'access-control-allow-origin': 'https://kiwkiwchat.vercel.app', 'content-length': '2', 'content-type': 'text/plain; charset=utf-8'}`
+- **Batasan & Scope Limit**: Evaluated on local test harness against configured ALLOWED_ORIGINS; production edge headers managed via reverse proxy / cloud deployment.
+
+```json
+{
+  "request_origin": "https://kiwkiwchat.vercel.app",
+  "response_status": 200,
+  "allow_origin_header": "https://kiwkiwchat.vercel.app",
+  "allow_methods_header": "POST, OPTIONS",
+  "allow_headers_header": "Accept, Accept-Language, Content-Language, Content-Type",
+  "response_headers": {
+    "date": "Mon, 03 Aug 2026 04:20:06 GMT",
+    "server": "uvicorn",
+    "vary": "Origin",
+    "access-control-allow-methods": "POST, OPTIONS",
+    "access-control-max-age": "600",
+    "access-control-allow-headers": "Accept, Accept-Language, Content-Language, Content-Type",
+    "access-control-allow-origin": "https://kiwkiwchat.vercel.app",
+    "content-length": "2",
+    "content-type": "text/plain; charset=utf-8"
+  },
+  "origin_matched": true,
+  "post_allowed": true,
+  "not_wildcard_conflict": true
+}
+```
+
+---
+
+### BT-08 — Untrusted Origin CORS Preflight (CORS Origin Restriction Verification)
+
+- **Target**: `OPTIONS http://127.0.0.1:8000/rooms`
+- **Kerangka Kerja**: Microsoft SDL & Trike Threat Modeling (T-11 (Akses API Lintas Domain Tanpa Izin / CORS Bypass))
+- **Security Requirement**: SR-13 (CORS Origin Whitelisting pada API Endpoint)
+- **Command / Execution Method**: `python tests/security/test_backend_websocket_security.py --test BT-08`
+- **Expected Result**: OPTIONS preflight with untrusted Origin (https://untrusted.example) does not return Access-Control-Allow-Origin matching the untrusted origin (or rejects/omits header), preventing cross-origin data access by unauthorized domains while server stays operational.
+- **Actual Result**: Status: 400; Access-Control-Allow-Origin: None (untrusted origin rejected: True); Response body: 'Disallowed CORS origin'.
+- **Status Verifikasi**: **PASS**
+- **Raw Evidence**: `req_origin=https://untrusted.example, resp_status=400, resp_allow_origin=None, resp_body=Disallowed CORS origin, all_headers={'date': 'Mon, 03 Aug 2026 04:20:06 GMT', 'server': 'uvicorn', 'vary': 'Origin', 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-max-age': '600', 'access-control-allow-headers': 'Accept, Accept-Language, Content-Language, Content-Type', 'content-length': '22', 'content-type': 'text/plain; charset=utf-8'}`
+- **Batasan & Scope Limit**: Evaluated on local test harness against configured ALLOWED_ORIGINS; production edge headers managed via reverse proxy / cloud deployment.
+
+```json
+{
+  "request_origin": "https://untrusted.example",
+  "response_status": 400,
+  "allow_origin_header": null,
+  "response_body": "Disallowed CORS origin",
+  "response_headers": {
+    "date": "Mon, 03 Aug 2026 04:20:06 GMT",
+    "server": "uvicorn",
+    "vary": "Origin",
+    "access-control-allow-methods": "POST, OPTIONS",
+    "access-control-max-age": "600",
+    "access-control-allow-headers": "Accept, Accept-Language, Content-Language, Content-Type",
+    "content-length": "22",
+    "content-type": "text/plain; charset=utf-8"
+  },
+  "untrusted_rejected": true
+}
+```
+
+---
+
 ## 4. Keterbatasan Pengujian Empiris & Integritas Ilmiah (Honesty & Limitations)
 
 Pengujian dinamis ini merupakan evaluasi keamanan minimum terfokus pada test harness lokal. Sesuai prinsip integritas ilmiah SSDLC:
 
-1. **Bukan Full Active Penetration Testing**: Rangkaian uji BT-01 s/d BT-06 mengevaluasi kontrol logika spesifik dan tidak menggantikan *full active penetration testing* profesional terhadap seluruh arsitektur infrastruktur cloud.
+1. **Bukan Full Active Penetration Testing**: Rangkaian uji BT-01 s/d BT-08 mengevaluasi kontrol logika spesifik (kapasitas peer, rate limiting, payload guard, parser resilience, lifecycle teardown, idle timeout, dan CORS preflight whitelisting) dan tidak menggantikan *full active penetration testing* profesional terhadap seluruh arsitektur infrastruktur cloud.
 2. **Bukan WebSocket Protocol Fuzzing**: Pengujian BT-04 memvalidasi ketahanan terhadap variasi format payload JSON struktural, namun bukan merupakan *protocol-level mutation fuzzing* RFC 6455 komprehensif.
 3. **Bukan Uji DDoS Produksi**: Pengujian rate limiting BT-02 membuktikan penegakan ambang batas SlowAPI per-IP pada beban sekuensial cepat pada single instance, bukan simulasi serangan *Distributed Denial of Service* (DDoS) multi-IP terdistribusi berskala besar.
 4. **Pembersihan Memori Fisik (T-06)**: Batasan runtime JavaScript (V8 Engine) tetap berlaku; dereferensi variabel tidak menjamin *deterministic physical RAM zeroization*.

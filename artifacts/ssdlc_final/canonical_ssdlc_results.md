@@ -83,12 +83,12 @@ Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file://
 
 ---
 
-## 4. Hasil Pengujian Dinamis Minimum Backend API & WebSocket Signaling (6 Test Cases)
+## 4. Hasil Pengujian Dinamis Minimum Backend API & WebSocket Signaling (8 Test Cases)
 
 Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`):
 
-- **Total Minimum Dynamic Test Cases**: 6
-- **PASS**: **6 (100%)**
+- **Total Minimum Dynamic Test Cases**: 8
+- **PASS**: **8 (100%)**
 - **FAIL**: **0**
 
 | Test ID | Modul & Skenario Uji | Deskripsi Kasus Uji | Status |
@@ -99,6 +99,8 @@ Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`
 | `BT-04` | WS Input Handling | Ketahanan terhadap pengiriman frame non-JSON/malformed tanpa crash server | **PASS** |
 | `BT-05` | WS Lifecycle & Teardown | Teardown room seketika: Broadcast `room_ended` & penolakan rekoneksi ('Room not found') | **PASS** |
 | `BT-06` | WS Idle Timeout | Timeout inaktivitas koneksi WebSocket (`WS_IDLE_TIMEOUT=3s` di test env) ditutup kode 1001 | **PASS** |
+| `BT-07` | REST API (CORS Trusted) | Preflight OPTIONS trusted origin (`https://kiwkiwchat.vercel.app`): Status 200, ACAO sesuai origin, method POST diizinkan | **PASS** |
+| `BT-08` | REST API (CORS Untrusted) | Preflight OPTIONS untrusted origin (`https://untrusted.example`): Status 400 'Disallowed CORS origin', ACAO tidak diberikan | **PASS** |
 
 ---
 
@@ -136,8 +138,8 @@ Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`
 ## 6. Ringkasan Status 16 Ancaman Trike (T-01 s/d T-16)
 
 - **Total Ancaman**: 16 (100% terpetakan ke kebutuhan dan kontrol).
-- **PASS / PASS_WITH_FINDINGS**: **12 Ancaman** (`T-01`, `T-02`, `T-03`, `T-04`, `T-05`, `T-07`, `T-09`, `T-10`, `T-12`, `T-13`, `T-14`, `T-15`)
-- **CODE_REVIEW_ONLY**: **1 Ancaman** (`T-11` — CORS Whitelist `backend/main.py:ALLOWED_ORIGINS`; pengujian dinamis lintas origin belum diotomasi di test harness).
+- **PASS / PASS_WITH_FINDINGS**: **13 Ancaman** (`T-01`, `T-02`, `T-03`, `T-04`, `T-05`, `T-07`, `T-09`, `T-10`, `T-11`, `T-12`, `T-13`, `T-14`, `T-15`)
+  - Termasuk `T-11` yang telah diverifikasi dinamis melalui `BT-07` (trusted origin) dan `BT-08` (untrusted origin).
 - **PARTIAL / OPEN_MEDIUM**: **3 Ancaman**:
   - `T-06`: Batasan runtime JavaScript V8 Engine (tidak menjamin deterministic memory zeroization pada physical RAM).
   - `T-08`: Status `RP-01` PARTIAL (validasi sequence counter di application envelope; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual).
@@ -148,7 +150,7 @@ Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`
 ## 7. Ringkasan Batasan Empiris & Integritas Ilmiah (Honesty & Limitations)
 
 1. **Replay Protection Test (`RP-01`)**: Dicatat sebagai **PARTIAL** karena test harness memvalidasi penolakan duplikasi sequence counter pada layer *application envelope*; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual.
-2. **Pemindaian DAST OWASP ZAP**: Dicatat sebagai **EXECUTED_WITH_OPEN_FINDINGS** (0 High, 1 Medium, 1 Low, 3 Informational) pada frontend produksi Vercel; pemindaian ZAP tidak mencakup backend Render atau WebSocket signaling, yang diverifikasi secara lokal melalui test harness `BT-01` s/d `BT-06`.
+2. **Pemindaian DAST OWASP ZAP**: Dicatat sebagai **EXECUTED_WITH_OPEN_FINDINGS** (0 High, 1 Medium, 1 Low, 3 Informational) pada frontend produksi Vercel; pemindaian ZAP tidak mencakup backend Render atau WebSocket signaling, yang diverifikasi secara lokal melalui test harness `BT-01` s/d `BT-08`.
 3. **Pembersihan Memori pada JavaScript (`T-06`)**: Dicatat sebagai **PARTIAL** karena engine V8 mengelola memori secara otomatis via Garbage Collector dan tidak memberikan jaminan deterministik pembersihan fisik RAM (*secure zeroization*).
 4. **Dependensi Backend (SCA)**: Dicatat sebagai **OPEN / PARTIAL** di mana 17 catatan advisory PyPI dikategorikan berdasarkan alur aplikasi aktual.
 5. **Klaim Kriptografi**: Protokol diklasifikasikan sebagai *PSK-assisted ML-KEM session-key establishment with AES-GCM application-layer encryption* dan menyediakan *mutual key confirmation* (bukan *identity authentication*). Parameter ML-KEM-768 mengikuti NIST FIPS 203, tanpa klaim sertifikasi NIST CMVP pada library JavaScript pihak ketiga.

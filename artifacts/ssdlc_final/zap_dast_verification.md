@@ -16,7 +16,7 @@ Dokumen ini mendokumentasikan verifikasi empiris pengujian dinamis (*Dynamic App
 > [!IMPORTANT]
 > **Pernyataan Lingkup & Batasan**:  
 > “OWASP ZAP 2.17.0 passive scan telah dijalankan terhadap frontend produksi Kiw Kiw Chat pada Vercel.”  
-> Pemindaian ini tidak mencakup backend Render, endpoint `POST /rooms`, atau protokol WebSocket signaling. Pengujian dinamis untuk backend dan WebSocket dilaksanakan melalui test harness terpisah (`BT-01` s/d `BT-06`) di [`backend_websocket_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.md).
+> Pemindaian ini tidak mencakup backend Render, endpoint `POST /rooms`, atau protokol WebSocket signaling. Pengujian dinamis untuk backend dan WebSocket dilaksanakan melalui test harness terpisah (`BT-01` s/d `BT-08`) di [`backend_websocket_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.md).
 
 ---
 

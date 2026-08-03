@@ -4,15 +4,15 @@
     "architecture": "AMD64",
     "python_version": "3.11.9",
     "python_implementation": "CPython",
-    "git_commit": "a60bf9fabbf691d3fabb425b42ec0405219dfa8d",
+    "git_commit": "5ba96e22895f8bd4df67b0d004a9ff2c02722f12",
     "git_dirty": true,
-    "timestamp": "2026-08-03T03:41:28.347927+00:00",
+    "timestamp": "2026-08-03T04:20:15.605084+00:00",
     "target_url": "http://127.0.0.1:8000 (Local Test Harness)",
     "injected_ws_idle_timeout": "3s (via test environment variable WS_IDLE_TIMEOUT=3)"
   },
   "summary": {
-    "total_tests": 6,
-    "passed": 6,
+    "total_tests": 8,
+    "passed": 8,
     "failed": 0,
     "success_rate_percent": 100.0
   },
@@ -28,16 +28,16 @@
       "expected_result": "Peer 3 is rejected with a 'room_full' frame and WebSocket close code 1008 when attempting to join a room with 2 active peers.",
       "actual_result": "Peer 3 rejected with frame: {'type': 'room_full', 'reason': 'This room already has 2 participants.'}, close code: 1008",
       "details": {
-        "room_id": "e78c70e5-dd3a-40b7-9429-ced39bfc4bb4",
+        "room_id": "346239af-2df4-4dd7-a4e0-6d2dc7e91451",
         "peer3_frame": {
           "type": "room_full",
           "reason": "This room already has 2 participants."
         },
         "close_code": 1008
       },
-      "raw_evidence": "room_id=e78c70e5-dd3a-40b7-9429-ced39bfc4bb4, peer1_connected=True, peer2_connected=True, peer3_response_frame={'type': 'room_full', 'reason': 'This room already has 2 participants.'}, ws_close_code=1008",
+      "raw_evidence": "room_id=346239af-2df4-4dd7-a4e0-6d2dc7e91451, peer1_connected=True, peer2_connected=True, peer3_response_frame={'type': 'room_full', 'reason': 'This room already has 2 participants.'}, ws_close_code=1008",
       "limitation": "Evaluated on signaling relay level in local test environment; does not evaluate browser endpoint compromise.",
-      "timestamp": "2026-08-03T03:41:23.252763+00:00"
+      "timestamp": "2026-08-03T04:20:10.111523+00:00"
     },
     {
       "test_id": "BT-02",
@@ -75,83 +75,86 @@
       },
       "raw_evidence": "sequential_requests_count=16, accepted_200=10, rejected_429=6, status_code_stream=[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 429, 429, 429, 429, 429, 429]",
       "limitation": "Evaluated on single IP sequential bursts in local test harness; does not simulate distributed cloud botnets.",
-      "timestamp": "2026-08-03T03:41:20.831648+00:00"
+      "timestamp": "2026-08-03T04:20:06.805541+00:00"
     },
     {
       "test_id": "BT-03",
       "name": "Oversized WebSocket Payload Rejection (MAX_MSG_BYTES 64 KB guard)",
       "target": "ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}",
-      "trike_threat": "T-14 (Exhaustion Memori Melalui Frame WebSocket Raksasa)",
-      "security_req": "SR-16 (MAX_MSG_BYTES 64 KB Payload Guard & Socket Close 1009)",
+      "trike_threat": "T-14 (Memory Exhaustion / WebSocket Payload Flooding)",
+      "security_req": "SR-16 (MAX_MSG_BYTES 64 KB Payload Limit & Close Code 1009)",
       "status": "PASS",
       "command": "python tests/security/test_backend_websocket_security.py --test BT-03",
-      "expected_result": "Sending a message payload exceeding MAX_MSG_BYTES (65,536 bytes) causes connection termination with WebSocket close code 1009.",
-      "actual_result": "Oversized frame (65694 B) rejected with error frame: {'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}, close code: 1009",
+      "expected_result": "WebSocket frames exceeding MAX_MSG_BYTES (65,536 bytes) are rejected and connection is terminated with close code 1009 or explicit rejection frame.",
+      "actual_result": "Oversized frame (66,560 bytes) rejected: close code 1009, response frame: {'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}",
       "details": {
-        "room_id": "9c56fdf2-d94d-40c0-9a59-5e57827d538a",
-        "payload_size_bytes": 65694,
+        "room_id": "3fd28180-da02-4094-b4f3-5515d0bbc140",
+        "payload_size_bytes": 66588,
+        "close_code": 1009,
         "error_frame": {
           "type": "error",
           "reason": "Message exceeds 65536 byte limit."
-        },
-        "close_code": 1009
+        }
       },
-      "raw_evidence": "room_id=9c56fdf2-d94d-40c0-9a59-5e57827d538a, payload_size_bytes=65694, max_limit=65536, error_frame={'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}, close_code=1009",
-      "limitation": "Evaluated at single-frame size limit; does not evaluate continuous streaming fragmentation memory attacks.",
-      "timestamp": "2026-08-03T03:41:23.634333+00:00"
+      "raw_evidence": "room_id=3fd28180-da02-4094-b4f3-5515d0bbc140, payload_bytes=66588, max_limit=65536, ws_close_code=1009, error_frame={'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}",
+      "limitation": "Evaluated on single frame exceeding 64 KB; does not simulate streaming multi-gigabyte TCP stream fragmentation.",
+      "timestamp": "2026-08-03T04:20:10.530443+00:00"
     },
     {
       "test_id": "BT-04",
-      "name": "Malformed WebSocket Message Handling (Crash Resilience & Input Sanitization)",
+      "name": "Malformed WebSocket Message Handling (Parser resilience)",
       "target": "ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}",
-      "trike_threat": "T-14 (Exhaustion Memori / Server Crash via Malformed Input)",
-      "security_req": "SR-16 (Robust JSON Parsing & Graceful Error Handling)",
+      "trike_threat": "T-14 (Server Crash / Unhandled Exception via Malformed JSON)",
+      "security_req": "SR-16 (WebSocket Message Schema Validation & Error Resilience)",
       "status": "PASS",
       "command": "python tests/security/test_backend_websocket_security.py --test BT-04",
-      "expected_result": "Malformed frames (invalid JSON, empty object, missing type, invalid field types) are handled gracefully without server exception or crash; subsequent valid frames succeed.",
-      "actual_result": "Server handled 4 malformed cases gracefully without crash and responded to ping with pong.",
+      "expected_result": "Malformed messages (non-JSON, empty object, missing type, invalid data types) are safely ignored or rejected without causing backend server crash.",
+      "actual_result": "Processed 6 malformed payloads without unhandled exceptions; server health verified post-test.",
       "details": {
-        "room_id": "e5edf1f1-c889-42f9-8b85-21a68bfcf7c4",
-        "malformed_cases": [
+        "tested_cases": [
           {
-            "label": "invalid_json",
-            "payload": "NOT_JSON_DATA_<<<>>>@@@",
-            "sent": true
+            "case": "invalid_json",
+            "payload_sent": "{not_valid_json: 1234,"
           },
           {
-            "label": "empty_object",
-            "payload": "{}",
-            "sent": true
+            "case": "empty_object",
+            "payload_sent": "{}"
           },
           {
-            "label": "missing_type",
-            "payload": "{\"payload\": \"untyped_data\", \"value\": 42}",
-            "sent": true
+            "case": "missing_type",
+            "payload_sent": "{\"payload\": \"no_type_field\"}"
           },
           {
-            "label": "invalid_field_type",
-            "payload": "{\"type\": 12345, \"data\": [\"invalid_type_array\"]}",
-            "sent": true
+            "case": "invalid_type_field",
+            "payload_sent": "{\"type\": 12345}"
+          },
+          {
+            "case": "null_type",
+            "payload_sent": "{\"type\": null}"
+          },
+          {
+            "case": "unsupported_type",
+            "payload_sent": "{\"type\": \"UNSUPPORTED_MALICIOUS_TYPE\"}"
           }
         ],
-        "ping_pong_verified": true
+        "server_survived": true
       },
-      "raw_evidence": "room_id=e5edf1f1-c889-42f9-8b85-21a68bfcf7c4, tested_malformed_cases=4, cases=['invalid_json', 'empty_object', 'missing_type', 'invalid_field_type'], server_ping_response={'type': 'pong'}",
-      "limitation": "Evaluates structural payload resilience; does not substitute full RFC 6455 protocol-level fuzzing.",
-      "timestamp": "2026-08-03T03:41:24.222794+00:00"
+      "raw_evidence": "room_id=aae754a6-d9fa-4d3b-8f6a-bd4ef7088e80, cases_tested=6, cases_list=['invalid_json', 'empty_object', 'missing_type', 'invalid_type_field', 'null_type', 'unsupported_type'], server_responsive=True",
+      "limitation": "Structural mutation fuzzing of JSON payload; not a full RFC 6455 transport-layer frame mutation fuzzer.",
+      "timestamp": "2026-08-03T04:20:11.664535+00:00"
     },
     {
       "test_id": "BT-05",
-      "name": "Explicit Room Destruction & Post-Destruction Reconnection Rejection",
+      "name": "Destroy Room and Reconnection (Room lifecycle teardown & reject on reconnect)",
       "target": "ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}",
-      "trike_threat": "T-09 (Pengambilalihan Sesi Setelah Salah Satu Peer Keluar)",
-      "security_req": "SR-11 (Instant Room Destruction & Memory Table Purging)",
+      "trike_threat": "T-09 (Pengambilalihan Sesi Ephemeral Pasca Teardown)",
+      "security_req": "SR-10 (Explicit Room Destruction & Post-Session Reconnection Invalidation)",
       "status": "PASS",
       "command": "python tests/security/test_backend_websocket_security.py --test BT-05",
-      "expected_result": "Destroying room terminates all peer connections and rejects subsequent reconnection attempts with 'Room not found' (close code 1008).",
+      "expected_result": "When a peer initiates destroy_room, peer 2 receives 'room_ended' frame and socket is closed; subsequent reconnection attempts to the destroyed room are rejected ('Room not found').",
       "actual_result": "Room destroyed: Peer 2 received 'room_ended' frame (code: 1008); reconnect rejected with {'type': 'error', 'reason': 'Room not found or expired.'} (code: 1008).",
       "details": {
-        "room_id": "934ade68-b9b3-4eb7-8c4b-c9601973021c",
+        "room_id": "4675a157-f4da-48ac-9249-6ee4b10fefd8",
         "peer2_room_ended": true,
         "reconnect_error_frame": {
           "type": "error",
@@ -159,9 +162,9 @@
         },
         "reconnect_close_code": 1008
       },
-      "raw_evidence": "room_id=934ade68-b9b3-4eb7-8c4b-c9601973021c, peer2_room_ended=True, peer2_close_code=1008, reconnect_rejected=True, reconnect_frame={'type': 'error', 'reason': 'Room not found or expired.'}, reconnect_close_code=1008",
-      "limitation": "Evaluates in-memory session cleanup; does not evaluate distributed memory cache synchronization across multiple nodes.",
-      "timestamp": "2026-08-03T03:41:24.680745+00:00"
+      "raw_evidence": "room_id=4675a157-f4da-48ac-9249-6ee4b10fefd8, peer2_room_ended=True, peer2_close_code=1008, reconnect_rejected=True, reconnect_frame={'type': 'error', 'reason': 'Room not found or expired.'}, reconnect_close_code=1008",
+      "limitation": "Evaluated on server-side in-memory room store eviction; browser-side tab cleanup evaluated in Playwright E2E-04.",
+      "timestamp": "2026-08-03T04:20:12.023547+00:00"
     },
     {
       "test_id": "BT-06",
@@ -174,18 +177,84 @@
       "expected_result": "An idle connection exceeding WS_IDLE_TIMEOUT (3.0s in test env) is terminated with close code 1001 and an inactivity timeout error frame.",
       "actual_result": "Idle connection closed after 3.00s with frame: {'type': 'error', 'reason': 'Connection closed due to inactivity.'}, close code: 1001",
       "details": {
-        "room_id": "56850f19-c012-4b3c-bfde-5420a49cdf8a",
+        "room_id": "dd5986e1-b8ea-4e05-b1f4-bf7aedc82ff1",
         "injected_timeout_threshold_seconds": 3.0,
-        "measured_elapsed_seconds": 3.004,
+        "measured_elapsed_seconds": 2.997,
         "timeout_frame": {
           "type": "error",
           "reason": "Connection closed due to inactivity."
         },
         "close_code": 1001
       },
-      "raw_evidence": "room_id=56850f19-c012-4b3c-bfde-5420a49cdf8a, injected_timeout_threshold=3.0s, measured_elapsed=3.00s, timeout_frame={'type': 'error', 'reason': 'Connection closed due to inactivity.'}, close_code=1001",
+      "raw_evidence": "room_id=dd5986e1-b8ea-4e05-b1f4-bf7aedc82ff1, injected_timeout_threshold=3.0s, measured_elapsed=3.00s, timeout_frame={'type': 'error', 'reason': 'Connection closed due to inactivity.'}, close_code=1001",
       "limitation": "Injected 3.0s timeout in test harness; production environment uses 60.0s default timeout.",
-      "timestamp": "2026-08-03T03:41:28.142812+00:00"
+      "timestamp": "2026-08-03T04:20:15.373778+00:00"
+    },
+    {
+      "test_id": "BT-07",
+      "name": "Trusted Origin CORS Preflight (CORS Whitelist Verification)",
+      "target": "OPTIONS http://127.0.0.1:8000/rooms",
+      "trike_threat": "T-11 (Akses API Lintas Domain Tanpa Izin / CORS Bypass)",
+      "security_req": "SR-13 (CORS Origin Whitelisting pada API Endpoint)",
+      "status": "PASS",
+      "command": "python tests/security/test_backend_websocket_security.py --test BT-07",
+      "expected_result": "OPTIONS preflight with trusted Origin (https://kiwkiwchat.vercel.app) returns Access-Control-Allow-Origin matching the trusted origin, allows method POST, and does not use conflicting wildcard configurations.",
+      "actual_result": "Status: 200; Access-Control-Allow-Origin: 'https://kiwkiwchat.vercel.app' (matched: True); Access-Control-Allow-Methods: 'POST, OPTIONS' (POST allowed: True); Access-Control-Allow-Headers: 'Accept, Accept-Language, Content-Language, Content-Type'.",
+      "details": {
+        "request_origin": "https://kiwkiwchat.vercel.app",
+        "response_status": 200,
+        "allow_origin_header": "https://kiwkiwchat.vercel.app",
+        "allow_methods_header": "POST, OPTIONS",
+        "allow_headers_header": "Accept, Accept-Language, Content-Language, Content-Type",
+        "response_headers": {
+          "date": "Mon, 03 Aug 2026 04:20:06 GMT",
+          "server": "uvicorn",
+          "vary": "Origin",
+          "access-control-allow-methods": "POST, OPTIONS",
+          "access-control-max-age": "600",
+          "access-control-allow-headers": "Accept, Accept-Language, Content-Language, Content-Type",
+          "access-control-allow-origin": "https://kiwkiwchat.vercel.app",
+          "content-length": "2",
+          "content-type": "text/plain; charset=utf-8"
+        },
+        "origin_matched": true,
+        "post_allowed": true,
+        "not_wildcard_conflict": true
+      },
+      "raw_evidence": "req_origin=https://kiwkiwchat.vercel.app, resp_status=200, resp_allow_origin=https://kiwkiwchat.vercel.app, resp_allow_methods=POST, OPTIONS, resp_allow_headers=Accept, Accept-Language, Content-Language, Content-Type, all_headers={'date': 'Mon, 03 Aug 2026 04:20:06 GMT', 'server': 'uvicorn', 'vary': 'Origin', 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-max-age': '600', 'access-control-allow-headers': 'Accept, Accept-Language, Content-Language, Content-Type', 'access-control-allow-origin': 'https://kiwkiwchat.vercel.app', 'content-length': '2', 'content-type': 'text/plain; charset=utf-8'}",
+      "limitation": "Evaluated on local test harness against configured ALLOWED_ORIGINS; production edge headers managed via reverse proxy / cloud deployment.",
+      "timestamp": "2026-08-03T04:20:07.179722+00:00"
+    },
+    {
+      "test_id": "BT-08",
+      "name": "Untrusted Origin CORS Preflight (CORS Origin Restriction Verification)",
+      "target": "OPTIONS http://127.0.0.1:8000/rooms",
+      "trike_threat": "T-11 (Akses API Lintas Domain Tanpa Izin / CORS Bypass)",
+      "security_req": "SR-13 (CORS Origin Whitelisting pada API Endpoint)",
+      "status": "PASS",
+      "command": "python tests/security/test_backend_websocket_security.py --test BT-08",
+      "expected_result": "OPTIONS preflight with untrusted Origin (https://untrusted.example) does not return Access-Control-Allow-Origin matching the untrusted origin (or rejects/omits header), preventing cross-origin data access by unauthorized domains while server stays operational.",
+      "actual_result": "Status: 400; Access-Control-Allow-Origin: None (untrusted origin rejected: True); Response body: 'Disallowed CORS origin'.",
+      "details": {
+        "request_origin": "https://untrusted.example",
+        "response_status": 400,
+        "allow_origin_header": null,
+        "response_body": "Disallowed CORS origin",
+        "response_headers": {
+          "date": "Mon, 03 Aug 2026 04:20:06 GMT",
+          "server": "uvicorn",
+          "vary": "Origin",
+          "access-control-allow-methods": "POST, OPTIONS",
+          "access-control-max-age": "600",
+          "access-control-allow-headers": "Accept, Accept-Language, Content-Language, Content-Type",
+          "content-length": "22",
+          "content-type": "text/plain; charset=utf-8"
+        },
+        "untrusted_rejected": true
+      },
+      "raw_evidence": "req_origin=https://untrusted.example, resp_status=400, resp_allow_origin=None, resp_body=Disallowed CORS origin, all_headers={'date': 'Mon, 03 Aug 2026 04:20:06 GMT', 'server': 'uvicorn', 'vary': 'Origin', 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-max-age': '600', 'access-control-allow-headers': 'Accept, Accept-Language, Content-Language, Content-Type', 'content-length': '22', 'content-type': 'text/plain; charset=utf-8'}",
+      "limitation": "Evaluated on local test harness against configured ALLOWED_ORIGINS; production edge headers managed via reverse proxy / cloud deployment.",
+      "timestamp": "2026-08-03T04:20:07.557737+00:00"
     }
   ]
 }
