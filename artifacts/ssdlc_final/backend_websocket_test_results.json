@@ -1,0 +1,191 @@
+{
+  "metadata": {
+    "os": "Windows 10 (10.0.26200)",
+    "architecture": "AMD64",
+    "python_version": "3.11.9",
+    "python_implementation": "CPython",
+    "git_commit": "a60bf9fabbf691d3fabb425b42ec0405219dfa8d",
+    "git_dirty": true,
+    "timestamp": "2026-08-03T03:41:28.347927+00:00",
+    "target_url": "http://127.0.0.1:8000 (Local Test Harness)",
+    "injected_ws_idle_timeout": "3s (via test environment variable WS_IDLE_TIMEOUT=3)"
+  },
+  "summary": {
+    "total_tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "success_rate_percent": 100.0
+  },
+  "results": [
+    {
+      "test_id": "BT-01",
+      "name": "Third Peer Rejection (Strict 2-peer capacity enforcement)",
+      "target": "ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}",
+      "trike_threat": "T-04 (Penyusupan Pihak Ketiga ke Dalam Room / 3rd Peer Join)",
+      "security_req": "SR-09 (Strict 2-Peer Max Capacity & Socket Close 1008)",
+      "status": "PASS",
+      "command": "python tests/security/test_backend_websocket_security.py --test BT-01",
+      "expected_result": "Peer 3 is rejected with a 'room_full' frame and WebSocket close code 1008 when attempting to join a room with 2 active peers.",
+      "actual_result": "Peer 3 rejected with frame: {'type': 'room_full', 'reason': 'This room already has 2 participants.'}, close code: 1008",
+      "details": {
+        "room_id": "e78c70e5-dd3a-40b7-9429-ced39bfc4bb4",
+        "peer3_frame": {
+          "type": "room_full",
+          "reason": "This room already has 2 participants."
+        },
+        "close_code": 1008
+      },
+      "raw_evidence": "room_id=e78c70e5-dd3a-40b7-9429-ced39bfc4bb4, peer1_connected=True, peer2_connected=True, peer3_response_frame={'type': 'room_full', 'reason': 'This room already has 2 participants.'}, ws_close_code=1008",
+      "limitation": "Evaluated on signaling relay level in local test environment; does not evaluate browser endpoint compromise.",
+      "timestamp": "2026-08-03T03:41:23.252763+00:00"
+    },
+    {
+      "test_id": "BT-02",
+      "name": "API Rate Limiting on POST /rooms (HTTP 429 enforcement)",
+      "target": "POST http://127.0.0.1:8000/rooms",
+      "trike_threat": "T-13 (DoS Flooding Pembuatan Room / Resource Exhaustion)",
+      "security_req": "SR-15 (SlowAPI Rate Limiting 10 req/IP/min)",
+      "status": "PASS",
+      "command": "python tests/security/test_backend_websocket_security.py --test BT-02",
+      "expected_result": "Sequential requests within a 1-minute window: requests 1-10 are accepted (HTTP 200), request 11 onwards returns HTTP 429 Too Many Requests.",
+      "actual_result": "Rate limit threshold strictly verified: exactly 10 requests accepted (HTTP 200), subsequent 6 requests returned HTTP 429 (total requests: 16).",
+      "details": {
+        "total_requests": 16,
+        "requests_before_limit": 10,
+        "count_200": 10,
+        "count_429": 6,
+        "status_codes": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          429,
+          429,
+          429,
+          429,
+          429,
+          429
+        ]
+      },
+      "raw_evidence": "sequential_requests_count=16, accepted_200=10, rejected_429=6, status_code_stream=[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 429, 429, 429, 429, 429, 429]",
+      "limitation": "Evaluated on single IP sequential bursts in local test harness; does not simulate distributed cloud botnets.",
+      "timestamp": "2026-08-03T03:41:20.831648+00:00"
+    },
+    {
+      "test_id": "BT-03",
+      "name": "Oversized WebSocket Payload Rejection (MAX_MSG_BYTES 64 KB guard)",
+      "target": "ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}",
+      "trike_threat": "T-14 (Exhaustion Memori Melalui Frame WebSocket Raksasa)",
+      "security_req": "SR-16 (MAX_MSG_BYTES 64 KB Payload Guard & Socket Close 1009)",
+      "status": "PASS",
+      "command": "python tests/security/test_backend_websocket_security.py --test BT-03",
+      "expected_result": "Sending a message payload exceeding MAX_MSG_BYTES (65,536 bytes) causes connection termination with WebSocket close code 1009.",
+      "actual_result": "Oversized frame (65694 B) rejected with error frame: {'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}, close code: 1009",
+      "details": {
+        "room_id": "9c56fdf2-d94d-40c0-9a59-5e57827d538a",
+        "payload_size_bytes": 65694,
+        "error_frame": {
+          "type": "error",
+          "reason": "Message exceeds 65536 byte limit."
+        },
+        "close_code": 1009
+      },
+      "raw_evidence": "room_id=9c56fdf2-d94d-40c0-9a59-5e57827d538a, payload_size_bytes=65694, max_limit=65536, error_frame={'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}, close_code=1009",
+      "limitation": "Evaluated at single-frame size limit; does not evaluate continuous streaming fragmentation memory attacks.",
+      "timestamp": "2026-08-03T03:41:23.634333+00:00"
+    },
+    {
+      "test_id": "BT-04",
+      "name": "Malformed WebSocket Message Handling (Crash Resilience & Input Sanitization)",
+      "target": "ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}",
+      "trike_threat": "T-14 (Exhaustion Memori / Server Crash via Malformed Input)",
+      "security_req": "SR-16 (Robust JSON Parsing & Graceful Error Handling)",
+      "status": "PASS",
+      "command": "python tests/security/test_backend_websocket_security.py --test BT-04",
+      "expected_result": "Malformed frames (invalid JSON, empty object, missing type, invalid field types) are handled gracefully without server exception or crash; subsequent valid frames succeed.",
+      "actual_result": "Server handled 4 malformed cases gracefully without crash and responded to ping with pong.",
+      "details": {
+        "room_id": "e5edf1f1-c889-42f9-8b85-21a68bfcf7c4",
+        "malformed_cases": [
+          {
+            "label": "invalid_json",
+            "payload": "NOT_JSON_DATA_<<<>>>@@@",
+            "sent": true
+          },
+          {
+            "label": "empty_object",
+            "payload": "{}",
+            "sent": true
+          },
+          {
+            "label": "missing_type",
+            "payload": "{\"payload\": \"untyped_data\", \"value\": 42}",
+            "sent": true
+          },
+          {
+            "label": "invalid_field_type",
+            "payload": "{\"type\": 12345, \"data\": [\"invalid_type_array\"]}",
+            "sent": true
+          }
+        ],
+        "ping_pong_verified": true
+      },
+      "raw_evidence": "room_id=e5edf1f1-c889-42f9-8b85-21a68bfcf7c4, tested_malformed_cases=4, cases=['invalid_json', 'empty_object', 'missing_type', 'invalid_field_type'], server_ping_response={'type': 'pong'}",
+      "limitation": "Evaluates structural payload resilience; does not substitute full RFC 6455 protocol-level fuzzing.",
+      "timestamp": "2026-08-03T03:41:24.222794+00:00"
+    },
+    {
+      "test_id": "BT-05",
+      "name": "Explicit Room Destruction & Post-Destruction Reconnection Rejection",
+      "target": "ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}",
+      "trike_threat": "T-09 (Pengambilalihan Sesi Setelah Salah Satu Peer Keluar)",
+      "security_req": "SR-11 (Instant Room Destruction & Memory Table Purging)",
+      "status": "PASS",
+      "command": "python tests/security/test_backend_websocket_security.py --test BT-05",
+      "expected_result": "Destroying room terminates all peer connections and rejects subsequent reconnection attempts with 'Room not found' (close code 1008).",
+      "actual_result": "Room destroyed: Peer 2 received 'room_ended' frame (code: 1008); reconnect rejected with {'type': 'error', 'reason': 'Room not found or expired.'} (code: 1008).",
+      "details": {
+        "room_id": "934ade68-b9b3-4eb7-8c4b-c9601973021c",
+        "peer2_room_ended": true,
+        "reconnect_error_frame": {
+          "type": "error",
+          "reason": "Room not found or expired."
+        },
+        "reconnect_close_code": 1008
+      },
+      "raw_evidence": "room_id=934ade68-b9b3-4eb7-8c4b-c9601973021c, peer2_room_ended=True, peer2_close_code=1008, reconnect_rejected=True, reconnect_frame={'type': 'error', 'reason': 'Room not found or expired.'}, reconnect_close_code=1008",
+      "limitation": "Evaluates in-memory session cleanup; does not evaluate distributed memory cache synchronization across multiple nodes.",
+      "timestamp": "2026-08-03T03:41:24.680745+00:00"
+    },
+    {
+      "test_id": "BT-06",
+      "name": "WebSocket Idle Timeout Disconnection (WS_IDLE_TIMEOUT Inactivity Guard)",
+      "target": "ws://127.0.0.1:8000/rooms/{room_id}/ws?token={token}",
+      "trike_threat": "T-14 (Exhaustion Memori Melalui Koneksi Idle / Zombie Sockets)",
+      "security_req": "SR-16 (WebSocket Idle Timeout Disconnection & Socket Close 1001)",
+      "status": "PASS",
+      "command": "python tests/security/test_backend_websocket_security.py --test BT-06 (WS_IDLE_TIMEOUT=3)",
+      "expected_result": "An idle connection exceeding WS_IDLE_TIMEOUT (3.0s in test env) is terminated with close code 1001 and an inactivity timeout error frame.",
+      "actual_result": "Idle connection closed after 3.00s with frame: {'type': 'error', 'reason': 'Connection closed due to inactivity.'}, close code: 1001",
+      "details": {
+        "room_id": "56850f19-c012-4b3c-bfde-5420a49cdf8a",
+        "injected_timeout_threshold_seconds": 3.0,
+        "measured_elapsed_seconds": 3.004,
+        "timeout_frame": {
+          "type": "error",
+          "reason": "Connection closed due to inactivity."
+        },
+        "close_code": 1001
+      },
+      "raw_evidence": "room_id=56850f19-c012-4b3c-bfde-5420a49cdf8a, injected_timeout_threshold=3.0s, measured_elapsed=3.00s, timeout_frame={'type': 'error', 'reason': 'Connection closed due to inactivity.'}, close_code=1001",
+      "limitation": "Injected 3.0s timeout in test harness; production environment uses 60.0s default timeout.",
+      "timestamp": "2026-08-03T03:41:28.142812+00:00"
+    }
+  ]
+}

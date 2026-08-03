@@ -1,0 +1,29 @@
+2026-08-03 10:41:17,871 [INFO] === Starting Kiw Kiw Chat Minimum Backend & WebSocket Dynamic Security Tests (BT-01 to BT-06) ===
+2026-08-03 10:41:17,871 [INFO] Starting Phase 1: Isolated backend server for BT-02 Rate Limiting (fresh window)...
+2026-08-03 10:41:19,855 [INFO] BT-02 request #1: status=200
+2026-08-03 10:41:19,919 [INFO] BT-02 request #2: status=200
+2026-08-03 10:41:19,980 [INFO] BT-02 request #3: status=200
+2026-08-03 10:41:20,042 [INFO] BT-02 request #4: status=200
+2026-08-03 10:41:20,103 [INFO] BT-02 request #5: status=200
+2026-08-03 10:41:20,167 [INFO] BT-02 request #6: status=200
+2026-08-03 10:41:20,229 [INFO] BT-02 request #7: status=200
+2026-08-03 10:41:20,290 [INFO] BT-02 request #8: status=200
+2026-08-03 10:41:20,358 [INFO] BT-02 request #9: status=200
+2026-08-03 10:41:20,419 [INFO] BT-02 request #10: status=200
+2026-08-03 10:41:20,484 [INFO] BT-02 request #11: status=429
+2026-08-03 10:41:20,549 [INFO] BT-02 request #12: status=429
+2026-08-03 10:41:20,604 [INFO] BT-02 request #13: status=429
+2026-08-03 10:41:20,666 [INFO] BT-02 request #14: status=429
+2026-08-03 10:41:20,722 [INFO] BT-02 request #15: status=429
+2026-08-03 10:41:20,778 [INFO] BT-02 request #16: status=429
+2026-08-03 10:41:20,831 [INFO] [PASS] BT-02 - API Rate Limiting on POST /rooms (HTTP 429 enforcement): Rate limit threshold strictly verified: exactly 10 requests accepted (HTTP 200), subsequent 6 requests returned HTTP 429 (total requests: 16).
+2026-08-03 10:41:20,831 [INFO] Stopping Phase 1 backend server...
+2026-08-03 10:41:21,343 [INFO] Starting Phase 2: Fresh backend server (WS_IDLE_TIMEOUT=3) for WebSocket dynamic tests...
+2026-08-03 10:41:23,252 [INFO] [PASS] BT-01 - Third Peer Rejection (Strict 2-peer capacity enforcement): Peer 3 rejected with frame: {'type': 'room_full', 'reason': 'This room already has 2 participants.'}, close code: 1008
+2026-08-03 10:41:23,634 [INFO] [PASS] BT-03 - Oversized WebSocket Payload Rejection (MAX_MSG_BYTES 64 KB guard): Oversized frame (65694 B) rejected with error frame: {'type': 'error', 'reason': 'Message exceeds 65536 byte limit.'}, close code: 1009
+2026-08-03 10:41:24,222 [INFO] [PASS] BT-04 - Malformed WebSocket Message Handling (Crash Resilience & Input Sanitization): Server handled 4 malformed cases gracefully without crash and responded to ping with pong.
+2026-08-03 10:41:24,681 [INFO] [PASS] BT-05 - Explicit Room Destruction & Post-Destruction Reconnection Rejection: Room destroyed: Peer 2 received 'room_ended' frame (code: 1008); reconnect rejected with {'type': 'error', 'reason': 'Room not found or expired.'} (code: 1008).
+2026-08-03 10:41:28,142 [INFO] [PASS] BT-06 - WebSocket Idle Timeout Disconnection (WS_IDLE_TIMEOUT Inactivity Guard): Idle connection closed after 3.00s with frame: {'type': 'error', 'reason': 'Connection closed due to inactivity.'}, close code: 1001
+2026-08-03 10:41:28,143 [INFO] Stopping Phase 2 backend server...
+2026-08-03 10:41:28,352 [INFO] Markdown report generated: artifacts\ssdlc_final\backend_websocket_test_results.md
+2026-08-03 10:41:28,353 [INFO] JSON report generated: artifacts\ssdlc_final\backend_websocket_test_results.json

@@ -49,7 +49,8 @@ Dokumen ini mendokumentasikan pemetaan komprehensif seluruh aktivitas pengembang
 | **Pengujian Kriptografi Otomatis** | Eksekusi 19 test case otomatis via `test_impkrip_final.py`: 18 PASS, 1 PARTIAL (`RP-01`), 0 FAIL. | [`baseline_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/baseline_test_results.md) |
 | **Pengujian End-to-End Multi-Run** | Eksekusi 3 run E2E independen (`E2E-01` s/d `E2E-04`) dengan tingkat keberhasilan 3/3 (100%). | [`final_regression_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/final_regression_results.md) |
 | **Pengukuran JavaScript Heap Memori** | Evaluasi checkpoint memori via CDP: Baseline 5.0850 MiB, Post-KeyGen 5.3223 MiB, Post-PQ Upgrade 5.6062 MiB. | [`impkrip_memory_summary.md`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_memory_summary.md) |
-| **Tinjauan Konfigurasi DAST & Headers** | Tinjauan kepatuhan terhadap OWASP ZAP Baseline Rules (DAST dinamis otomatis: BLOCKED / NOT EXECUTED). | [`zap_summary.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_summary.md) |
+| **Pengujian Dinamis Backend & WebSocket** | Eksekusi 6 kasus uji dinamis minimum (`BT-01` s/d `BT-06`) memverifikasi kapasitas 2-peer, rate limiting, batas payload WS, ketahanan malformed input, teardown, dan idle timeout: 6/6 PASS (100%). | [`backend_websocket_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.md) |
+| **Pemindaian DAST OWASP ZAP & Headers** | Pemindaian pasif OWASP ZAP 2.17.0 terhadap frontend produksi Vercel: 0 High, 1 Medium (`style-src 'unsafe-inline'`), 1 Low, 3 Informational. | [`zap_summary.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_summary.md)<br/>[`zap_report_2026-08-02.html`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_report_2026-08-02.html) |
 
 ---
 

@@ -1,6 +1,6 @@
 # Data Hasil Evaluasi SSDLC Kanonikal (Canonical SSDLC Results) — Kiw Kiw Chat
 
-Dokumen ini merupakan lembar data referensi tunggal (*Single Source of Truth*) yang memuat hanya data final yang didukung penuh oleh bukti empiris mentah (*raw evidence*) dari pengujian aktual **Kiw Kiw Chat** (Prototipe Riset).
+Dokumen ini merupakan lembar data referensi tunggal (*Single Source of Truth* - SSOT) yang memuat seluruh data final kanonikal yang didukung penuh oleh bukti empiris mentah (*raw evidence*) dari pengujian aktual **Kiw Kiw Chat** (Prototipe Riset).
 
 ---
 
@@ -10,14 +10,14 @@ Dokumen ini merupakan lembar data referensi tunggal (*Single Source of Truth*) y
 - **Klasifikasi Arsitektur**: PSK-assisted ML-KEM session-key establishment with AES-GCM application-layer encryption on browser-native WebRTC DataChannel with signaling relay that does not receive application keying material in the normal flow.
 - **Status Evaluasi**: **READY FOR PAPER WITH LIMITATIONS**
 - **Klasifikasi Kesiapan**: **RESEARCH PROTOTYPE (NOT EVALUATED AS PRODUCTION-READY)**
-- **Tanggal Rekonsiliasi Final**: 2026-08-02
-- **Lingkungan Pengujian**: Windows 11, AMD Ryzen 5 5600H, 16 GB RAM, Node.js v22, Python 3.11, Chromium (Playwright headless)
+- **Tanggal Rekonsiliasi Final**: 2026-08-02 (Sinkronisasi: 2026-08-03)
+- **Lingkungan Pengujian**: Windows 11, AMD Ryzen 5 5600H, 16 GB RAM, Node.js v22, Python 3.11, Chromium (Playwright headless), OWASP ZAP 2.17.0
 
 ---
 
 ## 2. Metrik Kinerja & Penggunaan Memori JavaScript Heap (Kanonikal)
 
-Sumber data mentah: [`artifacts/impkrip_final/impkrip_memory_benchmark.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_memory_benchmark.json) (5 Independent Runs, 20 Warm-up, 200 Measured Iterations per Run):
+Sumber data mentah: [`artifacts/impkrip_final/impkrip_memory_benchmark.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_memory_benchmark.json) (5 Independent Runs, 20 Warm-up, 200 Measured Iterations per Run via Chrome DevTools Protocol):
 
 | Metrik Checkpoint Heap | Median (MiB) | Mean (MiB) | Min (MiB) | Max (MiB) | StdDev (MiB) | Median (Bytes) |
 |---|---:|---:|---:|---:|---:|---:|
@@ -31,7 +31,7 @@ Sumber data mentah: [`artifacts/impkrip_final/impkrip_memory_benchmark.json`](fi
 | `delta_baseline_to_retained` | **0.9230** | 8.1074 | 0.3133 | 26.1151 | 11.4028 | 967,832 |
 
 > [!NOTE]
-> Metrik ini mencatat checkpoint memori selama alur uji terkontrol. Ini bukan pengujian kebocoran memori jangka panjang (*long-term memory leak testing*).
+> Metrik ini mencatat alokasi checkpoint memori selama alur uji terkontrol. Ini bukan pengujian kebocoran memori jangka panjang (*long-term memory leak testing*).
 
 ---
 
@@ -41,7 +41,7 @@ Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file://
 
 - **Total Test Cases**: 19
 - **PASS**: **18**
-- **PARTIAL**: **1** (`RP-01` - Replay Protection sequence validation di envelope layer)
+- **PARTIAL**: **1** (`RP-01` - Replay Protection sequence validation di application envelope layer)
 - **FAIL**: **0**
 - **E2E Multi-Run Execution**: **3/3 runs passed (100% success rate)**
 
@@ -69,14 +69,33 @@ Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file://
 
 ---
 
-## 4. Hasil Audit Keamanan Statis & Dependensi
+## 4. Hasil Pengujian Dinamis Minimum Backend API & WebSocket Signaling (6 Test Cases)
+
+Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`):
+
+- **Total Minimum Dynamic Test Cases**: 6
+- **PASS**: **6 (100%)**
+- **FAIL**: **0**
+
+| Test ID | Modul & Skenario Uji | Deskripsi Kasus Uji | Status |
+|---|---|---|:---:|
+| `BT-01` | WS Capacity | Penegakan kapasitas strict 2-peer: Penolakan peer ke-3 (`room_full` & Close 1008) | **PASS** |
+| `BT-02` | REST API (Rate Limit) | Penegakan SlowAPI rate limiting pada `POST /rooms` (10 req/IP/min: 10 diterima, 11+ ditolak HTTP 429) | **PASS** |
+| `BT-03` | WS Frame Guard | Penolakan frame payload melebihi batas 64 KB `MAX_MSG_BYTES` (Close 1009) | **PASS** |
+| `BT-04` | WS Input Handling | Ketahanan terhadap pengiriman frame non-JSON/malformed tanpa crash server | **PASS** |
+| `BT-05` | WS Lifecycle & Teardown | Teardown room seketika: Broadcast `room_ended` & penolakan rekoneksi ('Room not found') | **PASS** |
+| `BT-06` | WS Idle Timeout | Timeout inaktivitas koneksi WebSocket (`WS_IDLE_TIMEOUT=3s` di test env) ditutup kode 1001 | **PASS** |
+
+---
+
+## 5. Hasil Audit Keamanan Statis & Dependensi
 
 1. **Static Application Security Testing (SAST)**:
    - Tool: Bandit v1.9.4 pada `backend/` (269 LOC)
    - High Severity: **0**
    - Medium Severity: **1** (B104: Binding to `0.0.0.0` — accepted deployment finding untuk hosting container)
    - Low Severity: **3** (B110: Try-except-pass pada loop teardown koneksi — accepted technical debt)
-   - Status: ✅ **PASS (0 High)**
+   - Status: ✅ **PASS_WITH_FINDINGS (0 High)**
    - Raw Report: [`bandit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/bandit_report.json)
 
 2. **Software Composition Analysis (SCA)**:
@@ -88,16 +107,34 @@ Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file://
    - Status Backend SCA: ⚠️ **OPEN / PARTIAL**. Raw Report: [`pip_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/pip_audit_report.json).
 
 3. **Dynamic Application Security Testing (DAST)**:
-   - Tool: OWASP ZAP Baseline Scan
-   - Status: 🛑 **BLOCKED / NOT EXECUTED** (Docker daemon tidak aktif, binary ZAP mandiri tidak tersedia).
-   - Penilaian Pengganti: *Configuration Review* statis terhadap aturan ZAP (Header terkonfigurasi; `style-src` memuat `'unsafe-inline'`).
+   - Tool: OWASP ZAP 2.17.0 Passive Scan
+   - Target: Frontend Produksi Vercel (`https://kiwkiwchat.vercel.app/`)
+   - Tanggal Scan: 2026-08-02
+   - Hasil Alert: **0 High, 1 Medium, 1 Low, 3 Informational (Total: 5 Alert Types)**
+     - Medium (1): *CSP: style-src unsafe-inline* (Confidence: High)
+     - Low (1): *CSP: Notices* (Confidence: High)
+     - Informational (3): *Modern Web Application* (Confidence: Medium), *Re-examine Cache-control Directives* (Confidence: Low), *Retrieved from Cache* (Confidence: Medium)
+   - Status: ⚠️ **EXECUTED_WITH_OPEN_FINDINGS**
+   - Raw Report: [`zap_report_2026-08-02.html`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_report_2026-08-02.html)
 
 ---
 
-## 5. Ringkasan Status 16 Ancaman Trike (T-01 s/d T-16)
+## 6. Ringkasan Status 16 Ancaman Trike (T-01 s/d T-16)
 
 - **Total Ancaman**: 16 (100% terpetakan ke kebutuhan dan kontrol).
-- **PASS**: 8 Ancaman (`T-01`, `T-02`, `T-03`, `T-04`, `T-05`, `T-09`, `T-10`, `T-15`)
-- **PASS (WITH CAVEAT)**: 1 Ancaman (`T-16`)
-- **CODE REVIEW ONLY**: 4 Ancaman (`T-11`, `T-12`, `T-13`, `T-14`)
-- **PARTIAL**: 3 Ancaman (`T-06` memory zeroization, `T-07` URL leak residual risk note, `T-08` envelope replay)
+- **PASS / PASS_WITH_FINDINGS**: **12 Ancaman** (`T-01`, `T-02`, `T-03`, `T-04`, `T-05`, `T-07`, `T-09`, `T-10`, `T-12`, `T-13`, `T-14`, `T-15`)
+- **CODE_REVIEW_ONLY**: **1 Ancaman** (`T-11` — CORS Whitelist `backend/main.py:ALLOWED_ORIGINS`; pengujian dinamis lintas origin belum diotomasi di test harness).
+- **PARTIAL / OPEN_MEDIUM**: **3 Ancaman**:
+  - `T-06`: Batasan runtime JavaScript V8 Engine (tidak menjamin deterministic memory zeroization pada physical RAM).
+  - `T-08`: Status `RP-01` PARTIAL (validasi sequence counter di application envelope; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual).
+  - `T-16`: Status ZAP DAST EXECUTED WITH OPEN FINDINGS (1 Medium open: `CSP: style-src unsafe-inline`, 1 Low: `CSP: Notices`, 3 Informational).
+
+---
+
+## 7. Ringkasan Batasan Empiris & Integritas Ilmiah (Honesty & Limitations)
+
+1. **Replay Protection Test (`RP-01`)**: Dicatat sebagai **PARTIAL** karena test harness memvalidasi penolakan duplikasi sequence counter pada layer *application envelope*; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual.
+2. **Pemindaian DAST OWASP ZAP**: Dicatat sebagai **EXECUTED_WITH_OPEN_FINDINGS** (0 High, 1 Medium, 1 Low, 3 Informational) pada frontend produksi Vercel; pemindaian ZAP tidak mencakup backend Render atau WebSocket signaling, yang diverifikasi secara lokal melalui test harness `BT-01` s/d `BT-06`.
+3. **Pembersihan Memori pada JavaScript (`T-06`)**: Dicatat sebagai **PARTIAL** karena engine V8 mengelola memori secara otomatis via Garbage Collector dan tidak memberikan jaminan deterministik pembersihan fisik RAM (*secure zeroization*).
+4. **Dependensi Backend (SCA)**: Dicatat sebagai **OPEN / PARTIAL** di mana 17 catatan advisory PyPI dikategorikan berdasarkan alur aplikasi aktual.
+5. **Klaim Kriptografi**: Protokol diklasifikasikan sebagai *PSK-assisted ML-KEM session-key establishment with AES-GCM application-layer encryption* dan menyediakan *mutual key confirmation* (bukan *identity authentication*). Parameter ML-KEM-768 mengikuti NIST FIPS 203, tanpa klaim sertifikasi NIST CMVP pada library JavaScript pihak ketiga.

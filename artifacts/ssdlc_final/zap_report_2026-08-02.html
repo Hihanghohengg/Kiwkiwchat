@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZAP by Checkmarx Scanning Report</title>
+<link
+	href="2026-08-02-ZAP-Report-/normalize/normalize.css" rel="stylesheet">
+<link
+	href="2026-08-02-ZAP-Report-/themes/original/main.css" rel="stylesheet">
+<link
+	href="2026-08-02-ZAP-Report-/themes/original/colors.css" rel="stylesheet">
+</head>
+<body>
+	<header>
+		<h1>ZAP by Checkmarx Scanning Report</h1>
+		<p>
+			<span>Generated with</span> <a href="https://zaproxy.org"><img
+				src="2026-08-02-ZAP-Report-/zap32x32.png" alt="The ZAP logo" class="zap-logo">ZAP</a>
+			<span>on Sun 2 Aug 2026, at 20:00:53</span>
+		</p>
+		<p>ZAP Version: 2.17.0</p>
+		<p>
+			ZAP by <a href="https://checkmarx.com/">Checkmarx</a>
+		</p>
+	</header>
+
+	<main>
+
+		<section id="contents" class="contents">
+			<h2>Contents</h2>
+			<nav>
+				<ol>
+					<li><a
+						href="#about-this-report">About This Report</a>
+						<ol>
+							
+							<li><a
+								href="#report-parameters">Report Parameters</a></li>
+						</ol></li>
+					<data-th-block>
+					<li><a
+						href="#summaries">Summaries</a>
+						<ol>
+							<li><a
+								href="#risk-confidence-counts">Alert Counts by Risk and Confidence</a></li>
+							<li><a
+								href="#site-risk-counts">Alert Counts by Site and Risk</a></li>
+							<li><a
+								href="#alert-type-counts">Alert Counts by Alert Type</a></li>
+							
+						</ol></li>
+					<li><a
+						href="#alerts">Alerts</a>
+						<ol>
+							
+							 
+							
+							
+							
+							
+							<li><a
+								href="#alerts--risk-2-confidence-3"><span>Risk</span>=<span
+									class="risk-level">Medium</span>, <span>Confidence</span>=<span
+									class="confidence-level">High</span> <span>(1)</span></a></li>
+							
+							
+							
+							
+							  
+							
+							
+							
+							
+							<li><a
+								href="#alerts--risk-1-confidence-3"><span>Risk</span>=<span
+									class="risk-level">Low</span>, <span>Confidence</span>=<span
+									class="confidence-level">High</span> <span>(1)</span></a></li>
+							
+							
+							
+							
+							  
+							
+							
+							
+							
+							
+							
+							<li><a
+								href="#alerts--risk-0-confidence-2"><span>Risk</span>=<span
+									class="risk-level">Informational</span>, <span>Confidence</span>=<span
+									class="confidence-level">Medium</span> <span>(2)</span></a></li>
+							
+							<li><a
+								href="#alerts--risk-0-confidence-1"><span>Risk</span>=<span
+									class="risk-level">Informational</span>, <span>Confidence</span>=<span
+									class="confidence-level">Low</span> <span>(1)</span></a></li>
+							  
+						</ol></li>
+					<li><a
+						href="#appendix">Appendix</a>
+						<ol>
+							<li><a
+								href="#alert-types">Alert Types</a></li>
+						</ol></li>
+					</data-th-block>
+				</ol>
+			</nav>
+		</section>
+
+		<section
+			id="about-this-report" class="about-this-report">
+			<h2>About This Report</h2>
+
+			
+
+			<section
+				id="report-parameters">
+				<h3>Report Parameters</h3>
+				<div class="report-parameters--container">
+					<h4>Contexts</h4>
+					
+					
+					<p>No contexts were selected, so all contexts were included by default.</p>
+					  
+
+					<h4>Sites</h4>
+					
+					<p>The following sites were included:</p>
+					<ul class="sites-list">
+						<li><span class="site">https://kiwkiwchat.vercel.app</span></li>
+					</ul>
+					
+					<p>(If no sites were selected, all sites were included by default.)</p>
+					<p>An included site must also be within one of the included contexts for its data to be included in the report.</p>
+
+					<h4>Risk levels</h4>
+					<p>
+						<span>Included</span>:
+						 
+						<span class="included-risk-codes"><span class="risk-level">High</span>, <span class="risk-level">Medium</span>, <span class="risk-level">Low</span>, <span class="risk-level">Informational</span></span>
+					</p>
+					<p>
+						<span>Excluded</span>:
+						 <span>None</span>
+						
+					</p>
+
+					<h4>Confidence levels</h4>
+					<p>
+						<span>Included</span>:
+						
+						
+						<span class="included-confidence-codes"><span class="confidence-level">User Confirmed</span>, <span class="confidence-level">High</span>, <span class="confidence-level">Medium</span>, <span class="confidence-level">Low</span></span>
+					</p>
+					<p>
+						<span>Excluded</span>:
+						
+						
+						<span class="included-confidence-codes"> <span class="confidence-level">User Confirmed</span>, <span class="confidence-level">High</span>, <span class="confidence-level">Medium</span>, <span class="confidence-level">Low</span>, <span class="confidence-level">False Positive</span></span>
+					</p>
+				</div>
+			</section>
+		</section>
+
+		
+		<section>
+			
+		</section>
+		
+		<section id="summaries" class="summaries">
+			<h2>Summaries</h2>
+
+			<section
+				id="risk-confidence-counts">
+				<h3>Alert Counts by Risk and Confidence</h3>
+				<table class="risk-confidence-counts-table">
+					<caption>
+						<p>This table shows the number of alerts for each level of risk and confidence included in the report.</p>
+						<p>(The percentages in brackets represent the count as a percentage of the total number of alerts included in the report, rounded to one decimal place.)</p>
+					</caption>
+					<colgroup>
+						<col>
+						<col>
+					</colgroup>
+					<colgroup>
+						<col
+							style="width: 14.0%"><col
+							style="width: 14.0%"><col
+							style="width: 14.0%"><col
+							style="width: 14.0%">
+						<col style="width: 14.0%">
+					</colgroup>
+					<thead>
+						<tr>
+							<td colspan="2" rowspan="2"></td>
+							<th scope="colgroup"
+								colspan="5">Confidence</th>
+						</tr>
+						<tr>
+							<th scope="col">User Confirmed</th>
+							<th scope="col">High</th>
+							<th scope="col">Medium</th>
+							<th scope="col">Low</th>
+							<th scope="col">Total</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="rowgroup"
+								rowspan="5">Risk</th>
+							<th scope="row">High</th>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>0</span><br> <span class="additional-info-percentages">(0.0%)</span></td>
+						</tr>
+						<tr>
+							
+							<th scope="row">Medium</th>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>1</span><br> <span
+								class="additional-info-percentages">(20.0%)</span></td>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>1</span><br> <span class="additional-info-percentages">(20.0%)</span></td>
+						</tr>
+						<tr>
+							
+							<th scope="row">Low</th>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>1</span><br> <span
+								class="additional-info-percentages">(20.0%)</span></td>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>1</span><br> <span class="additional-info-percentages">(20.0%)</span></td>
+						</tr>
+						<tr>
+							
+							<th scope="row">Informational</th>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>2</span><br> <span
+								class="additional-info-percentages">(40.0%)</span></td>
+							<td><span>1</span><br> <span
+								class="additional-info-percentages">(20.0%)</span></td>
+							<td><span>3</span><br> <span class="additional-info-percentages">(60.0%)</span></td>
+						</tr>
+						<tr>
+							<th scope="row">Total</th>
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0.0%)</span></td>
+							<td><span>2</span><br> <span
+								class="additional-info-percentages">(40.0%)</span></td>
+							<td><span>2</span><br> <span
+								class="additional-info-percentages">(40.0%)</span></td>
+							<td><span>1</span><br> <span
+								class="additional-info-percentages">(20.0%)</span></td>
+							<td><span>5</span><br> <span
+								class="additional-info-percentages">(100%)</span></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section
+				id="site-risk-counts">
+				<h3>Alert Counts by Site and Risk</h3>
+				<table class="site-risk-counts-table">
+					<caption>
+						<p>This table shows, for each site for which one or more alerts were raised, the number of alerts raised at each risk level.</p>
+						<p>Alerts with a confidence level of &quot;False Positive&quot; have been excluded from these counts.</p>
+						<p>(The numbers in brackets are the number of alerts raised for the site at or above that risk level.)</p>
+					</caption>
+					<colgroup>
+						<col>
+						<col>
+					</colgroup>
+					<colgroup>
+						<col
+							style="width: 16.25%"><col
+							style="width: 16.25%"><col
+							style="width: 16.25%"><col
+							style="width: 16.25%">
+					</colgroup>
+					<thead>
+						<tr>
+							<td colspan="2" rowspan="2"></td>
+							<th scope="colgroup" colspan="4">Risk</th>
+						</tr>
+						<tr>
+							<th scope="col">
+								<span>High</span><br>  <span
+									class="additional-info-percentages">(= High)</span>  
+							</th>
+							<th scope="col">
+								<span>Medium</span><br>   <span
+									class="additional-info-percentages">(&gt;= Medium)</span> 
+							</th>
+							<th scope="col">
+								<span>Low</span><br>   <span
+									class="additional-info-percentages">(&gt;= Low)</span> 
+							</th>
+							<th scope="col">
+								<span>Informational</span><br>   <span
+									class="additional-info-percentages">(&gt;= Informational)</span> 
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="rowgroup"
+								rowspan="1">Site</th>
+							<th scope="row">https://kiwkiwchat.vercel.app</th>
+							
+							<td><span>0</span><br> <span
+								class="additional-info-percentages">(0)</span></td>
+							<td><span>1</span><br> <span
+								class="additional-info-percentages">(1)</span></td>
+							<td><span>1</span><br> <span
+								class="additional-info-percentages">(2)</span></td>
+							<td><span>3</span><br> <span
+								class="additional-info-percentages">(5)</span></td>
+							
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section
+				id="alert-type-counts">
+				<h3>Alert Counts by Alert Type</h3>
+				<table class="alert-type-counts-table">
+					<caption>
+						<p>This table shows the number of alerts of each alert type, together with the alert type&#39;s risk level.</p>
+						<p>(The percentages in brackets represent each count as a percentage, rounded to one decimal place, of the total number of alerts included in this report.)</p>
+					</caption>
+					<thead>
+						<tr>
+							<th scope="col">Alert type</th>
+							<th scope="col">Risk</th>
+							<th scope="col">Count</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row"><a
+								href="#alert-type-0">CSP: style-src unsafe-inline</a></th>
+							<td class="risk-level">Medium</td>
+							<td><span>3</span><br> <span
+								class="additional-info-percentages">(60.0%)</span></td>
+						</tr>
+						<tr>
+							<th scope="row"><a
+								href="#alert-type-1">CSP: Notices</a></th>
+							<td class="risk-level">Low</td>
+							<td><span>3</span><br> <span
+								class="additional-info-percentages">(60.0%)</span></td>
+						</tr>
+						<tr>
+							<th scope="row"><a
+								href="#alert-type-2">Modern Web Application</a></th>
+							<td class="risk-level">Informational</td>
+							<td><span>3</span><br> <span
+								class="additional-info-percentages">(60.0%)</span></td>
+						</tr>
+						<tr>
+							<th scope="row"><a
+								href="#alert-type-3">Re-examine Cache-control Directives</a></th>
+							<td class="risk-level">Informational</td>
+							<td><span>3</span><br> <span
+								class="additional-info-percentages">(60.0%)</span></td>
+						</tr>
+						<tr>
+							<th scope="row"><a
+								href="#alert-type-4">Retrieved from Cache</a></th>
+							<td class="risk-level">Informational</td>
+							<td><span>5</span><br> <span
+								class="additional-info-percentages">(100.0%)</span></td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<th scope="row">Total</th>
+							<td></td>
+							<td>5</td>
+						</tr>
+					</tfoot>
+				</table>
+			</section>
+			
+			
+		</section>
+
+		<section id="alerts" class="alerts">
+			<h2>Alerts</h2>
+			<ol>
+				
+				 
+				 
+				
+				
+				<li id="alerts--risk-2-confidence-3">
+					<h3>
+						<span>Risk</span>=<span
+							class="risk-level">Medium</span>, <span>Confidence</span>=<span
+							class="confidence-level">High</span> <span>(1)</span>
+					</h3>
+					<ol>
+						
+						<li class="alerts--site-li">
+							<h4>
+								<span class="site">https://kiwkiwchat.vercel.app</span> <span>(1)</span>
+							</h4>
+							<ol>
+								
+								<li>
+									<h5>
+										<a
+											href="#alert-type-0">CSP: style-src unsafe-inline</a> <span>(1)</span>
+									</h5>
+									<ol>
+										<li><details>
+												<summary>
+													<span class="request-method-n-url">GET https://kiwkiwchat.vercel.app/sitemap.xml</span>
+												</summary>
+												
+<table class="alerts-table">
+	<tr>
+		<th scope="row">Alert tags</th>
+		<td>
+			<ul class="alert-tags-list">
+				<li>
+					<span><a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP_2021_A05</a></span> 
+				</li>
+				<li>
+					 <span>POLICY_QA_STD = </span>
+				</li>
+				<li>
+					 <span>POLICY_PENTEST = </span>
+				</li>
+				<li>
+					<span><a href="https://www.zaproxy.org/docs/desktop/addons/common-library/alerttags/#systemic">SYSTEMIC</a></span> 
+				</li>
+				<li>
+					<span><a href="https://cwe.mitre.org/data/definitions/693.html">CWE-693</a></span> 
+				</li>
+				<li>
+					<span><a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html">OWASP_2017_A06</a></span> 
+				</li>
+				<li>
+					<span><a href="https://owasp.org/Top10/2025/A02_2025-Security_Misconfiguration/">OWASP_2025_A02</a></span> 
+				</li>
+				<li>
+					 <span>POLICY_DEV_STD = </span>
+				</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<th scope="row">Alert description</th>
+		<td> 
+<p>Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks. Including (but not limited to) Cross Site Scripting (XSS), and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that browsers should be allowed to load on that page — covered types are JavaScript, CSS, HTML frames, fonts, images and embeddable objects such as Java applets, ActiveX, audio and video files.</p>
+ </td>
+	</tr>
+	<tr>
+		<th scope="row">Other info</th>
+		<td> 
+<p>style-src includes unsafe-inline.</p>
+ </td>
+	</tr>
+	<tr>
+		<th scope="row">Request</th>
+		<td><details open="open">
+				<summary>Request line and header section (255 bytes)</summary>
+				
+				<pre><code>GET https://kiwkiwchat.vercel.app/sitemap.xml HTTP/1.1
+host: kiwkiwchat.vercel.app
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+pragma: no-cache
+cache-control: no-cache
+
+</code></pre>
+				
+				
+			</details> <details class="request-body" open="open">
+				<summary>Request body (0 bytes)</summary>
+				
+				<pre><code></code></pre>
+				
+				
+			</details></td>
+	</tr>
+	<tr>
+		<th scope="row">Response</th>
+		<td><details open="open">
+				<summary>Status line and header section (648 bytes)</summary>
+				
+				<pre><code>HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Access-Control-Allow-Origin: https://kiwkiwchat.vercel.app
+Age: 0
+Cache-Control: public, max-age=0, must-revalidate
+Content-Disposition: inline; filename=&quot;index.html&quot;
+Content-Length: 2573
+Content-Type: text/html; charset=utf-8
+Date: Sun, 02 Aug 2026 12:58:52 GMT
+Etag: &quot;69b94feb014bb10c717dc9f6a0401bec&quot;
+Last-Modified: Sun, 02 Aug 2026 12:58:52 GMT
+Referrer-Policy: no-referrer
+Server: Vercel
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Vercel-Cache: HIT
+X-Vercel-Id: sin1::lnw74-1785675532419-a2a280e4a59b
+
+</code></pre>
+				
+				
+			</details> <details class="response-body">
+				<summary>Response body (2573 bytes)</summary>
+				
+				<pre><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;id&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot; /&gt;
+    &lt;link rel=&quot;icon&quot; type=&quot;image/svg+xml&quot; href=&quot;/favicon.svg&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+    &lt;title&gt;Kiw Kiw Chat — Ephemeral Encrypted P2P&lt;/title&gt;
+
+    &lt;!-- SEO --&gt;
+    &lt;meta name=&quot;description&quot; content=&quot;Kiw Kiw Chat: pesan terenkripsi end-to-end dengan ML-KEM-768 + AES-GCM-256. Tidak ada log, tidak ada riwayat.&quot; /&gt;
+    &lt;meta name=&quot;robots&quot; content=&quot;noindex, nofollow&quot; /&gt;
+
+    &lt;!-- FIX-12: Content Security Policy --&gt;
+    &lt;!-- connect-src: allow WSS to production + localhost dev --&gt;
+    &lt;meta http-equiv=&quot;Content-Security-Policy&quot;
+          content=&quot;
+            default-src &#39;self&#39;;
+            connect-src &#39;self&#39;
+                        wss://kiwkiwchat.vercel.app
+                        https://kiwkiwchat.vercel.app
+                        wss://*.onrender.com
+                        https://*.onrender.com
+                        ws://localhost:8000
+                        http://localhost:8000
+                        ws://localhost:5173
+                        http://localhost:5173
+                        ws://localhost:4173
+                        http://localhost:4173
+                        stun:stun.l.google.com:19302
+                        turn:openrelay.metered.ca:80
+                        turn:openrelay.metered.ca:443;
+            script-src  &#39;self&#39;;
+            style-src   &#39;self&#39; https://fonts.googleapis.com &#39;unsafe-inline&#39;;
+            font-src    https://fonts.gstatic.com;
+            img-src     &#39;self&#39; data:;
+            base-uri    &#39;self&#39;;
+            form-action &#39;self&#39;;
+          &quot; /&gt;
+
+    &lt;!-- FIX-12: Additional security meta tags --&gt;
+    &lt;meta http-equiv=&quot;X-Content-Type-Options&quot; content=&quot;nosniff&quot; /&gt;
+    &lt;meta http-equiv=&quot;Referrer-Policy&quot; content=&quot;no-referrer&quot; /&gt;
+    &lt;meta name=&quot;permissions-policy&quot; content=&quot;geolocation=(), microphone=(), camera=()&quot; /&gt;
+
+    &lt;!-- Google Fonts --&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot; /&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin /&gt;
+    &lt;link href=&quot;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot; integrity=&quot;sha384-+KimCdwmcOqox9lD4RE8VLyuMEQ/kRzz7GvxaxY2FXTpFSOZEL+yS+WfprqkPm0Y&quot; crossorigin=&quot;anonymous&quot; /&gt;
+    &lt;script type=&quot;module&quot; crossorigin src=&quot;/assets/index-TZu0IV24.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; crossorigin href=&quot;/assets/index-C8ZL-JgS.css&quot;&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+				
+				
+			</details></td>
+	</tr>
+	<tr>
+		<th scope="row">Parameter</th>
+		<td><pre><code>Content-Security-Policy</code></pre></td>
+	</tr>
+	
+	<tr>
+		<th scope="row">Evidence</th>
+		<td><pre><code>
+            default-src &#39;self&#39;;
+            connect-src &#39;self&#39;
+                        wss://kiwkiwchat.vercel.app
+                        https://kiwkiwchat.vercel.app
+                        wss://*.onrender.com
+                        https://*.onrender.com
+                        ws://localhost:8000
+                        http://localhost:8000
+                        ws://localhost:5173
+                        http://localhost:5173
+                        ws://localhost:4173
+                        http://localhost:4173
+                        stun:stun.l.google.com:19302
+                        turn:openrelay.metered.ca:80
+                        turn:openrelay.metered.ca:443;
+            script-src  &#39;self&#39;;
+            style-src   &#39;self&#39; https://fonts.googleapis.com &#39;unsafe-inline&#39;;
+            font-src    https://fonts.gstatic.com;
+            img-src     &#39;self&#39; data:;
+            base-uri    &#39;self&#39;;
+            form-action &#39;self&#39;;
+          </code></pre></td>
+	</tr>
+	<tr>
+		<th scope="row">Solution</th>
+		<td> 
+<p>Ensure that your web server, application server, load balancer, etc. is properly configured to set the Content-Security-Policy header.</p>
+ </td>
+	</tr>
+</table>
+
+											</details></li>
+									</ol>
+								</li>
+								
+							</ol>
+						</li>
+						
+					</ol>
+				</li>
+				
+				
+				
+				
+				  
+				 
+				
+				
+				<li id="alerts--risk-1-confidence-3">
+					<h3>
+						<span>Risk</span>=<span
+							class="risk-level">Low</span>, <span>Confidence</span>=<span
+							class="confidence-level">High</span> <span>(1)</span>
+					</h3>
+					<ol>
+						
+						<li class="alerts--site-li">
+							<h4>
+								<span class="site">https://kiwkiwchat.vercel.app</span> <span>(1)</span>
+							</h4>
+							<ol>
+								
+								<li>
+									<h5>
+										<a
+											href="#alert-type-1">CSP: Notices</a> <span>(1)</span>
+									</h5>
+									<ol>
+										<li><details>
+												<summary>
+													<span class="request-method-n-url">GET https://kiwkiwchat.vercel.app/</span>
+												</summary>
+												
+<table class="alerts-table">
+	<tr>
+		<th scope="row">Alert tags</th>
+		<td>
+			<ul class="alert-tags-list">
+				<li>
+					<span><a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">OWASP_2021_A05</a></span> 
+				</li>
+				<li>
+					 <span>POLICY_QA_STD = </span>
+				</li>
+				<li>
+					 <span>POLICY_PENTEST = </span>
+				</li>
+				<li>
+					<span><a href="https://www.zaproxy.org/docs/desktop/addons/common-library/alerttags/#systemic">SYSTEMIC</a></span> 
+				</li>
+				<li>
+					<span><a href="https://cwe.mitre.org/data/definitions/693.html">CWE-693</a></span> 
+				</li>
+				<li>
+					<span><a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html">OWASP_2017_A06</a></span> 
+				</li>
+				<li>
+					<span><a href="https://owasp.org/Top10/2025/A02_2025-Security_Misconfiguration/">OWASP_2025_A02</a></span> 
+				</li>
+				<li>
+					 <span>POLICY_DEV_STD = </span>
+				</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<th scope="row">Alert description</th>
+		<td> 
+<p>Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks. Including (but not limited to) Cross Site Scripting (XSS), and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that browsers should be allowed to load on that page — covered types are JavaScript, CSS, HTML frames, fonts, images and embeddable objects such as Java applets, ActiveX, audio and video files.</p>
+ </td>
+	</tr>
+	<tr>
+		<th scope="row">Other info</th>
+		<td> 
+<p>Errors:</p>
+
+<p>Unrecognized source-expression stun:stun.l.google.com:19302</p>
+
+<p>Unrecognized source-expression turn:openrelay.metered.ca:80</p>
+
+<p>Unrecognized source-expression turn:openrelay.metered.ca:443</p>
+ </td>
+	</tr>
+	<tr>
+		<th scope="row">Request</th>
+		<td><details open="open">
+				<summary>Request line and header section (244 bytes)</summary>
+				
+				<pre><code>GET https://kiwkiwchat.vercel.app/ HTTP/1.1
+host: kiwkiwchat.vercel.app
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+pragma: no-cache
+cache-control: no-cache
+
+</code></pre>
+				
+				
+			</details> <details class="request-body" open="open">
+				<summary>Request body (0 bytes)</summary>
+				
+				<pre><code></code></pre>
+				
+				
+			</details></td>
+	</tr>
+	<tr>
+		<th scope="row">Response</th>
+		<td><details open="open">
+				<summary>Status line and header section (626 bytes)</summary>
+				
+				<pre><code>HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Access-Control-Allow-Origin: https://kiwkiwchat.vercel.app
+Age: 0
+Cache-Control: public, max-age=0, must-revalidate
+Content-Disposition: inline
+Content-Length: 2573
+Content-Type: text/html; charset=utf-8
+Date: Sun, 02 Aug 2026 12:58:52 GMT
+Etag: &quot;69b94feb014bb10c717dc9f6a0401bec&quot;
+Last-Modified: Sun, 02 Aug 2026 12:58:52 GMT
+Referrer-Policy: no-referrer
+Server: Vercel
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Vercel-Cache: MISS
+X-Vercel-Id: sin1::xwp9s-1785675531564-7675158e6b66
+
+</code></pre>
+				
+				
+			</details> <details class="response-body">
+				<summary>Response body (2573 bytes)</summary>
+				
+				<pre><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;id&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot; /&gt;
+    &lt;link rel=&quot;icon&quot; type=&quot;image/svg+xml&quot; href=&quot;/favicon.svg&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+    &lt;title&gt;Kiw Kiw Chat — Ephemeral Encrypted P2P&lt;/title&gt;
+
+    &lt;!-- SEO --&gt;
+    &lt;meta name=&quot;description&quot; content=&quot;Kiw Kiw Chat: pesan terenkripsi end-to-end dengan ML-KEM-768 + AES-GCM-256. Tidak ada log, tidak ada riwayat.&quot; /&gt;
+    &lt;meta name=&quot;robots&quot; content=&quot;noindex, nofollow&quot; /&gt;
+
+    &lt;!-- FIX-12: Content Security Policy --&gt;
+    &lt;!-- connect-src: allow WSS to production + localhost dev --&gt;
+    &lt;meta http-equiv=&quot;Content-Security-Policy&quot;
+          content=&quot;
+            default-src &#39;self&#39;;
+            connect-src &#39;self&#39;
+                        wss://kiwkiwchat.vercel.app
+                        https://kiwkiwchat.vercel.app
+                        wss://*.onrender.com
+                        https://*.onrender.com
+                        ws://localhost:8000
+                        http://localhost:8000
+                        ws://localhost:5173
+                        http://localhost:5173
+                        ws://localhost:4173
+                        http://localhost:4173
+                        stun:stun.l.google.com:19302
+                        turn:openrelay.metered.ca:80
+                        turn:openrelay.metered.ca:443;
+            script-src  &#39;self&#39;;
+            style-src   &#39;self&#39; https://fonts.googleapis.com &#39;unsafe-inline&#39;;
+            font-src    https://fonts.gstatic.com;
+            img-src     &#39;self&#39; data:;
+            base-uri    &#39;self&#39;;
+            form-action &#39;self&#39;;
+          &quot; /&gt;
+
+    &lt;!-- FIX-12: Additional security meta tags --&gt;
+    &lt;meta http-equiv=&quot;X-Content-Type-Options&quot; content=&quot;nosniff&quot; /&gt;
+    &lt;meta http-equiv=&quot;Referrer-Policy&quot; content=&quot;no-referrer&quot; /&gt;
+    &lt;meta name=&quot;permissions-policy&quot; content=&quot;geolocation=(), microphone=(), camera=()&quot; /&gt;
+
+    &lt;!-- Google Fonts --&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot; /&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin /&gt;
+    &lt;link href=&quot;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot; integrity=&quot;sha384-+KimCdwmcOqox9lD4RE8VLyuMEQ/kRzz7GvxaxY2FXTpFSOZEL+yS+WfprqkPm0Y&quot; crossorigin=&quot;anonymous&quot; /&gt;
+    &lt;script type=&quot;module&quot; crossorigin src=&quot;/assets/index-TZu0IV24.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; crossorigin href=&quot;/assets/index-C8ZL-JgS.css&quot;&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+				
+				
+			</details></td>
+	</tr>
+	<tr>
+		<th scope="row">Parameter</th>
+		<td><pre><code>content-security-policy</code></pre></td>
+	</tr>
+	
+	<tr>
+		<th scope="row">Evidence</th>
+		<td><pre><code>
+            default-src &#39;self&#39;;
+            connect-src &#39;self&#39;
+                        wss://kiwkiwchat.vercel.app
+                        https://kiwkiwchat.vercel.app
+                        wss://*.onrender.com
+                        https://*.onrender.com
+                        ws://localhost:8000
+                        http://localhost:8000
+                        ws://localhost:5173
+                        http://localhost:5173
+                        ws://localhost:4173
+                        http://localhost:4173
+                        stun:stun.l.google.com:19302
+                        turn:openrelay.metered.ca:80
+                        turn:openrelay.metered.ca:443;
+            script-src  &#39;self&#39;;
+            style-src   &#39;self&#39; https://fonts.googleapis.com &#39;unsafe-inline&#39;;
+            font-src    https://fonts.gstatic.com;
+            img-src     &#39;self&#39; data:;
+            base-uri    &#39;self&#39;;
+            form-action &#39;self&#39;;
+          </code></pre></td>
+	</tr>
+	<tr>
+		<th scope="row">Solution</th>
+		<td> 
+<p>Ensure that your web server, application server, load balancer, etc. is properly configured to set the Content-Security-Policy header.</p>
+ </td>
+	</tr>
+</table>
+
+											</details></li>
+									</ol>
+								</li>
+								
+							</ol>
+						</li>
+						
+					</ol>
+				</li>
+				
+				
+				
+				
+				  
+				 
+				
+				
+				
+				
+				<li id="alerts--risk-0-confidence-2">
+					<h3>
+						<span>Risk</span>=<span
+							class="risk-level">Informational</span>, <span>Confidence</span>=<span
+							class="confidence-level">Medium</span> <span>(2)</span>
+					</h3>
+					<ol>
+						
+						<li class="alerts--site-li">
+							<h4>
+								<span class="site">https://kiwkiwchat.vercel.app</span> <span>(2)</span>
+							</h4>
+							<ol>
+								
+								<li>
+									<h5>
+										<a
+											href="#alert-type-2">Modern Web Application</a> <span>(1)</span>
+									</h5>
+									<ol>
+										<li><details>
+												<summary>
+													<span class="request-method-n-url">GET https://kiwkiwchat.vercel.app/sitemap.xml</span>
+												</summary>
+												
+<table class="alerts-table">
+	<tr>
+		<th scope="row">Alert tags</th>
+		<td>
+			<ul class="alert-tags-list">
+				<li>
+					 <span>POLICY_QA_STD = </span>
+				</li>
+				<li>
+					 <span>POLICY_PENTEST = </span>
+				</li>
+				<li>
+					<span><a href="https://www.zaproxy.org/docs/desktop/addons/common-library/alerttags/#systemic">SYSTEMIC</a></span> 
+				</li>
+				<li>
+					 <span>POLICY_DEV_STD = </span>
+				</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<th scope="row">Alert description</th>
+		<td> 
+<p>The application appears to be a modern web application. If you need to explore it automatically then the Client Spider may well be more effective than the standard one.</p>
+ </td>
+	</tr>
+	<tr>
+		<th scope="row">Other info</th>
+		<td> 
+<p>No links have been found while there are scripts, which is an indication that this is a modern web application.</p>
+ </td>
+	</tr>
+	<tr>
+		<th scope="row">Request</th>
+		<td><details open="open">
+				<summary>Request line and header section (255 bytes)</summary>
+				
+				<pre><code>GET https://kiwkiwchat.vercel.app/sitemap.xml HTTP/1.1
+host: kiwkiwchat.vercel.app
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+pragma: no-cache
+cache-control: no-cache
+
+</code></pre>
+				
+				
+			</details> <details class="request-body" open="open">
+				<summary>Request body (0 bytes)</summary>
+				
+				<pre><code></code></pre>
+				
+				
+			</details></td>
+	</tr>
+	<tr>
+		<th scope="row">Response</th>
+		<td><details open="open">
+				<summary>Status line and header section (648 bytes)</summary>
+				
+				<pre><code>HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Access-Control-Allow-Origin: https://kiwkiwchat.vercel.app
+Age: 0
+Cache-Control: public, max-age=0, must-revalidate
+Content-Disposition: inline; filename=&quot;index.html&quot;
+Content-Length: 2573
+Content-Type: text/html; charset=utf-8
+Date: Sun, 02 Aug 2026 12:58:52 GMT
+Etag: &quot;69b94feb014bb10c717dc9f6a0401bec&quot;
+Last-Modified: Sun, 02 Aug 2026 12:58:52 GMT
+Referrer-Policy: no-referrer
+Server: Vercel
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Vercel-Cache: HIT
+X-Vercel-Id: sin1::lnw74-1785675532419-a2a280e4a59b
+
+</code></pre>
+				
+				
+			</details> <details class="response-body">
+				<summary>Response body (2573 bytes)</summary>
+				
+				<pre><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;id&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot; /&gt;
+    &lt;link rel=&quot;icon&quot; type=&quot;image/svg+xml&quot; href=&quot;/favicon.svg&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+    &lt;title&gt;Kiw Kiw Chat — Ephemeral Encrypted P2P&lt;/title&gt;
+
+    &lt;!-- SEO --&gt;
+    &lt;meta name=&quot;description&quot; content=&quot;Kiw Kiw Chat: pesan terenkripsi end-to-end dengan ML-KEM-768 + AES-GCM-256. Tidak ada log, tidak ada riwayat.&quot; /&gt;
+    &lt;meta name=&quot;robots&quot; content=&quot;noindex, nofollow&quot; /&gt;
+
+    &lt;!-- FIX-12: Content Security Policy --&gt;
+    &lt;!-- connect-src: allow WSS to production + localhost dev --&gt;
+    &lt;meta http-equiv=&quot;Content-Security-Policy&quot;
+          content=&quot;
+            default-src &#39;self&#39;;
+            connect-src &#39;self&#39;
+                        wss://kiwkiwchat.vercel.app
+                        https://kiwkiwchat.vercel.app
+                        wss://*.onrender.com
+                        https://*.onrender.com
+                        ws://localhost:8000
+                        http://localhost:8000
+                        ws://localhost:5173
+                        http://localhost:5173
+                        ws://localhost:4173
+                        http://localhost:4173
+                        stun:stun.l.google.com:19302
+                        turn:openrelay.metered.ca:80
+                        turn:openrelay.metered.ca:443;
+            script-src  &#39;self&#39;;
+            style-src   &#39;self&#39; https://fonts.googleapis.com &#39;unsafe-inline&#39;;
+            font-src    https://fonts.gstatic.com;
+            img-src     &#39;self&#39; data:;
+            base-uri    &#39;self&#39;;
+            form-action &#39;self&#39;;
+          &quot; /&gt;
+
+    &lt;!-- FIX-12: Additional security meta tags --&gt;
+    &lt;meta http-equiv=&quot;X-Content-Type-Options&quot; content=&quot;nosniff&quot; /&gt;
+    &lt;meta http-equiv=&quot;Referrer-Policy&quot; content=&quot;no-referrer&quot; /&gt;
+    &lt;meta name=&quot;permissions-policy&quot; content=&quot;geolocation=(), microphone=(), camera=()&quot; /&gt;
+
+    &lt;!-- Google Fonts --&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot; /&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin /&gt;
+    &lt;link href=&quot;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot; integrity=&quot;sha384-+KimCdwmcOqox9lD4RE8VLyuMEQ/kRzz7GvxaxY2FXTpFSOZEL+yS+WfprqkPm0Y&quot; crossorigin=&quot;anonymous&quot; /&gt;
+    &lt;script type=&quot;module&quot; crossorigin src=&quot;/assets/index-TZu0IV24.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; crossorigin href=&quot;/assets/index-C8ZL-JgS.css&quot;&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+				
+				
+			</details></td>
+	</tr>
+	
+	
+	<tr>
+		<th scope="row">Evidence</th>
+		<td><pre><code>&lt;script type=&quot;module&quot; crossorigin src=&quot;/assets/index-TZu0IV24.js&quot;&gt;&lt;/script&gt;</code></pre></td>
+	</tr>
+	<tr>
+		<th scope="row">Solution</th>
+		<td> 
+<p>This is an informational alert and so no changes are required.</p>
+ </td>
+	</tr>
+</table>
+
+											</details></li>
+									</ol>
+								</li>
+								
+								<li>
+									<h5>
+										<a
+											href="#alert-type-4">Retrieved from Cache</a> <span>(1)</span>
+									</h5>
+									<ol>
+										<li><details>
+												<summary>
+													<span class="request-method-n-url">GET https://kiwkiwchat.vercel.app/assets/index-C8ZL-JgS.css</span>
+												</summary>
+												
+<table class="alerts-table">
+	<tr>
+		<th scope="row">Alert tags</th>
+		<td>
+			<ul class="alert-tags-list">
+				<li>
+					<span><a href="https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/">OWASP_2025_A07</a></span> 
+				</li>
+				<li>
+					<span><a href="https://cwe.mitre.org/data/definitions/525.html">CWE-525</a></span> 
+				</li>
+				<li>
+					 <span>POLICY_PENTEST = </span>
+				</li>
+				<li>
+					<span><a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">OWASP_2021_A07</a></span> 
+				</li>
+				<li>
+					<span><a href="https://www.zaproxy.org/docs/desktop/addons/common-library/alerttags/#systemic">SYSTEMIC</a></span> 
+				</li>
+				<li>
+					<span><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/04-Authentication_Testing/06-Testing_for_Browser_Cache_Weaknesses">WSTG-v42-ATHN-06</a></span> 
+				</li>
+				<li>
+					<span><a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication.html">OWASP_2017_A02</a></span> 
+				</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<th scope="row">Alert description</th>
+		<td> 
+<p>The content was retrieved from a shared cache. If the response data is sensitive, personal or user-specific, this may result in sensitive information being leaked. In some cases, this may even result in a user gaining complete control of the session of another user, depending on the configuration of the caching components in use in their environment. This is primarily an issue where caching servers such as &quot;proxy&quot; caches are configured on the local network. This configuration is typically found in corporate or educational environments, for instance.</p>
+ </td>
+	</tr>
+	<tr>
+		<th scope="row">Other info</th>
+		<td> 
+<p>The presence of the &#39;Age&#39; header indicates that a HTTP/1.1 compliant caching server is in use.</p>
+ </td>
+	</tr>
+	<tr>
+		<th scope="row">Request</th>
+		<td><details open="open">
+				<summary>Request line and header section (310 bytes)</summary>
+				
+				<pre><code>GET https://kiwkiwchat.vercel.app/assets/index-C8ZL-JgS.css HTTP/1.1
+host: kiwkiwchat.vercel.app
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+pragma: no-cache
+cache-control: no-cache
+referer: https://kiwkiwchat.vercel.app/
+
+</code></pre>
+				
+				
+			</details> <details class="request-body" open="open">
+				<summary>Request body (0 bytes)</summary>
+				
+				<pre><code></code></pre>
+				
+				
+			</details></td>
+	</tr>
+	<tr>
+		<th scope="row">Response</th>
+		<td><details open="open">
+				<summary>Status line and header section (657 bytes)</summary>
+				
+				<pre><code>HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Access-Control-Allow-Origin: https://kiwkiwchat.vercel.app
+Age: 0
+Cache-Control: public, max-age=0, must-revalidate
+Content-Disposition: inline; filename=&quot;index-C8ZL-JgS.css&quot;
+Content-Length: 22040
+Content-Type: text/css; charset=utf-8
+Date: Sun, 02 Aug 2026 12:58:53 GMT
+Etag: &quot;d8a44299d9ef92308b2985aea158265f&quot;
+Last-Modified: Sun, 02 Aug 2026 12:58:53 GMT
+Referrer-Policy: no-referrer
+Server: Vercel
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Vercel-Cache: MISS
+X-Vercel-Id: sin1::w2cns-1785675532512-6d92be95161c
+
+</code></pre>
+				
+				
+			</details> <details class="response-body">
+				<summary>Response body (22040 bytes)</summary>
+				
+				<pre><code>/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
+@layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,:before,:after,::backdrop{--tw-rotate-x:initial;--tw-rotate-y:initial;--tw-rotate-z:initial;--tw-skew-x:initial;--tw-skew-y:initial;--tw-blur:initial;--tw-brightness:initial;--tw-contrast:initial;--tw-grayscale:initial;--tw-hue-rotate:initial;--tw-invert:initial;--tw-opacity:initial;--tw-saturate:initial;--tw-sepia:initial;--tw-drop-shadow:initial;--tw-drop-shadow-color:initial;--tw-drop-shadow-alpha:100%;--tw-drop-shadow-size:initial}}}@layer theme{:root,:host{--font-sans:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, &quot;Noto Sans&quot;, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;;--font-mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace;--color-red-400:oklch(70.4% .191 22.216);--color-red-500:oklch(63.7% .237 25.331);--color-amber-400:oklch(82.8% .189 84.429);--color-amber-500:oklch(76.9% .188 70.08);--spacing:.25rem;--default-font-family:var(--font-sans);--default-mono-font-family:var(--font-mono);--color-brand-primary:#4f46e5;--color-light-bg:#f8fafc;--color-cyber-green:#10b981}}@layer base{*,:after,:before,::backdrop{box-sizing:border-box;border:0 solid;margin:0;padding:0}::file-selector-button{box-sizing:border-box;border:0 solid;margin:0;padding:0}html,:host{-webkit-text-size-adjust:100%;tab-size:4;line-height:1.5;font-family:var(--default-font-family,-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, &quot;Noto Sans&quot;, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;);font-feature-settings:var(--default-font-feature-settings,normal);font-variation-settings:var(--default-font-variation-settings,normal);-webkit-tap-highlight-color:transparent}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;-webkit-text-decoration:inherit;-webkit-text-decoration:inherit;-webkit-text-decoration:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,samp,pre{font-family:var(--default-mono-font-family,ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, monospace);font-feature-settings:var(--default-mono-font-feature-settings,normal);font-variation-settings:var(--default-mono-font-variation-settings,normal);font-size:1em}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}:-moz-focusring:where(:not(iframe)){outline:auto}progress{vertical-align:baseline}summary{display:list-item}ol,ul,menu{list-style:none}img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:block}img,video{max-width:100%;height:auto}button,input,select,optgroup,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}::file-selector-button{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}:where(select:is([multiple],[size])) optgroup{font-weight:bolder}:where(select:is([multiple],[size])) optgroup option{padding-inline-start:20px}::file-selector-button{margin-inline-end:4px}::placeholder{opacity:1}@supports (not ((-webkit-appearance:-apple-pay-button))) or (contain-intrinsic-size:1px){::placeholder{color:currentColor}@supports (color:color-mix(in lab, red, red)){::placeholder{color:color-mix(in oklab, currentcolor 50%, transparent)}}}textarea{resize:vertical}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}::-webkit-datetime-edit{display:inline-flex}::-webkit-datetime-edit-fields-wrapper{padding:0}::-webkit-datetime-edit{padding-block:0}::-webkit-datetime-edit-year-field{padding-block:0}::-webkit-datetime-edit-month-field{padding-block:0}::-webkit-datetime-edit-day-field{padding-block:0}::-webkit-datetime-edit-hour-field{padding-block:0}::-webkit-datetime-edit-minute-field{padding-block:0}::-webkit-datetime-edit-second-field{padding-block:0}::-webkit-datetime-edit-millisecond-field{padding-block:0}::-webkit-datetime-edit-meridiem-field{padding-block:0}::-webkit-calendar-picker-indicator{line-height:1}:-moz-ui-invalid{box-shadow:none}button,input:where([type=button],[type=reset],[type=submit]){appearance:button}::file-selector-button{appearance:button}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}[hidden]:where(:not([hidden=until-found])){display:none!important}}@layer components;@layer utilities{.h-3{height:calc(var(--spacing) * 3)}.h-4{height:calc(var(--spacing) * 4)}.h-7{height:calc(var(--spacing) * 7)}.h-8{height:calc(var(--spacing) * 8)}.w-3{width:calc(var(--spacing) * 3)}.w-4{width:calc(var(--spacing) * 4)}.w-7{width:calc(var(--spacing) * 7)}.w-8{width:calc(var(--spacing) * 8)}.transform{transform:var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,)}.border-amber-500\/20{border-color:#f99c0033}@supports (color:color-mix(in lab, red, red)){.border-amber-500\/20{border-color:color-mix(in oklab, var(--color-amber-500) 20%, transparent)}}.border-brand-primary\/40{border-color:#4f46e566}@supports (color:color-mix(in lab, red, red)){.border-brand-primary\/40{border-color:color-mix(in oklab, var(--color-brand-primary) 40%, transparent)}}.border-cyber-green\/40{border-color:#10b98166}@supports (color:color-mix(in lab, red, red)){.border-cyber-green\/40{border-color:color-mix(in oklab, var(--color-cyber-green) 40%, transparent)}}.border-red-500\/20{border-color:#fb2c3633}@supports (color:color-mix(in lab, red, red)){.border-red-500\/20{border-color:color-mix(in oklab, var(--color-red-500) 20%, transparent)}}.border-red-500\/40{border-color:#fb2c3666}@supports (color:color-mix(in lab, red, red)){.border-red-500\/40{border-color:color-mix(in oklab, var(--color-red-500) 40%, transparent)}}.bg-amber-500\/8{background-color:#f99c0014}@supports (color:color-mix(in lab, red, red)){.bg-amber-500\/8{background-color:color-mix(in oklab, var(--color-amber-500) 8%, transparent)}}.bg-brand-primary\/10{background-color:#4f46e51a}@supports (color:color-mix(in lab, red, red)){.bg-brand-primary\/10{background-color:color-mix(in oklab, var(--color-brand-primary) 10%, transparent)}}.bg-cyber-green\/10{background-color:#10b9811a}@supports (color:color-mix(in lab, red, red)){.bg-cyber-green\/10{background-color:color-mix(in oklab, var(--color-cyber-green) 10%, transparent)}}.bg-red-500\/8{background-color:#fb2c3614}@supports (color:color-mix(in lab, red, red)){.bg-red-500\/8{background-color:color-mix(in oklab, var(--color-red-500) 8%, transparent)}}.bg-red-500\/10{background-color:#fb2c361a}@supports (color:color-mix(in lab, red, red)){.bg-red-500\/10{background-color:color-mix(in oklab, var(--color-red-500) 10%, transparent)}}.text-amber-400{color:var(--color-amber-400)}.text-brand-primary{color:var(--color-brand-primary)}.text-cyber-green{color:var(--color-cyber-green)}.text-red-400{color:var(--color-red-400)}.opacity-60{opacity:.6}.filter{filter:var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)}}*,:before,:after{box-sizing:border-box}body{background-color:var(--color-light-bg);color:#475569;margin:0;font-family:Inter,system-ui,sans-serif;overflow-x:hidden}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:0 0}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}::-webkit-scrollbar-thumb:hover{background:#94a3b8}.landing-root{justify-content:center;align-items:center;min-height:100vh;padding:1rem;display:flex;position:relative;overflow:hidden}.ambient-glow{filter:blur(120px);pointer-events:none;opacity:.15;border-radius:50%;width:500px;height:500px;position:absolute}.glow-left{background:#818cf8;top:20%;left:10%}.glow-right{background:#38bdf8;bottom:20%;right:10%}.landing-card{z-index:10;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);text-align:center;background:#ffffffbf;border:1px solid #fff;border-radius:20px;width:100%;max-width:400px;padding:3rem 2.5rem;animation:6s ease-in-out infinite card-glow;position:relative}@keyframes card-glow{0%,to{box-shadow:0 10px 40px #4f46e50f,0 0 0 1px #e2e8f080}50%{box-shadow:0 12px 50px #0ea5e914,0 0 0 1px #e2e8f0cc}}.landing-icon-wrap{background:#4f46e514;border:1px solid #4f46e526;border-radius:16px;justify-content:center;align-items:center;width:64px;height:64px;margin-bottom:1.5rem;animation:3s ease-in-out infinite icon-pulse;display:inline-flex}@keyframes icon-pulse{0%,to{box-shadow:none;border-color:#4f46e526}50%{border-color:#4f46e54d;box-shadow:0 0 16px #4f46e51a}}.landing-icon{color:#4f46e5;width:28px;height:28px}.landing-title{color:#0f172a;letter-spacing:.1em;margin:0 0 .4rem;font-family:JetBrains Mono,monospace;font-size:2.5rem;font-weight:700}.title-accent{color:#10b981}.landing-sub{color:#64748b;letter-spacing:.05em;margin:0 0 2rem;font-family:JetBrains Mono,monospace;font-size:.7rem}.btn-create{cursor:pointer;background:linear-gradient(135deg,#4f46e5,#0ea5e9);border:none;border-radius:10px;width:100%;margin-bottom:1.5rem;padding:.85rem 1.5rem;transition:opacity .2s,transform .15s,box-shadow .2s;display:block;position:relative;overflow:hidden;box-shadow:0 4px 15px #4f46e540}.btn-create:hover{opacity:.9;box-shadow:0 6px 20px #4f46e559}.btn-create:active{transform:scale(.98)}.btn-create:before{content:&quot;&quot;;background:linear-gradient(135deg,#0000 40%,#ffffff26);position:absolute;inset:0}.btn-create-text{color:#fff;letter-spacing:.05em;z-index:1;font-family:JetBrains Mono,monospace;font-size:.8rem;font-weight:600;position:relative}.badge-row{flex-wrap:wrap;justify-content:center;gap:.5rem;margin-bottom:1.5rem;display:flex}.badge{color:#475569;letter-spacing:.05em;background:#fff;border:1px solid #e2e8f0;border-radius:100px;padding:.25rem .7rem;font-family:JetBrains Mono,monospace;font-size:.65rem;font-weight:500;transition:color .2s,border-color .2s,background .2s}.badge:hover{color:#10b981;background:#10b9810d;border-color:#10b98166}.landing-footer{color:#94a3b8;margin:0;font-family:JetBrains Mono,monospace;font-size:.65rem}.ended-card{text-align:center}.ended-icon-wrap{background:#fff;border:1px solid #e2e8f0;border-radius:16px;justify-content:center;align-items:center;width:64px;height:64px;margin-bottom:1rem;display:inline-flex}.ended-label{letter-spacing:.15em;margin:0 0 .5rem;font-family:JetBrains Mono,monospace;font-size:.65rem;font-weight:600}.ended-title{color:#0f172a;letter-spacing:.08em;margin:0 0 .75rem;font-family:JetBrains Mono,monospace;font-size:1.6rem;font-weight:700}.ended-desc{color:#64748b;margin:0 0 1rem;font-size:.85rem;line-height:1.6}.ended-terminal{text-align:left;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:.6rem .85rem;font-family:JetBrains Mono,monospace;font-size:.65rem}.text-red-400{color:#ef4444}.text-amber-400{color:#f59e0b}.text-cyber-green{color:#10b981}.border-red-500\/20{border-color:#ef444433}.bg-red-500\/8{background-color:#ef444414}.bg-red-500\/10{background-color:#ef44441a}.border-amber-500\/20{border-color:#f59e0b33}.bg-amber-500\/8{background-color:#f59e0b14}.border-cyber-green\/40{border-color:#10b98166}.bg-cyber-green\/10{background-color:#10b9811a}.border-brand-primary\/40{border-color:#4f46e566}.bg-brand-primary\/10{background-color:#4f46e51a}.text-brand-primary{color:#4f46e5}.room-root{background:var(--color-light-bg);background-image:radial-gradient(at 20% 20%,#4f46e50f 0%,#0000 50%),radial-gradient(at 80% 80%,#0ea5e90d 0%,#0000 50%);justify-content:center;align-items:center;min-height:100vh;padding:1rem;display:flex}.room-panel{-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);background:#ffffffd9;border:1px solid #e2e8f0;border-radius:16px;flex-direction:column;width:100%;max-width:700px;height:88vh;max-height:820px;display:flex;overflow:hidden;box-shadow:0 20px 60px #0f172a0f,inset 0 0 0 1px #ffffff80}.room-header{-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);background:#fff9;border-bottom:1px solid #e2e8f0;flex-shrink:0;justify-content:space-between;align-items:center;padding:.85rem 1.25rem;display:flex}.header-left{align-items:center;gap:.75rem;display:flex}.header-right{align-items:center;gap:.6rem;display:flex}.status-dot{border-radius:50%;flex-shrink:0;width:10px;height:10px}.dot-secure{background:#10b981;animation:2s ease-in-out infinite dot-blink;box-shadow:0 0 8px #10b98180}.dot-waiting{background:#f59e0b;animation:1.5s ease-in-out infinite dot-pulse}@keyframes dot-blink{0%,to{opacity:1}50%{opacity:.7}}@keyframes dot-pulse{0%,to{box-shadow:0 0 #f59e0b66}50%{box-shadow:0 0 0 6px #f59e0b00}}.header-title{color:#0f172a;letter-spacing:.12em;font-family:JetBrains Mono,monospace;font-size:.9rem;font-weight:700;display:block}.header-status{color:#64748b;white-space:nowrap;text-overflow:ellipsis;max-width:300px;margin-top:2px;font-family:JetBrains Mono,monospace;font-size:.65rem;display:block;overflow:hidden}.timer-badge{color:#475569;letter-spacing:.05em;background:#fff;border:1px solid #e2e8f0;border-radius:8px;align-items:center;gap:.4rem;padding:.35rem .8rem;font-family:JetBrains Mono,monospace;font-size:.85rem;font-weight:600;display:flex;box-shadow:0 2px 4px #00000005}@keyframes urgent-pulse{0%,to{color:#ef4444;background:#ef44440d;border-color:#ef44444d}50%{color:#dc2626;background:#ef44441a;border-color:#ef444480}}.timer-urgent{animation:1s ease-in-out infinite urgent-pulse}.btn-icon{color:#64748b;cursor:pointer;background:#fff;border:1px solid #e2e8f0;border-radius:8px;flex-shrink:0;justify-content:center;align-items:center;width:34px;height:34px;transition:all .2s;display:inline-flex;box-shadow:0 2px 4px #00000005}.btn-icon:hover{color:#0f172a;background:#f8fafc;border-color:#cbd5e1}.btn-icon-danger:hover{color:#ef4444;background:#ef44440d;border-color:#ef44444d}.chat-area{flex-direction:column;flex:1;gap:.85rem;padding:1rem 1.25rem;display:flex;overflow-y:auto}.terminal-log{color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;flex-shrink:0;padding:.85rem 1rem;font-family:JetBrains Mono,monospace;font-size:.7rem;line-height:1.8;box-shadow:inset 0 2px 6px #00000005}.terminal-line{display:block}.terminal-ts{color:#94a3b8}.terminal-sep{color:#cbd5e1}.terminal-msg{color:#334155}.terminal-badge{color:#10b981;font-weight:600}.terminal-line.ok .terminal-msg{color:#059669}.waiting-state{flex-direction:column;gap:1rem;margin-top:1rem;display:flex}.share-panel{background:#fff9;border:1px dashed #cbd5e1;border-radius:12px;padding:1.25rem}.share-label{color:#475569;margin:0 0 .6rem;font-family:JetBrains Mono,monospace;font-size:.7rem;font-weight:600}.share-input-row{background:#fff;border:1px solid #e2e8f0;border-radius:8px;align-items:center;gap:.5rem;padding:.5rem .6rem;display:flex;box-shadow:inset 0 2px 4px #00000005}.share-link{text-overflow:ellipsis;white-space:nowrap;cursor:pointer;-webkit-user-select:none;user-select:none;flex:1;font-family:JetBrains Mono,monospace;font-size:.75rem;transition:color .2s;overflow:hidden}.share-link.revealed{color:#334155}.share-link.hidden-link{filter:blur(5px);opacity:.6;-webkit-user-select:none;user-select:none}.share-link:hover{color:#0f172a}.share-hint{color:#94a3b8;margin:.75rem 0 0;font-family:JetBrains Mono,monospace;font-size:.65rem}.msg-row{margin-bottom:.2rem;display:flex}.msg-self{justify-content:flex-end}.msg-peer{justify-content:flex-start}.msg-bubble{word-break:break-word;border-radius:16px;flex-direction:column;gap:.2rem;max-width:75%;padding:.65rem 1rem;font-size:.9rem;line-height:1.5;display:flex;position:relative}.bubble-self{color:#fff;background:linear-gradient(135deg,#4f46e5,#6366f1);border-bottom-right-radius:4px;box-shadow:0 4px 12px #4f46e533}.bubble-peer{color:#1e293b;background:#fff;border:1px solid #e2e8f0;border-bottom-left-radius:4px;box-shadow:0 2px 8px #0f172a0a}.msg-time{opacity:.7;align-self:flex-end;font-family:JetBrains Mono,monospace;font-size:.6rem}.bubble-peer .msg-time{opacity:.5}.input-area{-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);background:#ffffffb3;border-top:1px solid #e2e8f0;flex-shrink:0;align-items:center;gap:.75rem;padding:1rem 1.25rem;display:flex}.input-form{flex:1;align-items:center;gap:.75rem;display:flex}.msg-input{color:#0f172a;background:#fff;border:1px solid #cbd5e1;border-radius:12px;outline:none;flex:1;padding:.7rem 1.2rem;font-family:Inter,sans-serif;font-size:.9rem;transition:border-color .2s,box-shadow .2s;box-shadow:inset 0 2px 4px #00000005}.msg-input::placeholder{color:#94a3b8}.msg-input:focus{border-color:#6366f1;box-shadow:0 0 0 4px #6366f11a}.msg-input:disabled{opacity:.5;cursor:not-allowed;background:#f8fafc}.btn-send{color:#fff;cursor:pointer;background:linear-gradient(135deg,#4f46e5,#6366f1);border:none;border-radius:12px;flex-shrink:0;justify-content:center;align-items:center;width:42px;height:42px;transition:opacity .2s,transform .15s,box-shadow .2s;display:inline-flex;box-shadow:0 4px 12px #4f46e540}.btn-send:hover{opacity:.9;box-shadow:0 6px 16px #4f46e559}.btn-send:active{transform:scale(.94)}.btn-send:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}.qr-shortcut{color:#64748b}.qr-shortcut:hover{color:#4f46e5;background:#4f46e50d;border-color:#4f46e533}.modal-overlay{z-index:50;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);background:#0f172a66;justify-content:center;align-items:center;animation:.2s fade-in;display:flex;position:fixed;inset:0}@keyframes fade-in{0%{opacity:0}to{opacity:1}}.modal-box{text-align:center;background:#fff;border:1px solid #e2e8f0;border-radius:20px;width:calc(100% - 2rem);max-width:380px;padding:2.5rem 2rem;animation:.25s cubic-bezier(.16,1,.3,1) modal-slide;box-shadow:0 25px 50px -12px #00000026}@keyframes modal-slide{0%{opacity:0;transform:translateY(20px)scale(.95)}to{opacity:1;transform:translateY(0)scale(1)}}.modal-icon-wrap{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;justify-content:center;align-items:center;width:56px;height:56px;margin-bottom:1.25rem;display:inline-flex}.modal-title{color:#0f172a;letter-spacing:.05em;margin:0 0 .5rem;font-family:JetBrains Mono,monospace;font-size:1rem;font-weight:700}.modal-desc{color:#64748b;margin:0 0 1.75rem;font-size:.85rem;line-height:1.6}.modal-actions{gap:.75rem;display:flex}.btn-cancel,.btn-destroy{letter-spacing:.05em;cursor:pointer;border-radius:10px;flex:1;padding:.75rem 1rem;font-family:JetBrains Mono,monospace;font-size:.75rem;font-weight:600;transition:all .2s}.btn-cancel{color:#475569;background:#f1f5f9;border:1px solid #e2e8f0}.btn-cancel:hover{color:#1e293b;background:#e2e8f0}.btn-destroy{color:#fff;background:#ef4444;border:1px solid #ef4444;box-shadow:0 4px 12px #ef444433}.btn-destroy:hover{background:#dc2626;box-shadow:0 6px 16px #ef44444d}.qr-modal{text-align:center;background:#fff;border:1px solid #e2e8f0;border-radius:24px;flex-direction:column;align-items:center;gap:1.5rem;padding:2.5rem 2.5rem 2rem;animation:.25s cubic-bezier(.16,1,.3,1) modal-slide;display:flex;box-shadow:0 25px 50px -12px #00000026}.qr-label{color:#4f46e5;letter-spacing:.1em;margin:0;font-family:JetBrains Mono,monospace;font-size:.75rem;font-weight:600}.qr-wrapper{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:1.5rem;box-shadow:0 10px 25px #0000000d}.qr-close-btn{color:#475569;cursor:pointer;letter-spacing:.05em;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:10px;padding:.6rem 2rem;font-family:JetBrains Mono,monospace;font-size:.75rem;font-weight:600;transition:all .2s}.qr-close-btn:hover{color:#0f172a;background:#e2e8f0}.toast{z-index:60;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);white-space:nowrap;background:#fffffff2;border:1px solid;border-radius:12px;align-items:center;gap:.75rem;padding:.75rem 1.25rem;font-family:JetBrains Mono,monospace;font-size:.75rem;font-weight:500;display:flex;position:fixed;bottom:2rem;left:50%;transform:translate(-50%);box-shadow:0 10px 30px #0000001a}@keyframes slide-in{0%{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%)}}@keyframes slide-out{0%{opacity:1;transform:translate(-50%)}to{opacity:0;transform:translate(-50%,20px)}}.toast-enter{animation:.3s cubic-bezier(.16,1,.3,1) forwards slide-in}.toast-exit{animation:.2s ease-in forwards slide-out}.w-3{width:.75rem}.h-3{height:.75rem}.w-4{width:1rem}.h-4{height:1rem}.w-7{width:1.75rem}.h-7{height:1.75rem}.w-8{width:2rem}.h-8{height:2rem}.opacity-60{opacity:.6}@property --tw-rotate-x{syntax:&quot;*&quot;;inherits:false}@property --tw-rotate-y{syntax:&quot;*&quot;;inherits:false}@property --tw-rotate-z{syntax:&quot;*&quot;;inherits:false}@property --tw-skew-x{syntax:&quot;*&quot;;inherits:false}@property --tw-skew-y{syntax:&quot;*&quot;;inherits:false}@property --tw-blur{syntax:&quot;*&quot;;inherits:false}@property --tw-brightness{syntax:&quot;*&quot;;inherits:false}@property --tw-contrast{syntax:&quot;*&quot;;inherits:false}@property --tw-grayscale{syntax:&quot;*&quot;;inherits:false}@property --tw-hue-rotate{syntax:&quot;*&quot;;inherits:false}@property --tw-invert{syntax:&quot;*&quot;;inherits:false}@property --tw-opacity{syntax:&quot;*&quot;;inherits:false}@property --tw-saturate{syntax:&quot;*&quot;;inherits:false}@property --tw-sepia{syntax:&quot;*&quot;;inherits:false}@property --tw-drop-shadow{syntax:&quot;*&quot;;inherits:false}@property --tw-drop-shadow-color{syntax:&quot;*&quot;;inherits:false}@property --tw-drop-shadow-alpha{syntax:&quot;&lt;percentage&gt;&quot;;inherits:false;initial-value:100%}@property --tw-drop-shadow-size{syntax:&quot;*&quot;;inherits:false}
+</code></pre>
+				
+				
+			</details></td>
+	</tr>
+	
+	
+	<tr>
+		<th scope="row">Evidence</th>
+		<td><pre><code>Age: 0</code></pre></td>
+	</tr>
+	<tr>
+		<th scope="row">Solution</th>
+		<td> 
+<p>Validate that the response does not contain sensitive, personal or user-specific information. If it does, consider the use of the following HTTP response headers, to limit, or prevent the content being stored and retrieved from the cache by another user:</p>
+
+<p>Cache-Control: no-cache, no-store, must-revalidate, private</p>
+
+<p>Pragma: no-cache</p>
+
+<p>Expires: 0</p>
+
+<p>This configuration directs both HTTP 1.0 and HTTP 1.1 compliant caching servers to not store the response, and to not retrieve the response (without validation) from the cache, in response to a similar request.</p>
+ </td>
+	</tr>
+</table>
+
+											</details></li>
+									</ol>
+								</li>
+								
+							</ol>
+						</li>
+						
+					</ol>
+				</li>
+				
+				<li id="alerts--risk-0-confidence-1">
+					<h3>
+						<span>Risk</span>=<span
+							class="risk-level">Informational</span>, <span>Confidence</span>=<span
+							class="confidence-level">Low</span> <span>(1)</span>
+					</h3>
+					<ol>
+						
+						<li class="alerts--site-li">
+							<h4>
+								<span class="site">https://kiwkiwchat.vercel.app</span> <span>(1)</span>
+							</h4>
+							<ol>
+								
+								<li>
+									<h5>
+										<a
+											href="#alert-type-3">Re-examine Cache-control Directives</a> <span>(1)</span>
+									</h5>
+									<ol>
+										<li><details>
+												<summary>
+													<span class="request-method-n-url">GET https://kiwkiwchat.vercel.app/sitemap.xml</span>
+												</summary>
+												
+<table class="alerts-table">
+	<tr>
+		<th scope="row">Alert tags</th>
+		<td>
+			<ul class="alert-tags-list">
+				<li>
+					<span><a href="https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/">OWASP_2025_A07</a></span> 
+				</li>
+				<li>
+					<span><a href="https://cwe.mitre.org/data/definitions/525.html">CWE-525</a></span> 
+				</li>
+				<li>
+					 <span>POLICY_PENTEST = </span>
+				</li>
+				<li>
+					<span><a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">OWASP_2021_A07</a></span> 
+				</li>
+				<li>
+					<span><a href="https://www.zaproxy.org/docs/desktop/addons/common-library/alerttags/#systemic">SYSTEMIC</a></span> 
+				</li>
+				<li>
+					<span><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/04-Authentication_Testing/06-Testing_for_Browser_Cache_Weaknesses">WSTG-v42-ATHN-06</a></span> 
+				</li>
+				<li>
+					<span><a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication.html">OWASP_2017_A02</a></span> 
+				</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<th scope="row">Alert description</th>
+		<td> 
+<p>The cache-control header has not been set properly or is missing, allowing the browser and proxies to cache content. For static assets like css, js, or image files this might be intended, however, the resources should be reviewed to ensure that no sensitive content will be cached.</p>
+ </td>
+	</tr>
+	
+	<tr>
+		<th scope="row">Request</th>
+		<td><details open="open">
+				<summary>Request line and header section (255 bytes)</summary>
+				
+				<pre><code>GET https://kiwkiwchat.vercel.app/sitemap.xml HTTP/1.1
+host: kiwkiwchat.vercel.app
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+pragma: no-cache
+cache-control: no-cache
+
+</code></pre>
+				
+				
+			</details> <details class="request-body" open="open">
+				<summary>Request body (0 bytes)</summary>
+				
+				<pre><code></code></pre>
+				
+				
+			</details></td>
+	</tr>
+	<tr>
+		<th scope="row">Response</th>
+		<td><details open="open">
+				<summary>Status line and header section (648 bytes)</summary>
+				
+				<pre><code>HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Access-Control-Allow-Origin: https://kiwkiwchat.vercel.app
+Age: 0
+Cache-Control: public, max-age=0, must-revalidate
+Content-Disposition: inline; filename=&quot;index.html&quot;
+Content-Length: 2573
+Content-Type: text/html; charset=utf-8
+Date: Sun, 02 Aug 2026 12:58:52 GMT
+Etag: &quot;69b94feb014bb10c717dc9f6a0401bec&quot;
+Last-Modified: Sun, 02 Aug 2026 12:58:52 GMT
+Referrer-Policy: no-referrer
+Server: Vercel
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Vercel-Cache: HIT
+X-Vercel-Id: sin1::lnw74-1785675532419-a2a280e4a59b
+
+</code></pre>
+				
+				
+			</details> <details class="response-body">
+				<summary>Response body (2573 bytes)</summary>
+				
+				<pre><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;id&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot; /&gt;
+    &lt;link rel=&quot;icon&quot; type=&quot;image/svg+xml&quot; href=&quot;/favicon.svg&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+    &lt;title&gt;Kiw Kiw Chat — Ephemeral Encrypted P2P&lt;/title&gt;
+
+    &lt;!-- SEO --&gt;
+    &lt;meta name=&quot;description&quot; content=&quot;Kiw Kiw Chat: pesan terenkripsi end-to-end dengan ML-KEM-768 + AES-GCM-256. Tidak ada log, tidak ada riwayat.&quot; /&gt;
+    &lt;meta name=&quot;robots&quot; content=&quot;noindex, nofollow&quot; /&gt;
+
+    &lt;!-- FIX-12: Content Security Policy --&gt;
+    &lt;!-- connect-src: allow WSS to production + localhost dev --&gt;
+    &lt;meta http-equiv=&quot;Content-Security-Policy&quot;
+          content=&quot;
+            default-src &#39;self&#39;;
+            connect-src &#39;self&#39;
+                        wss://kiwkiwchat.vercel.app
+                        https://kiwkiwchat.vercel.app
+                        wss://*.onrender.com
+                        https://*.onrender.com
+                        ws://localhost:8000
+                        http://localhost:8000
+                        ws://localhost:5173
+                        http://localhost:5173
+                        ws://localhost:4173
+                        http://localhost:4173
+                        stun:stun.l.google.com:19302
+                        turn:openrelay.metered.ca:80
+                        turn:openrelay.metered.ca:443;
+            script-src  &#39;self&#39;;
+            style-src   &#39;self&#39; https://fonts.googleapis.com &#39;unsafe-inline&#39;;
+            font-src    https://fonts.gstatic.com;
+            img-src     &#39;self&#39; data:;
+            base-uri    &#39;self&#39;;
+            form-action &#39;self&#39;;
+          &quot; /&gt;
+
+    &lt;!-- FIX-12: Additional security meta tags --&gt;
+    &lt;meta http-equiv=&quot;X-Content-Type-Options&quot; content=&quot;nosniff&quot; /&gt;
+    &lt;meta http-equiv=&quot;Referrer-Policy&quot; content=&quot;no-referrer&quot; /&gt;
+    &lt;meta name=&quot;permissions-policy&quot; content=&quot;geolocation=(), microphone=(), camera=()&quot; /&gt;
+
+    &lt;!-- Google Fonts --&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot; /&gt;
+    &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin /&gt;
+    &lt;link href=&quot;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot; integrity=&quot;sha384-+KimCdwmcOqox9lD4RE8VLyuMEQ/kRzz7GvxaxY2FXTpFSOZEL+yS+WfprqkPm0Y&quot; crossorigin=&quot;anonymous&quot; /&gt;
+    &lt;script type=&quot;module&quot; crossorigin src=&quot;/assets/index-TZu0IV24.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; crossorigin href=&quot;/assets/index-C8ZL-JgS.css&quot;&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+				
+				
+			</details></td>
+	</tr>
+	<tr>
+		<th scope="row">Parameter</th>
+		<td><pre><code>cache-control</code></pre></td>
+	</tr>
+	
+	<tr>
+		<th scope="row">Evidence</th>
+		<td><pre><code>public, max-age=0, must-revalidate</code></pre></td>
+	</tr>
+	<tr>
+		<th scope="row">Solution</th>
+		<td> 
+<p>For secure content, ensure the cache-control HTTP header is set with &quot;no-cache, no-store, must-revalidate&quot;. If an asset should be cached consider setting the directives &quot;public, max-age, immutable&quot;.</p>
+ </td>
+	</tr>
+</table>
+
+											</details></li>
+									</ol>
+								</li>
+								
+							</ol>
+						</li>
+						
+					</ol>
+				</li>
+				  
+			</ol>
+		</section>
+
+		<section id="appendix" class="appendix">
+			<h2>Appendix</h2>
+
+			<section id="alert-types" class="alert-types">
+				<h3>Alert Types</h3>
+				<p class="alert-types-intro">This section contains additional information on the types of alerts in the report.</p>
+				<ol>
+					<li
+						id="alert-type-0">
+						<h4>CSP: style-src unsafe-inline</h4>
+						<table class="alert-types-table">
+							<tr>
+								<th scope="row">Source</th>
+								<td>
+									
+									   <span>raised by a passive scanner</span> <span>(<a
+										href="https://www.zaproxy.org/docs/alerts/10055/">CSP</a>)
+									</span>   
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">CWE ID</th>
+								<td><a
+									href="https://cwe.mitre.org/data/definitions/693.html">693</a></td>
+							</tr>
+							<tr>
+								<th scope="row">WASC ID</th>
+								<td>15</td>
+							</tr>
+							<tr>
+								<th scope="row">Reference</th>
+								<td>
+									<ol>
+										<li><a
+											href="https://www.w3.org/TR/CSP/">https://www.w3.org/TR/CSP/</a></li>
+										<li><a
+											href="https://caniuse.com/#search=content+security+policy">https://caniuse.com/#search=content+security+policy</a></li>
+										<li><a
+											href="https://content-security-policy.com/">https://content-security-policy.com/</a></li>
+										<li><a
+											href="https://github.com/HtmlUnit/htmlunit-csp">https://github.com/HtmlUnit/htmlunit-csp</a></li>
+										<li><a
+											href="https://web.dev/articles/csp#resource-options">https://web.dev/articles/csp#resource-options</a></li>
+									</ol>
+								</td>
+							</tr>
+						</table>
+					</li>
+					<li
+						id="alert-type-1">
+						<h4>CSP: Notices</h4>
+						<table class="alert-types-table">
+							<tr>
+								<th scope="row">Source</th>
+								<td>
+									
+									   <span>raised by a passive scanner</span> <span>(<a
+										href="https://www.zaproxy.org/docs/alerts/10055/">CSP</a>)
+									</span>   
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">CWE ID</th>
+								<td><a
+									href="https://cwe.mitre.org/data/definitions/693.html">693</a></td>
+							</tr>
+							<tr>
+								<th scope="row">WASC ID</th>
+								<td>15</td>
+							</tr>
+							<tr>
+								<th scope="row">Reference</th>
+								<td>
+									<ol>
+										<li><a
+											href="https://www.w3.org/TR/CSP/">https://www.w3.org/TR/CSP/</a></li>
+										<li><a
+											href="https://caniuse.com/#search=content+security+policy">https://caniuse.com/#search=content+security+policy</a></li>
+										<li><a
+											href="https://content-security-policy.com/">https://content-security-policy.com/</a></li>
+										<li><a
+											href="https://github.com/HtmlUnit/htmlunit-csp">https://github.com/HtmlUnit/htmlunit-csp</a></li>
+										<li><a
+											href="https://web.dev/articles/csp#resource-options">https://web.dev/articles/csp#resource-options</a></li>
+									</ol>
+								</td>
+							</tr>
+						</table>
+					</li>
+					<li
+						id="alert-type-2">
+						<h4>Modern Web Application</h4>
+						<table class="alert-types-table">
+							<tr>
+								<th scope="row">Source</th>
+								<td>
+									
+									   <span>raised by a passive scanner</span> <span>(<a
+										href="https://www.zaproxy.org/docs/alerts/10109/">Modern Web Application</a>)
+									</span>   
+								</td>
+							</tr>
+							
+							
+							
+						</table>
+					</li>
+					<li
+						id="alert-type-3">
+						<h4>Re-examine Cache-control Directives</h4>
+						<table class="alert-types-table">
+							<tr>
+								<th scope="row">Source</th>
+								<td>
+									
+									   <span>raised by a passive scanner</span> <span>(<a
+										href="https://www.zaproxy.org/docs/alerts/10015/">Re-examine Cache-control Directives</a>)
+									</span>   
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">CWE ID</th>
+								<td><a
+									href="https://cwe.mitre.org/data/definitions/525.html">525</a></td>
+							</tr>
+							<tr>
+								<th scope="row">WASC ID</th>
+								<td>13</td>
+							</tr>
+							<tr>
+								<th scope="row">Reference</th>
+								<td>
+									<ol>
+										<li><a
+											href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#web-content-caching">https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#web-content-caching</a></li>
+										<li><a
+											href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control">https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control</a></li>
+										<li><a
+											href="https://grayduck.mn/2021/09/13/cache-control-recommendations/">https://grayduck.mn/2021/09/13/cache-control-recommendations/</a></li>
+									</ol>
+								</td>
+							</tr>
+						</table>
+					</li>
+					<li
+						id="alert-type-4">
+						<h4>Retrieved from Cache</h4>
+						<table class="alert-types-table">
+							<tr>
+								<th scope="row">Source</th>
+								<td>
+									
+									   <span>raised by a passive scanner</span> <span>(<a
+										href="https://www.zaproxy.org/docs/alerts/10050/">Retrieved from Cache</a>)
+									</span>   
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">CWE ID</th>
+								<td><a
+									href="https://cwe.mitre.org/data/definitions/525.html">525</a></td>
+							</tr>
+							
+							<tr>
+								<th scope="row">Reference</th>
+								<td>
+									<ol>
+										<li><a
+											href="https://datatracker.ietf.org/doc/html/rfc7234">https://datatracker.ietf.org/doc/html/rfc7234</a></li>
+										<li><a
+											href="https://datatracker.ietf.org/doc/html/rfc7231">https://datatracker.ietf.org/doc/html/rfc7231</a></li>
+										<li><a
+											href="https://www.rfc-editor.org/rfc/rfc9110.html">https://www.rfc-editor.org/rfc/rfc9110.html</a></li>
+									</ol>
+								</td>
+							</tr>
+						</table>
+					</li>
+				</ol>
+			</section>
+		</section>
+		 
+	</main>
+</body>
+</html>
+
+
+

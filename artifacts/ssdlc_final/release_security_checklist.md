@@ -1,31 +1,51 @@
 # Daftar Periksa Keamanan Pra-Rilis (Release Security Checklist) — Kiw Kiw Chat
 
-Dokumen ini memuat lembar evaluasi keamanan akhir (*Final Security Review* - FSR) pada **Kiw Kiw Chat** (Prototipe Riset) sesuai standar kerangka kerja **Microsoft Security Development Lifecycle (SDL)**.
+Dokumen ini memuat lembar evaluasi keamanan akhir (*Final Security Review* - FSR) pada **Kiw Kiw Chat** (Prototipe Riset) sesuai kerangka kerja **Microsoft Security Development Lifecycle (SDL)** dan **Trike Threat Modeling**.
 
 ---
 
 ## 1. Lembar Verifikasi Final Security Review (FSR Checklist)
 
-| Kategori Pemeriksaan | Item Pemeriksaan Keamanan | Bukti Verifikasi / Referensi | Status Evaluasi | Catatan Kritis & Limitasi |
-|---|---|---|:---:|---|
-| **1. Threat Modeling** | Seluruh 16 ancaman Trike (T-01 s/d T-16) telah dipetakan ke kontrol teknis dan dicatat residual risk-nya. | [`trike_threat_model.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/trike_threat_model.md) | ✅ **100% MAPPED** | 3 ancaman berstatus PARTIAL / WITH CAVEAT; 4 berstatus CODE REVIEW ONLY. |
-| **2. Cryptographic Review** | Parameter ML-KEM-768 mengikuti NIST FIPS 203; HKDF-SHA-256 (RFC 5869); AES-GCM-256 dengan IV unik 12-byte. | [`baseline_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/baseline_test_results.md) | ✅ **VERIFIED** | Library `mlkem` JavaScript pihak ketiga tidak diklaim memiliki sertifikasi CMVP. |
-| **3. Zero-Knowledge Relay** | Backend signaling tidak menerima material kunci aplikasi dalam alur normal; room secret di fragment `#` (RFC 3986). | [`repository_inventory.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/repository_inventory.md) | ✅ **VERIFIED** | Asumsi integritas client delivery channel. |
-| **4. SAST Code Gate** | Audit Bandit pada backend menunjukkan 0 kerentanan High Severity. | [`bandit_summary.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/bandit_summary.md) | ✅ **PASS (0 High)** | 1 Med B104 (accepted deployment finding); 3 Low B110 (accepted technical debt). |
-| **5. SCA Dependency Gate** | Frontend: 0 vulnerabilities (NPM). Backend: 17 catatan advisory PyPI dikategorikan. | [`dependency_review.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/dependency_review.md) | ⚠️ **OPEN / PARTIAL** | 8 advisory multipart tidak dipanggil dalam alur aplikasi; 5 URL/Host perlu validasi; open for upgrade. |
-| **6. Dynamic DAST Gate** | Pemindaian dinamis otomatis menggunakan OWASP ZAP. | [`zap_execution_blocker.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_execution_blocker.md) | 🛑 **BLOCKED / NOT EXECUTED** | Docker tidak aktif dan binary ZAP tidak tersedia di PATH. Configuration review dilakukan secara manual. |
-| **7. Web Security & CSP** | Header keamanan terkonfigurasi pada `vercel.json` dan middleware backend; CSP terpasang pada `index.html`. | [`zap_summary.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_summary.md) | ⚠️ **CONFIGURED (WITH CAVEAT)** | Directive `style-src` masih memuat `'unsafe-inline'` sebagai residual risk. |
-| **8. Secure Memory Zeroization** | Pembersihan variabel kunci privat ML-KEM dan shared secret dari RAM browser. | [`trike_threat_model.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/trike_threat_model.md) | ⚠️ **PARTIAL** | Engine JavaScript (V8) mengelola memori via GC dan tidak menjamin secure memory zeroization fisik. |
-| **9. Replay Protection Test** | Pengujian proteksi replay pesan aplikasi. | [`baseline_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/baseline_test_results.md) | ⚠️ **PARTIAL** | Test `RP-01` memvalidasi sequence counter di application envelope; raw packet WebRTC reinjection out-of-scope. |
-| **10. Regression Reliability** | Eksekusi 19 test case otomatis dan 3/3 putaran E2E multi-run deterministik. | [`final_regression_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/final_regression_results.md) | ✅ **PASS (18 PASS, 1 PARTIAL)** | 100% reliabilitas pada run pengujian multi-run. |
+| No | Kategori & Item Pemeriksaan | Bukti Verifikasi / Sumber Data | Status Evaluasi Terstandar | Rincian Analisis & Batasan |
+|:---:|---|---|---|:---:|---|
+| **1** | **Trike Threat Modeling** | [`trike_threat_model.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/trike_threat_model.md) | **PASS_WITH_RESIDUAL_RISK** | 16 ancaman (T-01 s/d T-16) 100% terpetakan ke kebutuhan & kontrol. Residual risk dicatat pada T-06, T-07, T-08, T-11 (CODE_REVIEW_ONLY), dan T-16. |
+| **2** | **Security Requirements Verification** | [`use_abuse_security_requirements.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/use_abuse_security_requirements.md) | **PASS** | 18 kebutuhan keamanan (SR-01 s/d SR-18) terdefinisi dari 10 Use Cases dan 10 Abuse Cases serta diverifikasi oleh test suite. |
+| **3** | **Application Cryptographic Tests** | [`baseline_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/baseline_test_results.md), [`impkrip_test_report.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_test_report.json) | **PARTIAL** | 19 kasus uji kriptografi & E2E: 18 PASS, 1 PARTIAL (`RP-01` Replay Protection divalidasi di layer application envelope; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual). |
+| **4** | **SAST Static Code Analysis (Bandit)** | [`bandit_summary.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/bandit_summary.md), [`bandit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/bandit_report.json) | **PASS_WITH_FINDINGS** | Bandit v1.9.4: 0 High Severity, 1 Medium (B104 binding `0.0.0.0` - accepted deployment), 3 Low (B110 try-except-pass - accepted debt). |
+| **5** | **Frontend Dependency SCA (NPM Audit)** | [`dependency_review.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/dependency_review.md), [`npm_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/npm_audit_report.json) | **PASS** | 113 paket frontend dipindai via npm audit dengan hasil 0 kerentanan (0 vulnerabilities). |
+| **6** | **Backend Dependency SCA (Pip-audit)** | [`dependency_review.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/dependency_review.md), [`pip_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/pip_audit_report.json) | **OPEN / PARTIAL** | 17 catatan advisory PyPI terdeteksi (FastAPI/Starlette/multipart); 8 multipart tidak dipanggil pada alur aplikasi, 5 URL/Host perlu validasi, open for upgrade. |
+| **7** | **Frontend Dynamic Scan (OWASP ZAP)** | [`zap_summary.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_summary.md), [`zap_report_2026-08-02.html`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_report_2026-08-02.html) | **EXECUTED_WITH_OPEN_FINDINGS** | OWASP ZAP 2.17.0 passive scan pada frontend produksi Vercel: 0 High, 1 Medium (`style-src 'unsafe-inline'`), 1 Low (`CSP: Notices`), 3 Informational. |
+| **8** | **Content Security Policy (CSP)** | [`zap_dast_verification.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_dast_verification.md) | **OPEN_MEDIUM** | Header protektif aktif di edge response; `style-src` memuat `'unsafe-inline'` sebagai residu teknis yang dicatat terbuka. |
+| **9** | **Backend API Dynamic Testing** | [`backend_websocket_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.md) | **PASS** | Kasus uji `BT-02` (Rate Limiting POST /rooms: 10 request diterima, 11+ ditolak HTTP 429) berhasil 100% pada instance uji lokal. |
+| **10** | **WebSocket Signaling Dynamic Testing** | [`backend_websocket_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.md) | **PASS** | Kasus uji `BT-01`, `BT-03`, `BT-04`, `BT-05`, `BT-06` (2-peer capacity, frame limit 64KB, malformed resilient, teardown, idle timeout) berhasil 100%. |
+| **11** | **Backend CORS Configuration** | [`backend/main.py`](file:///d:/Obed/kiwkiw/backend/main.py) | **CODE_REVIEW_ONLY** | Whitelist `ALLOWED_ORIGINS` terdefinisi pada kode sumber `backend/main.py:114-119`; pengujian dinamis lintas origin belum diotomasi di test harness. |
+| **12** | **Secure Memory Zeroization** | [`trike_threat_model.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/trike_threat_model.md), [`impkrip_memory_benchmark.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_memory_benchmark.json) | **PARTIAL** | Dereferensi pointer JavaScript aktif; runtime V8 Engine mengelola memori via GC dan tidak menjamin *zeroization* deterministik pada physical RAM. |
+| **13** | **Incident Response & CVD Plan** | [`vulnerability_response_plan.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/vulnerability_response_plan.md) | **PREPARED_NOT_EXERCISED** | Prosedur penanganan insiden dan kebijakan Coordinated Vulnerability Disclosure telah disusun lengkap namun belum disimulasikan (*tabletop exercise*). |
+| **14** | **Production Readiness Assessment** | Seluruh dokumen evaluasi keamanan | **NOT_EVALUATED** | Sistem dievaluasi sebagai prototipe riset akademik dan **tidak dievaluasi untuk kesiapan produksi komersial (*not evaluated as production-ready*)**. |
 
 ---
 
-## 2. Pernyataan Keputusan Evaluasi (Evaluation Decision Statement)
+## 2. Pernyataan Keputusan Evaluasi Final (Final Evaluation Decision)
 
-Berdasarkan hasil evaluasi objektif dan rekonsiliasi bukti terhadap seluruh artefak Microsoft SDL dan Trike Threat Modeling:
+- **Keputusan Evaluasi Final**: **READY FOR PAPER WITH LIMITATIONS**
+- **Klasifikasi Kesiapan**: **RESEARCH PROTOTYPE (NOT EVALUATED AS PRODUCTION-READY)**
+- **Tanggal Keputusan**: 2026-08-02 (Rekonsiliasi Final: 2026-08-03)
 
-- **Keputusan Evaluasi**: **READY FOR PAPER WITH LIMITATIONS**
-- **Klasifikasi Perangkat Lunak**: **RESEARCH PROTOTYPE (NOT EVALUATED AS PRODUCTION-READY)**
-- **Tanggal Evaluasi**: 2026-08-02
-- **Ringkasan Kondisi**: Perangkat lunak memenuhi seluruh kriteria kelayakan sebagai prototipe riset akademik untuk publikasi ilmiah dengan limitasi empiris yang terdokumentasi secara transparan dan jujur.
+### Rasional Keputusan:
+1. **Pencapaian**:
+   - Seluruh 18 Kebutuhan Keamanan (SR-01 s/d SR-18) dan 16 Ancaman Trike (T-01 s/d T-16) telah 100% terpetakan ke kontrol teknis arsitektur.
+   - Pengujian kriptografi dan integrasi E2E mencapai tingkat kelulusan 18 PASS, 1 PARTIAL (`RP-01`), 0 FAIL dengan reliabilitas 3/3 putaran (100%).
+   - Audit SAST Bandit backend menunjukkan 0 kerentanan High Severity; audit SCA frontend (NPM) menunjukkan 0 kerentanan.
+   - Pengujian dinamis backend dan WebSocket (`BT-01` s/d `BT-06`) membuktikan keandalan kontrol kapasitas 2-peer, rate limiting, batas frame, ketahanan malformed input, pemusnahan room, dan idle timeout.
+   - Pemindaian pasif OWASP ZAP 2.17.0 pada frontend produksi Vercel menunjukkan 0 kerentanan High Severity.
+
+2. **Keterbatasan & Alasan Kualifikasi (*Limitations*)**:
+   - Status pengujian `RP-01` adalah **PARTIAL** karena validasi sequence counter dilakukan pada layer *application envelope*; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual.
+   - Status kontrol CORS `T-11` adalah **CODE_REVIEW_ONLY** karena diverifikasi melalui inspeksi kode sumber `backend/main.py:ALLOWED_ORIGINS` dan belum memiliki test case dinamis lintas origin otomatis.
+   - Pemindaian OWASP ZAP mencatat **1 temuan Medium terbuka** pada Content Security Policy (`style-src 'unsafe-inline'`).
+   - Pemindaian OWASP ZAP **hanya mencakup frontend produksi Vercel**, tidak memindai backend API Render atau protokol WebSocket secara aktif di lingkungan produksi cloud.
+   - Audit dependensi backend (Pip-audit) mencatat **17 advisory PyPI berstatus OPEN / PARTIAL** yang memerlukan siklus pembaruan dependensi lanjutan.
+   - Runtime JavaScript (V8) **tidak menjamin secure memory zeroization deterministik pada RAM fisik** untuk pembersihan kunci privat.
+   - Rencana tanggap insiden dan pengungkapan kerentanan berstatus **PREPARED_NOT_EXERCISED** (belum diuji simulasi latihan penanganan insiden).
+
+Berdasarkan rasional di atas, sistem dinilai layak dan siap untuk pelaporan bukti penelitian ilmiah (**READY FOR PAPER WITH LIMITATIONS**) sebagai prototipe riset.

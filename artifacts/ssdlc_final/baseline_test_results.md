@@ -19,7 +19,7 @@ Dokumen ini mendokumentasikan hasil pengujian baseline empiris untuk 19 kasus uj
 | **Key Derivation Function (HKDF-SHA-256)** | `KD-01`, `KD-02`, `KD-03`, `KD-04` | Pemisahan domain `K_enc` dan `K_conf`; efek avalans terverifikasi pada manipulasi 1-bit. | **PASS** |
 | **Mutual Key Confirmation (HMAC-SHA-256)** | `KC-01`, `KC-02` | Verifikasi tag HMAC transcript dua arah berhasil; manipulasi transcript memicu penolakan. | **PASS** |
 | **Authenticated Encryption (AES-GCM-256)** | `AE-01`, `AE-02`, `AE-03`, `AE-04` | Enkripsi/dekripsi normal lolos; tampering pada ciphertext, wrong key/IV, dan AAD ditolak tag GCM. | **PASS** |
-| **Replay Protection Validation** | `RP-01` | Validasi urutan sequence counter aktif di layer envelope; reinjeksi raw packet WebRTC out-of-scope. | **PARTIAL** |
+| **Replay Protection Validation** | `RP-01` | Validasi sequence counter di application envelope; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual. | **PARTIAL** |
 | **End-to-End Multi-Run Integration** | `E2E-01`, `E2E-02`, `E2E-03`, `E2E-04` | Alur penuh chat, 10 pesan beruntun, penolakan peer ke-3, dan room teardown lolos pada 3/3 putaran. | **PASS** |
 
 ---

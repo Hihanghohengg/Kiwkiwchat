@@ -1,10 +1,12 @@
 # Inventaris Pengujian Keamanan (Security Test Inventory) — Kiw Kiw Chat
 
-Dokumen ini menyajikan inventaris lengkap dari seluruh 19 kasus uji otomatis pada test suite `test_impkrip_final.py` beserta pemetaannya terhadap *Security Requirements* (SR) dan *Trike Threats* (T-01 s/d T-16).
+Dokumen ini menyajikan inventaris lengkap dari seluruh kasus uji keamanan pada **Kiw Kiw Chat**, mencakup 19 kasus uji kriptografi & E2E (`test_impkrip_final.py`), 6 kasus uji dinamis backend & WebSocket (`test_backend_websocket_security.py`), inspeksi kode statis CORS, audit statis SAST (Bandit), audit dependensi SCA (npm audit & pip-audit), dan pemindaian pasif DAST (OWASP ZAP).
 
 ---
 
 ## 1. Inventaris 19 Kasus Uji Otomatis Kriptografi & E2E
+
+Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_test_report.json) (`test_impkrip_final.py --runs 3`):
 
 | Test ID | Kategori Pengujian | Deskripsi Prosedur Pengujian | Security Requirement | Trike Threat Terkait | Status Aktual | Catatan Verifikasi & Limitasi |
 |---|---|---|---|---|:---:|---|
@@ -22,7 +24,7 @@ Dokumen ini menyajikan inventaris lengkap dari seluruh 19 kasus uji otomatis pad
 | **AE-02** | Auth Enc Negative | Validasi penolakan dekripsi AES-GCM ketika ciphertext dimanipulasi (*tampered ciphertext*). | SR-01 | T-01 | **PASS** | GCM authentication tag error, payload ditolak. |
 | **AE-03** | Auth Enc Negative | Validasi penolakan dekripsi jika IV atau key yang digunakan salah. | SR-01 | T-01 | **PASS** | Dekripsi gagal dengan `OperationError`. |
 | **AE-04** | Auth Enc AAD Binding | Validasi penolakan dekripsi jika Additional Authenticated Data (AAD) dimanipulasi. | SR-07 | T-08 | **PASS** | Perubahan sequence/direction pada AAD membatalkan dekripsi. |
-| **RP-01** | Replay Protection | Validasi penolakan sequence counter duplikat pada layer *application envelope*. | SR-07 | T-08 | **PARTIAL** | **PARTIAL**: Terverifikasi pada level envelope data; reinjeksi raw packet WebRTC DataChannel belum diotomasi. |
+| **RP-01** | Replay Protection | Validasi penolakan sequence counter duplikat pada layer *application envelope*. | SR-07 | T-08 | **PARTIAL** | **PARTIAL**: Terverifikasi pada level application envelope; raw encrypted application envelope belum ditangkap dan direinjeksi secara end-to-end melalui DataChannel aktual. |
 | **E2E-01** | End-to-End Flow | Simulasi obrolan P2P 2-arah lengkap: Room creation $\to$ Signaling $\to$ PQ Upgrade $\to$ Chat. | SR-01..08 | T-01, T-02, T-03 | **PASS** | Lolos 3/3 putaran independen. |
 | **E2E-02** | End-to-End Stress | Pengiriman bertubi-tubi 10 pesan berurutan antar browser tanpa packet loss. | SR-01, SR-07 | T-01, T-08 | **PASS** | Lolos 3/3 putaran independen. |
 | **E2E-03** | End-to-End Capacity | Penolakan koneksi browser ketiga ke dalam room yang sedang aktif (*3rd Peer Rejection*). | SR-09 | T-04 | **PASS** | Peer 3 menerima `room_full` dan koneksi ditutup (3/3 runs). |
@@ -30,13 +32,28 @@ Dokumen ini menyajikan inventaris lengkap dari seluruh 19 kasus uji otomatis pad
 
 ---
 
-## 2. Inventaris Kontrol Tambahan (Non-Automated / Code Review)
+## 2. Inventaris 6 Kasus Uji Dinamis Minimum Backend API & WebSocket Signaling (BT-01 s/d BT-06)
 
-| Kontrol Keamanan | Deskripsi Prosedur Evaluasi | Security Requirement | Trike Threat Terkait | Status Evaluasi | Catatan Bukti |
+Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`):
+
+| Test ID | Kategori Pengujian | Deskripsi Prosedur Pengujian | Security Requirement | Trike Threat Terkait | Status Aktual | Catatan Verifikasi & Limitasi |
+|---|---|---|---|---|:---:|---|
+| **BT-01** | WS Capacity | Validasi penolakan koneksi peer ketiga ke room aktif dengan 2 peserta. | SR-09 | T-04, T-12 | **PASS** | Peer ke-3 menerima frame `room_full` dan soket ditutup kode 1008. |
+| **BT-02** | API Rate Limiting | Pengujian flooding pembuatan room (`POST /rooms`) pada fresh window (10 req/IP/min). | SR-15 | T-13 | **PASS** | Tepat 10 request pertama diterima (HTTP 200), 6 request berikutnya ditolak dengan HTTP 429. |
+| **BT-03** | WS Frame Guard | Pengiriman frame WebSocket berukuran raksasa (> 64 KB limit). | SR-16 | T-14 | **PASS** | Server mengirim error frame dan menutup soket dengan close code 1009. |
+| **BT-04** | WS Resiliency | Pengiriman frame malformed / JSON rusak ke soket signaling aktif. | SR-16 | T-14 | **PASS** | Frame diabaikan tanpa crash, soket tetap hidup dan merespon ping normal. |
+| **BT-05** | Room Teardown | Pengiriman sinyal `destroy_room` dan verifikasi penolakan koneksi baru berikutnya. | SR-11 | T-09, T-12 | **PASS** | Room dihapus seketika dari memori server; rekoneksi ditolak dengan 'Room not found' (kode 1008). |
+| **BT-06** | WS Idle Timeout | Pemeriksaan timeout inaktivitas soket signaling WebSocket (`WS_IDLE_TIMEOUT=3s` di test env). | SR-16 | T-14 | **PASS** | Koneksi idle terputus tepat setelah timeout dengan error inactivity dan close code 1001. |
+
+---
+
+## 3. Inventaris Audit Statis, Tinjauan Kode & Pemindaian DAST
+
+| Kontrol / Alat | Deskripsi Prosedur Evaluasi | Security Requirement | Trike Threat Terkait | Status Evaluasi | Catatan Bukti |
 |---|---|---|---|:---:|---|
-| **Rate Limiter API** | Pemeriksaan konfigurasi middleware SlowAPI pada `POST /rooms`. | SR-15 | T-13 | **CODE REVIEW ONLY** | Terkonfigurasi 10 req/IP/min pada `backend/main.py`. |
-| **WebSocket Guard** | Pemeriksaan limit frame 64 KB dan idle timeout 60s. | SR-16 | T-14 | **CODE REVIEW ONLY** | Terkonfigurasi `MAX_MSG_BYTES` & `WS_IDLE_TIMEOUT`. |
-| **CORS Whitelist** | Pemeriksaan daftar origin pada `ALLOWED_ORIGINS`. | SR-13 | T-11 | **CODE REVIEW ONLY** | Terkonfigurasi pada CORS middleware FastAPI. |
-| **Direct WS Guard** | Pemeriksaan validasi keberadaan room dan parameter token. | SR-14 | T-12 | **CODE REVIEW ONLY** | Terkonfigurasi pada `websocket_endpoint`. |
-| **Static Code SAST** | Pemindaian statis backend Python via Bandit v1.9.4. | SR-17 | T-15 | **PASS (0 High)** | Output raw pada `bandit_report.json`. |
-| **Security Headers** | Pemeriksaan konfigurasi headers dan CSP meta tag. | SR-18 | T-16 | **CONFIGURED (WITH CAVEAT)** | `style-src` memuat `'unsafe-inline'`. DAST automated scan: BLOCKED. |
+| **CORS Code Inspection** | Inspeksi deklarasi whitelist origin pada `backend/main.py:114-119`. | SR-13 | T-11 | **CODE_REVIEW_ONLY** | Whitelist `ALLOWED_ORIGINS` terdefinisi; pengujian dinamis lintas origin belum diotomasi di test harness. |
+| **Bandit v1.9.4 (SAST)** | Pemindaian keamanan statis kode Python backend (`backend/`, 269 LOC). | SR-17 | T-15 | **PASS (0 High)** | 0 High, 1 Med (B104 binding), 3 Low (B110 pass). Raw: [`bandit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/bandit_report.json). |
+| **NPM Audit (SCA)** | Pemindaian kerentanan dependensi frontend (113 paket dipindai). | SR-17 | T-15 | **PASS (0 Vulns)** | 0 kerentanan terdeteksi. Raw: [`npm_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/npm_audit_report.json). |
+| **Pip-audit (SCA)** | Pemindaian dependensi backend Python. | SR-17 | T-15 | **OPEN / PARTIAL** | Ditemukan 17 advisory PyPI terbuka (FastAPI/Starlette/multipart). Raw: [`pip_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/pip_audit_report.json). |
+| **OWASP ZAP 2.17.0 (DAST)** | Pemindaian pasif dinamis pada frontend produksi Vercel. | SR-18 | T-16 | **EXECUTED WITH OPEN FINDINGS** | 0 High, 1 Med (`style-src 'unsafe-inline'`), 1 Low (`CSP: Notices`), 3 Info. Raw: [`zap_report_2026-08-02.html`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_report_2026-08-02.html). |
+| **Security Headers** | Verifikasi header HTTP produksi (HSTS, XFO, XCTO, Referrer-Policy). | SR-18 | T-16 | **PASS (WITH CAVEAT)** | Header aktif di edge produksi; CSP memiliki open medium finding pada style-src. |
