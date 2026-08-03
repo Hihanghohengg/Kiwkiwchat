@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software or its research artifacts, please cite the corresponding paper artifact release."
+title: "Kiw Kiw Chat Research Artifacts"
+type: software
+authors:
+  - family-names: "Musila"
+    given-names: "Yohanes Obed"
+repository-code: "https://github.com/Hihanghohengg/Kiwkiwchat"
+license: "MIT"
+abstract: "Research artifacts, source code, verification test suites, and empirical evaluation data for Kiw Kiw Chat, supporting research on browser-native post-quantum cryptography (ML-KEM-768) and Microsoft SDL with Trike threat modeling."
+keywords:
+  - post-quantum cryptography
+  - ml-kem-768
+  - webrtc
+  - ephemeral messaging
+  - microsoft-sdl
+  - trike-threat-modeling

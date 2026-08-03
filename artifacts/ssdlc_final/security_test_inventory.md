@@ -6,7 +6,7 @@ Dokumen ini menyajikan inventaris lengkap dari seluruh kasus uji keamanan pada *
 
 ## 1. Inventaris 19 Kasus Uji Otomatis Kriptografi & E2E
 
-Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_test_report.json) (`test_impkrip_final.py --runs 3`):
+Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](../impkrip_final/impkrip_test_report.json) (`test_impkrip_final.py --runs 3`):
 
 | Test ID | Kategori Pengujian | Deskripsi Prosedur Pengujian | Security Requirement | Trike Threat Terkait | Status Aktual | Catatan Verifikasi & Limitasi |
 |---|---|---|---|---|:---:|---|
@@ -34,7 +34,7 @@ Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file://
 
 ## 2. Inventaris 8 Kasus Uji Dinamis Minimum Backend API & WebSocket Signaling (BT-01 s/d BT-08)
 
-Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`):
+Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](./backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`):
 
 | Test ID | Kategori Pengujian | Deskripsi Prosedur Pengujian | Security Requirement | Trike Threat Terkait | Status Aktual | Catatan Verifikasi & Limitasi |
 |---|---|---|---|---|:---:|---|
@@ -54,8 +54,8 @@ Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`
 | Kontrol / Alat | Deskripsi Prosedur Evaluasi | Security Requirement | Trike Threat Terkait | Status Evaluasi | Catatan Bukti |
 |---|---|---|---|:---:|---|
 | **CORS Dynamic & Code Audit** | Validasi preflight OPTIONS (BT-07 & BT-08) dan inspeksi deklarasi whitelist pada `backend/main.py:114-119`. | SR-13 | T-11 | **PASS** | Dynamic tests BT-07 & BT-08 lolos 100%; whitelist `ALLOWED_ORIGINS` terdefinisi dan ditegakkan secara presisi. |
-| **Bandit v1.9.4 (SAST)** | Pemindaian keamanan statis kode Python backend (`backend/`, 269 LOC). | SR-17 | T-15 | **PASS (0 High)** | 0 High, 1 Med (B104 binding), 3 Low (B110 pass). Raw: [`bandit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/bandit_report.json). |
-| **NPM Audit (SCA)** | Pemindaian kerentanan dependensi frontend (113 paket dipindai). | SR-17 | T-15 | **PASS (0 Vulns)** | 0 kerentanan terdeteksi. Raw: [`npm_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/npm_audit_report.json). |
-| **Pip-audit (SCA)** | Pemindaian dependensi backend Python. | SR-17 | T-15 | **OPEN / PARTIAL** | Ditemukan 17 advisory PyPI terbuka (FastAPI/Starlette/multipart). Raw: [`pip_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/pip_audit_report.json). |
-| **OWASP ZAP 2.17.0 (DAST)** | Pemindaian pasif dinamis pada frontend produksi Vercel. | SR-18 | T-16 | **EXECUTED WITH OPEN FINDINGS** | 0 High, 1 Med (`style-src 'unsafe-inline'`), 1 Low (`CSP: Notices`), 3 Info. Raw: [`zap_report_2026-08-02.html`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_report_2026-08-02.html). |
+| **Bandit v1.9.4 (SAST)** | Pemindaian keamanan statis kode Python backend (`backend/`, 269 LOC). | SR-17 | T-15 | **PASS (0 High)** | 0 High, 1 Med (B104 binding), 3 Low (B110 pass). Raw: [`bandit_report.json`](./bandit_report.json). |
+| **NPM Audit (SCA)** | Pemindaian kerentanan dependensi frontend (113 paket dipindai). | SR-17 | T-15 | **PASS (0 Vulns)** | 0 kerentanan terdeteksi. Raw: [`npm_audit_report.json`](./npm_audit_report.json). |
+| **Pip-audit (SCA)** | Pemindaian dependensi backend Python. | SR-17 | T-15 | **OPEN / PARTIAL** | Ditemukan 17 advisory PyPI terbuka (FastAPI/Starlette/multipart). Raw: [`pip_audit_report.json`](./pip_audit_report.json). |
+| **OWASP ZAP 2.17.0 (DAST)** | Pemindaian pasif dinamis pada frontend produksi Vercel. | SR-18 | T-16 | **EXECUTED WITH OPEN FINDINGS** | 0 High, 1 Med (`style-src 'unsafe-inline'`), 1 Low (`CSP: Notices`), 3 Info. Raw: [`zap_report_2026-08-02.html`](./zap_report_2026-08-02.html). |
 | **Security Headers** | Verifikasi header HTTP produksi (HSTS, XFO, XCTO, Referrer-Policy). | SR-18 | T-16 | **PASS (WITH CAVEAT)** | Header aktif di edge produksi; CSP memiliki open medium finding pada style-src. |

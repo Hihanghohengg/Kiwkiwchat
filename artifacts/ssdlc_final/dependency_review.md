@@ -8,7 +8,7 @@ Dokumen ini menyajikan audit keamanan dependensi pihak ketiga (*Software Composi
 
 - **Jumlah Paket Dipindai**: 113 paket pihak ketiga (`package-lock.json`).
 - **Hasil Pemindaian (`npm audit`)**: **0 Kerentanan Ditemukan (0 Vulnerabilities)**.
-- **Raw Report**: [`npm_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/npm_audit_report.json).
+- **Raw Report**: [`npm_audit_report.json`](./npm_audit_report.json).
 - **Status Frontend SCA**: ✅ **PASS (0 Vulnerabilities)**.
 
 ---
@@ -17,7 +17,7 @@ Dokumen ini menyajikan audit keamanan dependensi pihak ketiga (*Software Composi
 
 - **Paket Terpasang di Lingkungan Backend**: `fastapi==0.110.0`, `starlette==0.36.3`, `uvicorn==0.28.0`, `slowapi==0.1.9`, `python-multipart==0.0.9`.
 - **Hasil Pemindaian (`pip-audit`)**: Ditemukan **17 catatan advisory keamanan** pada dependensi web backend FastAPI & Starlette.
-- **Raw Report**: [`pip_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/pip_audit_report.json).
+- **Raw Report**: [`pip_audit_report.json`](./pip_audit_report.json).
 - **Status Backend SCA**: ⚠️ **OPEN / PARTIAL (REQUIRES VALIDATION & DEPENDENCY UPGRADE)**.
 
 ### Kategorisasi & Analisis Keterjangkauan Jalur Eksekusi:

@@ -8,7 +8,7 @@ Dokumen ini mendokumentasikan hasil pemindaian keamanan statis (*Static Applicat
 
 - **Target Pemindaian**: `backend/` (269 baris kode sumber / LOC)
 - **Waktu Pemindaian**: 2026-08-02T11:39:40Z
-- **File Laporan JSON**: [`artifacts/ssdlc_final/bandit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/bandit_report.json)
+- **File Laporan JSON**: [`bandit_report.json`](./bandit_report.json)
 - **Status Kepatuhan Bug Bar**: ✅ **LULUS (0 High Severity Vulnerabilities)**
 
 | Tingkat Keparahan (Severity) | Jumlah Temuan | Status Resolusi / Disposisi |

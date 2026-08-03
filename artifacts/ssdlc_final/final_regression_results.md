@@ -14,14 +14,14 @@ Dokumen ini merangkum seluruh hasil evaluasi regresi akhir yang dijalankan pada 
 | **End-to-End Multi-Run** | Skenario Chat P2P 2-Arah, Penolakan Peer ke-3, Room Destroy | `E2E-01`, `E2E-02`, `E2E-03`, `E2E-04` (3 Run Independen) | Lolos 3 dari 3 putaran pengujian beruntun (100% reliability) | ✅ **PASS** |
 | **Static Security (SAST)** | Analisis Kode Sumber Backend Python | `backend/` (269 LOC) via Bandit v1.9.4 | 0 High Severity, 1 Medium (B104 accepted deployment finding), 3 Low (B110 accepted technical debt) | ✅ **PASS (0 High)** |
 | **Software Composition (SCA)** | Dependensi Frontend NPM & Backend PyPI | 113 paket NPM, 5 direct requirements Pip | NPM: 0 Vulnerabilities; Pip: 17 advisories pada backend (dikategorikan & open for upgrade) | ⚠️ **OPEN / PARTIAL** |
-| **Dynamic Headers Review** | Konfigurasi HTTP Security Headers & CSP | Review terhadap OWASP ZAP Baseline Rules terpilih | Header terkonfigurasi; `style-src` memuat `'unsafe-inline'`. DAST automated scan: BLOCKED | ⚠️ **CONFIGURED (DAST BLOCKED)** |
+| **Dynamic Headers & DAST** | Respon HTTP & Pemindaian Pasif OWASP ZAP 2.17.0 | Frontend Produksi Vercel | 0 High, 1 Med (`style-src 'unsafe-inline'`), 1 Low, 3 Info | ⚠️ **EXECUTED WITH OPEN FINDINGS** |
 | **Memory Consumption** | Alokasi JavaScript Heap selama Operasi Chat | Benchmark 200 iterasi terukur di Chromium (5 Run) | Median baseline: 5.0850 MiB; Median delta keygen: 0.2371 MiB; Median delta PQ upgrade: 0.5212 MiB | 📊 **RECORDED (CHECKPOINT METRICS)** |
 
 ---
 
 ## 2. Rangkuman Metrik Memori Kanonikal
 
-Berdasarkan berkas canonical [`impkrip_memory_benchmark.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_memory_benchmark.json):
+Berdasarkan berkas canonical [`impkrip_memory_benchmark.json`](../impkrip_final/impkrip_memory_benchmark.json):
 - **Median Baseline Heap**: 5.0850 MiB (5,332,008 Bytes)
 - **Median Post-KeyGen Heap**: 5.3223 MiB (5,580,856 Bytes)
 - **Median Delta KeyGen**: +0.2371 MiB (+248,664 Bytes)

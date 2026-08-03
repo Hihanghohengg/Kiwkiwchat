@@ -38,7 +38,7 @@ Dokumen ini merupakan lembar data referensi tunggal (*Single Source of Truth* - 
 
 ## 2. Metrik Kinerja & Penggunaan Memori JavaScript Heap (Kanonikal)
 
-Sumber data mentah: [`artifacts/impkrip_final/impkrip_memory_benchmark.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_memory_benchmark.json) (5 Independent Runs, 20 Warm-up, 200 Measured Iterations per Run via Chrome DevTools Protocol):
+Sumber data mentah: [`artifacts/impkrip_final/impkrip_memory_benchmark.json`](../impkrip_final/impkrip_memory_benchmark.json) (5 Independent Runs, 20 Warm-up, 200 Measured Iterations per Run via Chrome DevTools Protocol):
 
 | Metrik Checkpoint Heap | Median (MiB) | Mean (MiB) | Min (MiB) | Max (MiB) | StdDev (MiB) | Median (Bytes) |
 |---|---:|---:|---:|---:|---:|---:|
@@ -58,7 +58,7 @@ Sumber data mentah: [`artifacts/impkrip_final/impkrip_memory_benchmark.json`](fi
 
 ## 3. Hasil Pengujian Kriptografi & Fungsional Otomatis (19 Test Cases)
 
-Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_test_report.json) (`test_impkrip_final.py --runs 3`):
+Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](../impkrip_final/impkrip_test_report.json) (`test_impkrip_final.py --runs 3`):
 
 - **Total Test Cases**: 19
 - **PASS**: **18**
@@ -92,7 +92,7 @@ Sumber data mentah: [`artifacts/impkrip_final/impkrip_test_report.json`](file://
 
 ## 4. Hasil Pengujian Dinamis Minimum Backend API & WebSocket Signaling (8 Test Cases)
 
-Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`):
+Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](./backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`):
 
 - **Total Minimum Dynamic Test Cases**: 8
 - **PASS**: **8 (100%)**
@@ -119,15 +119,15 @@ Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`
    - Medium Severity: **1** (B104: Binding to `0.0.0.0` — accepted deployment finding untuk hosting container)
    - Low Severity: **3** (B110: Try-except-pass pada loop teardown koneksi — accepted technical debt)
    - Status: ✅ **PASS_WITH_FINDINGS (0 High)**
-   - Raw Report: [`bandit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/bandit_report.json)
+   - Raw Report: [`bandit_report.json`](./bandit_report.json)
 
 2. **Software Composition Analysis (SCA)**:
-   - Frontend (NPM): 113 paket dipindai $\to$ **0 Vulnerabilities** (Status: ✅ **PASS**). Raw Report: [`npm_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/npm_audit_report.json).
+   - Frontend (NPM): 113 paket dipindai $\to$ **0 Vulnerabilities** (Status: ✅ **PASS**). Raw Report: [`npm_audit_report.json`](./npm_audit_report.json).
    - Backend (Pip): Ditemukan 17 catatan advisory PyPI pada FastAPI/Starlette/python-multipart.
      - 8 advisories multipart $\longrightarrow$ *Not reached in current application flow*
      - 5 advisories URL/Host $\longrightarrow$ *Requires validation*
      - Transitive $\longrightarrow$ *Open for dependency upgrade*
-   - Status Backend SCA: ⚠️ **OPEN / PARTIAL**. Raw Report: [`pip_audit_report.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/pip_audit_report.json).
+   - Status Backend SCA: ⚠️ **OPEN / PARTIAL**. Raw Report: [`pip_audit_report.json`](./pip_audit_report.json).
 
 3. **Dynamic Application Security Testing (DAST)**:
    - Tool: OWASP ZAP 2.17.0 Passive Scan
@@ -137,8 +137,8 @@ Sumber data mentah: [`artifacts/ssdlc_final/backend_websocket_test_results.json`
      - Medium (1): *CSP: style-src unsafe-inline* (Confidence: High)
      - Low (1): *CSP: Notices* (Confidence: High)
      - Informational (3): *Modern Web Application* (Confidence: Medium), *Re-examine Cache-control Directives* (Confidence: Low), *Retrieved from Cache* (Confidence: Medium)
-   - Status: ⚠️ **EXECUTED_WITH_OPEN_FINDINGS**
-   - Raw Report: [`zap_report_2026-08-02.html`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_report_2026-08-02.html)
+    - Status: ⚠️ **EXECUTED_WITH_OPEN_FINDINGS**
+   - Raw Report: [`zap_report_2026-08-02.html`](./zap_report_2026-08-02.html)
 
 ---
 

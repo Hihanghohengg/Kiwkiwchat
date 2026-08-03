@@ -18,13 +18,13 @@ Dokumen ini merupakan laporan audit dan rekonsiliasi akhir (*Final Audit & Evide
 ## 2. Ringkasan Hasil Pengujian Empiris Kanonikal
 
 ### A. Pengujian Kriptografi & Alur E2E (19 Kasus Uji)
-- **Sumber Bukti**: [`artifacts/impkrip_final/impkrip_test_report.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_test_report.json) (`test_impkrip_final.py --runs 3`)
+- **Sumber Bukti**: [`artifacts/impkrip_final/impkrip_test_report.json`](../impkrip_final/impkrip_test_report.json) (`test_impkrip_final.py --runs 3`)
 - **Total Kasus Uji**: 19 Kasus Uji
 - **Hasil**: **18 PASS**, **1 PARTIAL** (`RP-01`), **0 FAIL**
 - **Reliabilitas E2E Multi-Run**: 3/3 putaran independen sukses (100% deterministik)
 
 ### B. Pengujian Dinamis Backend API & WebSocket Signaling (8 Kasus Uji Minimum)
-- **Sumber Bukti**: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`)
+- **Sumber Bukti**: [`artifacts/ssdlc_final/backend_websocket_test_results.json`](./backend_websocket_test_results.json) (`tests/security/test_backend_websocket_security.py`)
 - **Total Kasus Uji**: 8 Kasus Uji (`BT-01` s/d `BT-08`)
 - **Hasil**: **8/8 PASS (100%)**, **0 FAIL**
 - **Cakupan Pengujian**:
@@ -38,7 +38,7 @@ Dokumen ini merupakan laporan audit dan rekonsiliasi akhir (*Final Audit & Evide
   - `BT-08`: Untrusted Origin CORS Preflight (Preflight OPTIONS untrusted origin ditolak status 400 tanpa ACAO).
 
 ### C. Pemindaian Dinamis DAST OWASP ZAP 2.17.0
-- **Sumber Bukti**: [`artifacts/ssdlc_final/zap_report_2026-08-02.html`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_report_2026-08-02.html), [`artifacts/ssdlc_final/zap_summary.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_summary.md)
+- **Sumber Bukti**: [`artifacts/ssdlc_final/zap_report_2026-08-02.html`](./zap_report_2026-08-02.html), [`artifacts/ssdlc_final/zap_summary.md`](./zap_summary.md)
 - **Target Scan**: Frontend Produksi Vercel (`https://kiwkiwchat.vercel.app/`)
 - **Status Evaluasi**: **EXECUTED_WITH_OPEN_FINDINGS**
 - **Ringkasan Temuan Alert**:
@@ -53,7 +53,7 @@ Dokumen ini merupakan laporan audit dan rekonsiliasi akhir (*Final Audit & Evide
 - **SCA Backend (Pip-audit)**: 17 catatan advisory PyPI dikategorikan (8 multipart not reached, 5 URL/Host requires validation, transitive open for upgrade). Status: **OPEN / PARTIAL**.
 
 ### E. Metrik Checkpoint Alokasi JavaScript Heap (CDP)
-- **Sumber Bukti**: [`artifacts/impkrip_final/impkrip_memory_benchmark.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_memory_benchmark.json)
+- **Sumber Bukti**: [`artifacts/impkrip_final/impkrip_memory_benchmark.json`](../impkrip_final/impkrip_memory_benchmark.json)
 - **Baseline Heap**: **5.0850 MiB** (Median)
 - **Post-KeyGen Heap**: **5.3223 MiB** (Median, $\Delta = +0.2371\text{ MiB}$)
 - **Post-PQ Upgrade Heap**: **5.6062 MiB** (Median, $\Delta = +0.5212\text{ MiB}$)

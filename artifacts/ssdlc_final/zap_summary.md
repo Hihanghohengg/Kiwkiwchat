@@ -12,7 +12,7 @@ Dokumen ini memuat ringkasan eksekutif hasil pemindaian keamanan dinamis (*Dynam
 - **Metode Pemindaian**: *Passive Scanning* terhadap resource web frontend produksi
 - **Status Evaluasi ZAP**: **EXECUTED WITH OPEN FINDINGS**
 - **Status Evaluasi CSP**: **PARTIAL / OPEN MEDIUM FINDING**
-- **Raw Evidence File**: [`zap_report_2026-08-02.html`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/zap_report_2026-08-02.html)
+- **Raw Evidence File**: [`zap_report_2026-08-02.html`](./zap_report_2026-08-02.html)
 
 > [!IMPORTANT]
 > **Pernyataan Batas Cakupan Pemindaian**:  
@@ -22,7 +22,7 @@ Dokumen ini memuat ringkasan eksekutif hasil pemindaian keamanan dinamis (*Dynam
 > 2. Laporan ini **tidak mencakup pemindaian backend API pada Render** (misalnya endpoint `POST /rooms` tidak dipindai oleh ZAP).
 > 3. Laporan ini **tidak mencakup pemindaian protokol signaling WebSocket** (`/rooms/{room_id}/ws`).
 > 4. Laporan ini **bukan merupakan uji penetrasi aktif penuh (*full active penetration testing*)** melainkan pemindaian pasif (*passive scanning*) terhadap respon HTTP dan resource frontend statis.
-> 5. Untuk pengujian dinamis backend dan WebSocket, lihat laporan uji lokal mandiri pada [`backend_websocket_test_results.md`](file:///d:/Obed/kiwkiw/artifacts/ssdlc_final/backend_websocket_test_results.md).
+> 5. Untuk pengujian dinamis backend dan WebSocket, lihat laporan uji lokal mandiri pada [`backend_websocket_test_results.md`](./backend_websocket_test_results.md).
 
 ---
 
