@@ -15,6 +15,20 @@ Dokumen ini merupakan lembar data referensi tunggal (*Single Source of Truth* - 
 
 ---
 
+## Evidence Snapshot
+
+- Canonical evidence commit:
+  `df63a8a4c98991342f82a261e1db32b7220a6c1a`
+- Branch: `main`
+- Evidence status: `READY FOR PAPER WITH LIMITATIONS`
+- System classification: `RESEARCH PROTOTYPE`
+- Production readiness: `NOT EVALUATED AS PRODUCTION-READY`
+
+Commit tersebut merupakan snapshot utama evidence pengujian, traceability,
+release review, OWASP ZAP, dan pengujian dinamis backend/WebSocket.
+
+---
+
 ## 2. Metrik Kinerja & Penggunaan Memori JavaScript Heap (Kanonikal)
 
 Sumber data mentah: [`artifacts/impkrip_final/impkrip_memory_benchmark.json`](file:///d:/Obed/kiwkiw/artifacts/impkrip_final/impkrip_memory_benchmark.json) (5 Independent Runs, 20 Warm-up, 200 Measured Iterations per Run via Chrome DevTools Protocol):
