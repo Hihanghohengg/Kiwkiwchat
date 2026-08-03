@@ -15,17 +15,24 @@ Dokumen ini merupakan lembar data referensi tunggal (*Single Source of Truth* - 
 
 ---
 
-## Evidence Snapshot
+## Evidence Snapshots
 
-- Canonical evidence commit:
-  `df63a8a4c98991342f82a261e1db32b7220a6c1a`
+### Snapshot v2 (Final Complete Audit & Method Verification)
+- Canonical evidence commit: `e14d00679b4826058adb0f1afca93147b7dd7d85`
+- Tag: `ssdlc-evidence-v2`
 - Branch: `main`
 - Evidence status: `READY FOR PAPER WITH LIMITATIONS`
 - System classification: `RESEARCH PROTOTYPE`
 - Production readiness: `NOT EVALUATED AS PRODUCTION-READY`
+- Scope: Snapshot lengkap audit metodologi T-01 s/d T-16, pengujian dinamis backend & CORS (BT-01..BT-08), matriks kelayakan paper, dan rekonsiliasi seluruh artefak bukti SSDLC.
 
-Commit tersebut merupakan snapshot utama evidence pengujian, traceability,
-release review, OWASP ZAP, dan pengujian dinamis backend/WebSocket.
+### Snapshot v1 (Initial Reconciliation)
+- Canonical evidence commit: `df63a8a4c98991342f82a261e1db32b7220a6c1a`
+- Tag: `ssdlc-evidence-v1`
+- Branch: `main`
+- Evidence status: `READY FOR PAPER WITH LIMITATIONS`
+- System classification: `RESEARCH PROTOTYPE`
+- Production readiness: `NOT EVALUATED AS PRODUCTION-READY`
 
 ---
 
