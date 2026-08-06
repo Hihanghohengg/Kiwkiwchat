@@ -50,7 +50,15 @@ export default function App() {
   const currentRoomId  = useRef(null);
   const messagesEndRef = useRef(null);
   const iceServers     = useRef([
-    { urls: "stun:stun.l.google.com:19302" }
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" },
+    { urls: "stun:stun2.l.google.com:19302" },
+    { urls: "stun:stun.cloudflare.com:3478" },
+    { urls: "stun:stun.relay.metered.ca:80" },
+    { urls: "turn:global.relay.metered.ca:80", username: "72d96f322f19adc9ad45e376", credential: "SGyfufycpKzu9PmP" },
+    { urls: "turn:global.relay.metered.ca:80?transport=tcp", username: "72d96f322f19adc9ad45e376", credential: "SGyfufycpKzu9PmP" },
+    { urls: "turn:global.relay.metered.ca:443", username: "72d96f322f19adc9ad45e376", credential: "SGyfufycpKzu9PmP" },
+    { urls: "turns:global.relay.metered.ca:443?transport=tcp", username: "72d96f322f19adc9ad45e376", credential: "SGyfufycpKzu9PmP" }
   ]);
   const wsToken        = useRef("");
   const pendingCandidates = useRef([]);
@@ -225,6 +233,10 @@ export default function App() {
         isInitiator.current = msg.initiator;
         addTermLine(`IDENTITY_ASSIGNED :: initiator=${msg.initiator}`);
         
+        if (msg.turn_servers && msg.turn_servers.length > 0) {
+          iceServers.current = msg.turn_servers;
+        }
+
         if (msg.expires_in !== undefined) {
           const localStartTs = Date.now() - ((ROOM_TTL_SECONDS - msg.expires_in) * 1000);
           sessionStorage.setItem(storageKey(currentRoomId.current, 'start'), localStartTs);

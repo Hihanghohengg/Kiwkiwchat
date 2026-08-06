@@ -63,14 +63,14 @@ logger.propagate = False
 # Set ALLOWED_ORIGINS in your environment, comma-separated:
 #   ALLOWED_ORIGINS=https://kiwkiw.chat,https://www.kiwkiw.chat
 _raw_origins = os.environ.get("ALLOWED_ORIGINS", "https://kiwkiwchat.vercel.app,http://localhost:5173,http://localhost:4173")
-ALLOWED_ORIGINS: List[str] = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+ALLOWED_ORIGINS: List[str] = [o.strip().rstrip("/") for o in _raw_origins.split(",") if o.strip()]
 
 MAX_MSG_BYTES: int        = int(os.environ.get("MAX_MSG_BYTES",    "65536"))               # 64 KB (JSON signaling)
 WS_IDLE_TIMEOUT: int      = int(os.environ.get("WS_IDLE_TIMEOUT",  "60"))                    # 60 s
 ROOM_TTL_SECONDS: int     = int(os.environ.get("ROOM_TTL_SECONDS", "900"))                   # 15 min
-TURN_URL: Optional[str]   = os.environ.get("TURN_URL")           # e.g. turn:turn.kiwkiw.chat:3478
-TURN_USERNAME: Optional[str] = os.environ.get("TURN_USERNAME")
-TURN_CREDENTIAL: Optional[str] = os.environ.get("TURN_CREDENTIAL")
+TURN_URL: Optional[str]   = os.environ.get("TURN_URL", "turn:global.relay.metered.ca:80,turn:global.relay.metered.ca:443,turns:global.relay.metered.ca:443?transport=tcp")
+TURN_USERNAME: Optional[str] = os.environ.get("TURN_USERNAME", "72d96f322f19adc9ad45e376")
+TURN_CREDENTIAL: Optional[str] = os.environ.get("TURN_CREDENTIAL", "SGyfufycpKzu9PmP")
 
 
 # ─── In-Memory Store ───────────────────────────────────────────────────────────
@@ -114,8 +114,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"] if "*" in ALLOWED_ORIGINS else ALLOWED_ORIGINS,
     allow_credentials=False,
-    allow_methods=["POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_methods=["POST", "OPTIONS", "GET"],
+    allow_headers=["*"],
 )
 
 
@@ -132,13 +132,17 @@ def _build_ice_servers() -> List[Dict]:
     servers: List[Dict] = [
         {"urls": "stun:stun.l.google.com:19302"},
         {"urls": "stun:stun1.l.google.com:19302"},
+        {"urls": "stun:stun2.l.google.com:19302"},
+        {"urls": "stun:stun.cloudflare.com:3478"},
     ]
     if TURN_URL and TURN_USERNAME and TURN_CREDENTIAL:
-        servers.append({
-            "urls":       TURN_URL,
-            "username":   TURN_USERNAME,
-            "credential": TURN_CREDENTIAL,
-        })
+        urls = [u.strip() for u in TURN_URL.split(",") if u.strip()]
+        for u in urls:
+            servers.append({
+                "urls":       u,
+                "username":   TURN_USERNAME,
+                "credential": TURN_CREDENTIAL,
+            })
     return servers
 
 
@@ -237,6 +241,7 @@ async def websocket_endpoint(
             "initiator":       is_initiator,
             "connection_id":   connection_id,
             "expires_in":      expires_in,
+            "turn_servers":    _build_ice_servers(),
         })
 
         # If second peer joined, notify existing peer
