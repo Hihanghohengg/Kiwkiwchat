@@ -13,17 +13,17 @@
       "node_version": "v22.17.0",
       "browser": "Chromium 149.0.7827.55",
       "mlkem_version": "^2.7.0",
-      "source_commit_tested": "8c8d06791ffd5bc5b099425fb8d034bcf0834d90",
+      "source_commit_tested": "dcd202a3d88d999f557247ec9e4b6d0790a2cf14",
       "git_dirty": true,
-      "timestamp": "2026-08-03T12:21:26+0700",
+      "timestamp": "2026-08-06T09:14:02+0700",
       "timezone": "WIB (+0700)"
     }
   },
   "summary": {
     "total": 19,
-    "pass": 18,
+    "pass": 16,
     "partial": 1,
-    "fail": 0,
+    "fail": 2,
     "skipped": 0,
     "not_evaluated": 0
   },
@@ -160,17 +160,17 @@
       "id": "E2E-03",
       "name": "Signaling Constraint: Third-Peer Rejection",
       "expected": "Attempt by a third peer to enter occupied room is rejected with ROOM_FULL across all 3 runs",
-      "actual": "Passed 3/3 runs",
-      "status": "PASS",
-      "error": null
+      "actual": "Passed 0/3 runs",
+      "status": "FAIL",
+      "error": "Page.wait_for_selector: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator(\"text='ROOM_FULL'\") to be visible\n"
     },
     {
       "id": "E2E-04",
       "name": "Session Teardown: Room Destroy Cleanup",
       "expected": "Explicit room destruction removes all session storage keys across all 3 runs",
-      "actual": "Passed 3/3 runs",
-      "status": "PASS",
-      "error": null
+      "actual": "Passed 0/3 runs",
+      "status": "FAIL",
+      "error": "Storage not cleaned: creator=[], invitee=['kiwkiw_start_bd3a88c2-62d9-4ced-bbc2-12395ec4a6a4', 'kiwkiw_invite_token_bd3a88c2-62d9-4ced-bbc2-12395ec4a6a4', 'kiwkiw_key_bd3a88c2-62d9-4ced-bbc2-12395ec4a6a4', 'kiwkiw_msgs_bd3a88c2-62d9-4ced-bbc2-12395ec4a6a4', 'kiwkiw_token_bd3a88c2-62d9-4ced-bbc2-12395ec4a6a4']"
     },
     {
       "id": "RP-01",
@@ -184,34 +184,34 @@
   "e2e_runs": [
     {
       "run": 1,
-      "status": "SUCCESS",
+      "status": "FAIL",
       "details": {
         "E2E-01": "PASS",
         "E2E-02": "PASS",
-        "E2E-03": "PASS",
-        "E2E-04": "PASS"
+        "E2E-03": "FAIL",
+        "E2E-04": "FAIL"
       },
       "error": null
     },
     {
       "run": 2,
-      "status": "SUCCESS",
+      "status": "FAIL",
       "details": {
         "E2E-01": "PASS",
         "E2E-02": "PASS",
-        "E2E-03": "PASS",
-        "E2E-04": "PASS"
+        "E2E-03": "FAIL",
+        "E2E-04": "FAIL"
       },
       "error": null
     },
     {
       "run": 3,
-      "status": "SUCCESS",
+      "status": "FAIL",
       "details": {
         "E2E-01": "PASS",
         "E2E-02": "PASS",
-        "E2E-03": "PASS",
-        "E2E-04": "PASS"
+        "E2E-03": "FAIL",
+        "E2E-04": "FAIL"
       },
       "error": null
     }

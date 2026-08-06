@@ -12,9 +12,9 @@
     "node_version": "v22.17.0",
     "browser": "Chromium 149.0.7827.55",
     "mlkem_version": "^2.7.0",
-    "source_commit_tested": "8c8d06791ffd5bc5b099425fb8d034bcf0834d90",
+    "source_commit_tested": "dcd202a3d88d999f557247ec9e4b6d0790a2cf14",
     "git_dirty": true,
-    "timestamp": "2026-08-03T12:21:26+0700",
+    "timestamp": "2026-08-06T09:14:02+0700",
     "timezone": "WIB (+0700)"
   }
 }

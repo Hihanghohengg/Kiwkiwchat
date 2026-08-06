@@ -14,16 +14,16 @@
 | **Node.js Version** | `v22.17.0` |
 | **Browser Engine** | `Chromium 149.0.7827.55` |
 | **ML-KEM Package** | `^2.7.0` |
-| **Source Commit Tested** | `8c8d06791ffd5bc5b099425fb8d034bcf0834d90` (Git Dirty: `True`) |
-| **Timestamp & Timezone** | `2026-08-03T12:21:26+0700` (WIB (+0700)) |
+| **Source Commit Tested** | `dcd202a3d88d999f557247ec9e4b6d0790a2cf14` (Git Dirty: `True`) |
+| **Timestamp & Timezone** | `2026-08-06T09:14:02+0700` (WIB (+0700)) |
 
 ## 2. Summary of Results
 
 | Status | Count |
 |---|---:|
-| **PASS** | 18 |
+| **PASS** | 16 |
 | **PARTIAL** | 1 |
-| **FAIL** | 0 |
+| **FAIL** | 2 |
 | **TOTAL** | 19 |
 
 ## 3. Detailed Test Results
@@ -46,27 +46,27 @@
 | `AE-04` | AES-GCM-256 Additional Authenticated Data (AAD) Binding | Mismatch in sequence number or direction in AAD causes GCM decryption failure | Decryption with modified AAD sequence rejected | **PASS** |
 | `E2E-01` | Two-Way Chat: Creator to Invitee | Messages sent from Creator are received and decrypted by Invitee across all 3 runs | Passed 3/3 runs | **PASS** |
 | `E2E-02` | Two-Way Chat: Invitee to Creator | Messages sent from Invitee are received and decrypted by Creator across all 3 runs | Passed 3/3 runs | **PASS** |
-| `E2E-03` | Signaling Constraint: Third-Peer Rejection | Attempt by a third peer to enter occupied room is rejected with ROOM_FULL across all 3 runs | Passed 3/3 runs | **PASS** |
-| `E2E-04` | Session Teardown: Room Destroy Cleanup | Explicit room destruction removes all session storage keys across all 3 runs | Passed 3/3 runs | **PASS** |
+| `E2E-03` | Signaling Constraint: Third-Peer Rejection | Attempt by a third peer to enter occupied room is rejected with ROOM_FULL across all 3 runs | Passed 0/3 runs | **FAIL** |
+| `E2E-04` | Session Teardown: Room Destroy Cleanup | Explicit room destruction removes all session storage keys across all 3 runs | Passed 0/3 runs | **FAIL** |
 | `RP-01` | Replay Protection: Envelope Sequence Validation | Envelopes with out-of-order or duplicate sequences rejected | Sequence counter validation enforced at application envelope layer; raw WebRTC packet injection out-of-scope for browser unit tests | **PARTIAL** |
 
 ## 4. E2E Multi-Run Execution Details
 
-### Run 1 - Overall: SUCCESS
+### Run 1 - Overall: FAIL
 - `E2E-01`: PASS
 - `E2E-02`: PASS
-- `E2E-03`: PASS
-- `E2E-04`: PASS
+- `E2E-03`: FAIL
+- `E2E-04`: FAIL
 
-### Run 2 - Overall: SUCCESS
+### Run 2 - Overall: FAIL
 - `E2E-01`: PASS
 - `E2E-02`: PASS
-- `E2E-03`: PASS
-- `E2E-04`: PASS
+- `E2E-03`: FAIL
+- `E2E-04`: FAIL
 
-### Run 3 - Overall: SUCCESS
+### Run 3 - Overall: FAIL
 - `E2E-01`: PASS
 - `E2E-02`: PASS
-- `E2E-03`: PASS
-- `E2E-04`: PASS
+- `E2E-03`: FAIL
+- `E2E-04`: FAIL
 
