@@ -157,6 +157,7 @@ async def create_room(request: Request):
 
     rooms[room_id] = {
         "connections": {},
+        "token_connections": {},
         "count":       0,
         "tokens":      [creator_token, invite_token],
         "created_at":  time.time(),
@@ -210,6 +211,21 @@ async def websocket_endpoint(
         logger.warning(f"WS_INVALID_TOKEN room_id={room_id} remote={websocket.client.host}")
         return
 
+    # If this token is reconnecting (e.g. page refresh), cleanly close stale connection
+    if "token_connections" not in room:
+        room["token_connections"] = {}
+
+    if token in room["token_connections"]:
+        old_cid = room["token_connections"][token]
+        if old_cid in room["connections"]:
+            old_ws = room["connections"][old_cid]
+            try:
+                await old_ws.close(code=1000, reason="Replaced by new connection")
+            except Exception:
+                pass
+            del room["connections"][old_cid]
+            room["count"] = max(0, room["count"] - 1)
+
     # Accept first so we can send a JSON rejection message if room is full
     await websocket.accept()
 
@@ -225,6 +241,7 @@ async def websocket_endpoint(
     room["count"] += 1
     connection_id = str(uuid.uuid4())
     room["connections"][connection_id] = websocket
+    room["token_connections"][token] = connection_id
     is_initiator = room["count"] == 1
 
     logger.info(
@@ -335,7 +352,10 @@ async def websocket_endpoint(
         if room_id in rooms:
             if connection_id in rooms[room_id]["connections"]:
                 del rooms[room_id]["connections"][connection_id]
-                rooms[room_id]["count"] -= 1
+                rooms[room_id]["count"] = max(0, rooms[room_id]["count"] - 1)
+
+            if "token_connections" in rooms[room_id] and rooms[room_id]["token_connections"].get(token) == connection_id:
+                del rooms[room_id]["token_connections"][token]
 
             # Notify remaining peer(s) — peer disconnected but room remains
             for cid, ws in list(rooms[room_id]["connections"].items()):

@@ -106,17 +106,35 @@ export default function App() {
     const hash = window.location.hash;
     const path = window.location.pathname;
 
-    if (path.startsWith('/rooms/') && hash) {
-      const id = path.split('/rooms/')[1];
-      const fragment = hash.substring(1);
+    if (path.startsWith('/rooms/')) {
+      const id = path.split('/rooms/')[1].split('?')[0].split('#')[0];
+      if (!id) return;
+
+      const fragment = hash.startsWith('#') ? hash.substring(1) : hash;
       
       let inviteToken = "";
-      let keyB64 = fragment;
+      let keyB64 = "";
       if (fragment.includes('|')) {
         const parts = fragment.split('|');
         inviteToken = parts[0];
         keyB64 = parts[1];
+      } else if (fragment) {
+        keyB64 = fragment;
       }
+
+      const savedKey = sessionStorage.getItem(storageKey(id, 'key'));
+      const finalKeyB64 = keyB64 || savedKey;
+
+      const savedToken = sessionStorage.getItem(storageKey(id, 'token'));
+      const tokenToUse = savedToken || inviteToken;
+
+      if (!finalKeyB64 || !tokenToUse) {
+        return;
+      }
+
+      sessionStorage.setItem(storageKey(id, 'token'), tokenToUse);
+      sessionStorage.setItem(storageKey(id, 'key'), finalKeyB64);
+      if (inviteToken) sessionStorage.setItem(storageKey(id, 'invite_token'), inviteToken);
 
       const sk = storageKey(id, 'start');
       let ts   = parseInt(sessionStorage.getItem(sk), 10);
@@ -139,10 +157,7 @@ export default function App() {
       setRoomStartTs(ts);
       setRoomId(id);
 
-      const savedToken = sessionStorage.getItem(storageKey(id, 'token'));
-      const tokenToUse = savedToken || inviteToken;
-
-      importKey(keyB64)
+      importKey(finalKeyB64)
         .then(key => {
           classicalKey.current = key;
           connectToRoom(id, tokenToUse);
@@ -176,6 +191,8 @@ export default function App() {
 
       wsToken.current = data.creator_token || "";
       sessionStorage.setItem(storageKey(data.room_id, 'token'), data.creator_token);
+      sessionStorage.setItem(storageKey(data.room_id, 'key'), keyB64);
+      sessionStorage.setItem(storageKey(data.room_id, 'invite_token'), data.invite_token);
 
       if (data.turn_servers && data.turn_servers.length > 0) {
         iceServers.current = data.turn_servers;
@@ -219,16 +236,21 @@ export default function App() {
         if (ws.current && ws.current.readyState === WebSocket.OPEN) {
           ws.current.send(JSON.stringify({ type: "ping" }));
         }
-      }, 30000);
+      }, 15000);
     };
 
-    ws.current.onmessage = async (event) => {
-      const msg = JSON.parse(event.data);
+    ws.current.onmessage = (event) => {
+      let msg;
+      try {
+        msg = JSON.parse(event.data);
+      } catch (e) {
+        secureLog("Malformed WebSocket frame", event.data);
+        return;
+      }
 
       if (msg.type === 'error') {
-        secureLog("Server rejected connection:", msg.reason);
-        setStatus(`Error: ${msg.reason}`);
-        addTermLine(`SERVER_ERROR :: ${msg.reason}`, false);
+        setStatus(`Error: ${msg.reason || "Unknown"}`);
+        addTermLine(`WS_ERROR :: ${msg.reason}`, false);
       } else if (msg.type === 'init') {
         isInitiator.current = msg.initiator;
         addTermLine(`IDENTITY_ASSIGNED :: initiator=${msg.initiator}`);
@@ -247,10 +269,11 @@ export default function App() {
         setStatus("Peer joined. Initiating WebRTC...");
         isInitiator.current = true;
         if (peer.current) {
-          peer.current.close();
+          try { peer.current.close(); } catch(e) {}
           peer.current = null;
-          dataChannel.current = null;
         }
+        dataChannel.current = null;
+        pendingCandidates.current = [];
 
         const storedStart = parseInt(sessionStorage.getItem(storageKey(currentRoomId.current, 'start')), 10);
         if (storedStart && !isNaN(storedStart)) {
@@ -265,8 +288,14 @@ export default function App() {
         handleSignal(msg.data);
       } else if (msg.type === 'peer_disconnected') {
         addTermLine("REMOTE_PEER_DISCONNECTED. Waiting for reconnect...", false);
-        setStatus("Peer disconnected.");
+        setStatus("Peer disconnected. Waiting for reconnect...");
         setIsSecure(false);
+        if (peer.current) {
+          try { peer.current.close(); } catch(e) {}
+          peer.current = null;
+        }
+        dataChannel.current = null;
+        pendingCandidates.current = [];
       } else if (msg.type === 'room_full') {
         setRoomFull(true);
         setInRoom(false);
