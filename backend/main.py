@@ -112,12 +112,17 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if "*" in ALLOWED_ORIGINS else ALLOWED_ORIGINS,
-    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_origins=["*"],
     allow_credentials=False,
-    allow_methods=["POST", "OPTIONS", "GET"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/", include_in_schema=False)
+@app.get("/health", include_in_schema=False)
+async def health_check():
+    return {"status": "ok", "service": "kiwkiw-backend", "rooms_active": len(rooms)}
 
 
 # ─── Pydantic Models ───────────────────────────────────────────────────────────

@@ -23,6 +23,58 @@ const ROOM_TTL_SECONDS = import.meta.env.VITE_TEST_MODE
   ? (parseInt(import.meta.env.VITE_ROOM_TTL_SECONDS) || 3) 
   : 15 * 60; // 15 minutes
 
+function parseRoomUrl(pathname, search, hash) {
+  if (!pathname.startsWith('/rooms/')) return null;
+
+  const id = pathname.split('/rooms/')[1].split('?')[0].split('#')[0].replace(/\/+$/, '');
+  if (!id) return null;
+
+  const searchParams = new URLSearchParams(search);
+  let inviteToken = searchParams.get('t') || searchParams.get('token') || '';
+
+  let rawHash = hash.startsWith('#') ? hash.substring(1) : hash;
+  let decodedHash = '';
+  try {
+    decodedHash = decodeURIComponent(rawHash);
+  } catch (e) {
+    decodedHash = rawHash;
+  }
+
+  let keyB64 = '';
+
+  // 1. Check if hash has query-style format: #t=...&k=... or #key=...
+  if (decodedHash.includes('=')) {
+    const hashParams = new URLSearchParams(decodedHash.replace(/^#/, ''));
+    if (hashParams.get('t') || hashParams.get('token')) {
+      inviteToken = inviteToken || hashParams.get('t') || hashParams.get('token');
+    }
+    if (hashParams.get('k') || hashParams.get('key')) {
+      keyB64 = hashParams.get('k') || hashParams.get('key');
+    }
+  }
+
+  // 2. Check delimiters: pipe (|), %7C, ::, or token_key
+  if (!keyB64) {
+    if (decodedHash.includes('|')) {
+      const parts = decodedHash.split('|');
+      inviteToken = inviteToken || parts[0];
+      keyB64 = parts.slice(1).join('|');
+    } else if (rawHash.includes('%7C') || rawHash.includes('%7c')) {
+      const parts = rawHash.split(/%7[Cc]/);
+      inviteToken = inviteToken || parts[0];
+      keyB64 = parts.slice(1).join('%7C');
+    } else if (decodedHash.includes('::')) {
+      const parts = decodedHash.split('::');
+      inviteToken = inviteToken || parts[0];
+      keyB64 = parts.slice(1).join('::');
+    } else {
+      keyB64 = decodedHash;
+    }
+  }
+
+  return { id, inviteToken, keyB64 };
+}
+
 export default function App() {
   const [roomId,            setRoomId]            = useState(null);
   const [inRoom,            setInRoom]            = useState(false);
@@ -103,24 +155,13 @@ export default function App() {
 
   // Restore from URL on load
   useEffect(() => {
-    const hash = window.location.hash;
-    const path = window.location.pathname;
+    const { pathname, search, hash } = window.location;
 
-    if (path.startsWith('/rooms/')) {
-      const id = path.split('/rooms/')[1].split('?')[0].split('#')[0];
-      if (!id) return;
+    if (pathname.startsWith('/rooms/')) {
+      const parsed = parseRoomUrl(pathname, search, hash);
+      if (!parsed || !parsed.id) return;
 
-      const fragment = hash.startsWith('#') ? hash.substring(1) : hash;
-      
-      let inviteToken = "";
-      let keyB64 = "";
-      if (fragment.includes('|')) {
-        const parts = fragment.split('|');
-        inviteToken = parts[0];
-        keyB64 = parts[1];
-      } else if (fragment) {
-        keyB64 = fragment;
-      }
+      const { id, inviteToken, keyB64 } = parsed;
 
       const savedKey = sessionStorage.getItem(storageKey(id, 'key'));
       const finalKeyB64 = keyB64 || savedKey;
@@ -129,6 +170,8 @@ export default function App() {
       const tokenToUse = savedToken || inviteToken;
 
       if (!finalKeyB64 || !tokenToUse) {
+        secureLog("Incomplete room URL params", { finalKeyB64: !!finalKeyB64, tokenToUse: !!tokenToUse });
+        setStatus("Link tidak lengkap atau token/kunci terpotong.");
         return;
       }
 
@@ -164,7 +207,7 @@ export default function App() {
         })
         .catch(err => {
           secureLog("Invalid room key", err);
-          setStatus("Invalid Room Key");
+          setStatus("Kunci enkripsi ruangan tidak valid");
         });
     }
   }, []);
@@ -198,7 +241,9 @@ export default function App() {
         iceServers.current = data.turn_servers;
       }
 
-      window.history.pushState({}, '', `/rooms/${data.room_id}#${data.invite_token}|${keyB64}`);
+      // Standard, WhatsApp-friendly and universal URL format
+      const shareUrl = `/rooms/${data.room_id}?t=${data.invite_token}#${keyB64}`;
+      window.history.pushState({}, '', shareUrl);
 
       const ts = Date.now();
       sessionStorage.setItem(storageKey(data.room_id, 'start'), ts);
@@ -509,10 +554,40 @@ export default function App() {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    showToast("Link disalin!", "success");
-    setTimeout(() => setCopied(false), 2000);
+    const text = window.location.href;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopied(true);
+        showToast("Link disalin!", "success");
+        setTimeout(() => setCopied(false), 2000);
+      }).catch(() => fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
+  };
+
+  const fallbackCopy = (text) => {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      if (successful) {
+        setCopied(true);
+        showToast("Link disalin!", "success");
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        showToast("Gagal menyalin link otomatis.", "error");
+      }
+    } catch (err) {
+      showToast("Gagal menyalin link otomatis.", "error");
+    }
   };
 
   const sendMessage = async (e) => {
